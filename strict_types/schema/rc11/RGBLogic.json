@@ -1,0 +1,203 @@
+{
+  "id": "742e975a8ab1582191efc07f3920b778f531ed9e1c6577b845ee7acc9af0683b",
+  "library": {
+    "dependencies": [
+      {
+        "id": "15957095c109a742e108980253a6b0bd7f514e8d924f71b985811a8042428d40",
+        "name": "BPCore"
+      },
+      {
+        "id": "7c73ef9269b68e794875ff38e1fada766fc46d8624d8eaa488a62546886469ce",
+        "name": "RGBCommit"
+      },
+      {
+        "id": "e5b79918d1d9d9b67976ea95901e73d44426ac7a2f944971d18fe7b83c8eb702",
+        "name": "Bitcoin"
+      }
+    ],
+    "extern_types": {
+      "BPCore": {
+        "017c075d00404b1695981b17c3612dc6b8eaae0d7f7059629216755ae5199311": "TapretNodePartner",
+        "13c453526627bb44258c3b67f4ccc27efefce427b7cf5e0ffd818f2f7e7bd87c": "TapretPathProof",
+        "357a4ed58b660b4a85ee115443a97c6973abbcded0e000a95f95c4787cce2d9b": "TapretProof",
+        "383f622e7153d2c821913ccb771d9f3d64df76f22855592df8464394164d6d05": "TapretRightBranch",
+        "474ecf5cd0e84c3e78eafb3c3e58ecb859cd7737b36764046a1e134a9b383b97": "OpretProof"
+      },
+      "Bitcoin": {
+        "25abf5b9121417baa339d45f7b1575a7714be17a75185dd031357ad4c92de986": "ScriptBytes",
+        "31bbaee8848977c5b007317231cd92f630b6292dcd897fdcbadec5bac4e97fd9": "TapNodeHash",
+        "5facd96de53f4ec514d9b18d6780da0aabeb2d260bfd372da3c07aa45d399f4d": "LeafScript",
+        "b63309a918bfb6920d6ec858a4248723465a693f724307bfff1dd73a73814ec9": "LeafVer",
+        "fca2a72abe91fecd82a8b198906322c24e76aaaa35f224d1730563a0182e8859": "XOnlyPk"
+      },
+      "RGBCommit": {
+        "34520fae13961a5ebd29fc11233f854ef21038047fd404bedfa146d916a53268": "TransitionType",
+        "95c8e67a1e75625fd49655426a91eb7e4290a16f5a98f1be50f7b68a2412f7c5": "OpId"
+      }
+    },
+    "name": "RGBLogic",
+    "types": {
+      "DbcProof": {
+        "Union": {
+          "opret:2": {
+            "inline": {
+              "Tuple": [
+                {
+                  "extern": {
+                    "libId": "15957095c109a742e108980253a6b0bd7f514e8d924f71b985811a8042428d40",
+                    "semId": "474ecf5cd0e84c3e78eafb3c3e58ecb859cd7737b36764046a1e134a9b383b97"
+                  }
+                }
+              ]
+            }
+          },
+          "tapret:1": {
+            "inline": {
+              "Tuple": [
+                {
+                  "extern": {
+                    "libId": "15957095c109a742e108980253a6b0bd7f514e8d924f71b985811a8042428d40",
+                    "semId": "357a4ed58b660b4a85ee115443a97c6973abbcded0e000a95f95c4787cce2d9b"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "GlobalOrd": {
+        "Struct": [
+          {
+            "name": "opOrd",
+            "ty": {
+              "named": "aea199c97879ef30d0c005811e0d58b6095474983173278f2db45872b1e06474"
+            }
+          },
+          {
+            "name": "idx",
+            "ty": {
+              "inline": {
+                "Primitive": 2
+              }
+            }
+          }
+        ]
+      },
+      "Layer1": {
+        "Enum": [
+          "bitcoin:0",
+          "liquid:1"
+        ]
+      },
+      "OpOrd": {
+        "Union": {
+          "genesis:0": {
+            "inline": {
+              "Primitive": 0
+            }
+          },
+          "transition:255": {
+            "inline": {
+              "Struct": [
+                {
+                  "name": "witness",
+                  "ty": {
+                    "named": "8feb6101fc52b5662608e62419b851d8d4da318f3d8f0046b74e780149908582"
+                  }
+                },
+                {
+                  "name": "ty",
+                  "ty": {
+                    "extern": {
+                      "libId": "7c73ef9269b68e794875ff38e1fada766fc46d8624d8eaa488a62546886469ce",
+                      "semId": "34520fae13961a5ebd29fc11233f854ef21038047fd404bedfa146d916a53268"
+                    }
+                  }
+                },
+                {
+                  "name": "nonce",
+                  "ty": {
+                    "inline": {
+                      "Primitive": 8
+                    }
+                  }
+                },
+                {
+                  "name": "opid",
+                  "ty": {
+                    "extern": {
+                      "libId": "7c73ef9269b68e794875ff38e1fada766fc46d8624d8eaa488a62546886469ce",
+                      "semId": "95c8e67a1e75625fd49655426a91eb7e4290a16f5a98f1be50f7b68a2412f7c5"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "WitnessOrd": {
+        "Union": {
+          "archived:3": {
+            "inline": {
+              "Primitive": 0
+            }
+          },
+          "ignored:2": {
+            "inline": {
+              "Primitive": 0
+            }
+          },
+          "mined:0": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "5cdc0e23152f7922db87c3f99c438aa79e1bd02c483962f678f7b4cac8008012"
+                }
+              ]
+            }
+          },
+          "tentative:1": {
+            "inline": {
+              "Primitive": 0
+            }
+          }
+        }
+      },
+      "WitnessPos": {
+        "Struct": [
+          {
+            "name": "layer1",
+            "ty": {
+              "named": "79c4d849086c368795a2494047de94c8733edee3d4885e89e71aca0d536a1a10"
+            }
+          },
+          {
+            "name": "height",
+            "ty": {
+              "inline": {
+                "Primitive": 4
+              }
+            }
+          },
+          {
+            "name": "timestamp",
+            "ty": {
+              "inline": {
+                "Primitive": 72
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "namedSemIds": {
+    "DbcProof": "5d81fb469b06c44019333ff09f29b9a3530f8d9aada7ce5265d192193da5c26f",
+    "GlobalOrd": "b80b9cfe36693691c3b3491899a300d31c5cdf9599ddfd4bd08ed16f9c58f2a7",
+    "Layer1": "79c4d849086c368795a2494047de94c8733edee3d4885e89e71aca0d536a1a10",
+    "OpOrd": "aea199c97879ef30d0c005811e0d58b6095474983173278f2db45872b1e06474",
+    "WitnessOrd": "8feb6101fc52b5662608e62419b851d8d4da318f3d8f0046b74e780149908582",
+    "WitnessPos": "5cdc0e23152f7922db87c3f99c438aa79e1bd02c483962f678f7b4cac8008012"
+  }
+}

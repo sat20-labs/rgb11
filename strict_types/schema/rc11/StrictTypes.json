@@ -1,0 +1,1991 @@
+{
+  "id": "e99e92e73b40977f917e85ae3885bf2b4d38b7b47edca222072844d56e2b3c50",
+  "library": {
+    "dependencies": [
+      {
+        "id": "8289eb4d0f0b7054af744b05e8c1d79d2303a65c63cbcfa56798f9fa563c316a",
+        "name": "Std"
+      }
+    ],
+    "extern_types": {
+      "Std": {
+        "831bcb0c328608f3f9cd16633c16a8e6a52ac31c79a61042be9d864bc9f4a0f7": "AlphaLodash",
+        "95c3bdc94d0260f9716a113cf6492d5d4e23988e33043005ca36da6d6eee67b4": "AlphaNumLodash",
+        "b9837ee740ae9213daeb346492fda55e20b8a283493c14b8b3cc74c79d87f9af": "AlphaCapsLodash",
+        "d13d0cc32a1bad7a9cac7a89f83a28bebb6f4e0951d0dbc80bf4c86487acb2de": "AlphaSmallLodash"
+      }
+    },
+    "name": "StrictTypes",
+    "types": {
+      "Dependency": {
+        "Struct": [
+          {
+            "name": "id",
+            "ty": {
+              "named": "b5b980cfff6d7caa89eda5e11e29c1048a61603f97b9e3ad33708dbda5c94136"
+            }
+          },
+          {
+            "name": "name",
+            "ty": {
+              "named": "87b5efc03762e2d36b260acac87bac47a5bd45c55ef02c3d29c908e2ab1c417a"
+            }
+          }
+        ]
+      },
+      "EnumVariants": {
+        "Tuple": [
+          {
+            "inline": {
+              "Set": [
+                {
+                  "named": "7dc94227d46200d926968524efcc7d92f923fd479418034c6d22e47a16a8764e"
+                },
+                {
+                  "max": 255,
+                  "min": 1
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "ExternRef": {
+        "Struct": [
+          {
+            "name": "libId",
+            "ty": {
+              "named": "b5b980cfff6d7caa89eda5e11e29c1048a61603f97b9e3ad33708dbda5c94136"
+            }
+          },
+          {
+            "name": "semId",
+            "ty": {
+              "named": "6b04a3149ea6950016679fef02b4ab24f5e6b78a64c8d9d0bd65fcd7a3584e8d"
+            }
+          }
+        ]
+      },
+      "FieldInlineRef": {
+        "Struct": [
+          {
+            "name": "name",
+            "ty": {
+              "named": "1bb45801f260ae6dc8fc2902a5fcd4841ff1d75084ed1be0c1422d770237f872"
+            }
+          },
+          {
+            "name": "ty",
+            "ty": {
+              "named": "b6e4eb3422b78a3c920bba2c17885d146fc780e6e38d104bace1eddbe1059734"
+            }
+          }
+        ]
+      },
+      "FieldInlineRef1": {
+        "Struct": [
+          {
+            "name": "name",
+            "ty": {
+              "named": "1bb45801f260ae6dc8fc2902a5fcd4841ff1d75084ed1be0c1422d770237f872"
+            }
+          },
+          {
+            "name": "ty",
+            "ty": {
+              "named": "5b32554761eef5f6168fbab79bb2f5394d1ae76c84c42d888fb8583e0e0eb989"
+            }
+          }
+        ]
+      },
+      "FieldInlineRef2": {
+        "Struct": [
+          {
+            "name": "name",
+            "ty": {
+              "named": "1bb45801f260ae6dc8fc2902a5fcd4841ff1d75084ed1be0c1422d770237f872"
+            }
+          },
+          {
+            "name": "ty",
+            "ty": {
+              "named": "b5a1ffa8920bbd9e496b7bc3b7049af6e8142603bfdd5bfd679bdc6a795deddc"
+            }
+          }
+        ]
+      },
+      "FieldLibRef": {
+        "Struct": [
+          {
+            "name": "name",
+            "ty": {
+              "named": "1bb45801f260ae6dc8fc2902a5fcd4841ff1d75084ed1be0c1422d770237f872"
+            }
+          },
+          {
+            "name": "ty",
+            "ty": {
+              "named": "b33f63c6611e04f0a1e6faa74b3f986a8ea71b3a0619b25a1a36be5283315291"
+            }
+          }
+        ]
+      },
+      "FieldName": {
+        "Tuple": [
+          {
+            "inline": {
+              "Tuple": [
+                {
+                  "extern": {
+                    "libId": "8289eb4d0f0b7054af744b05e8c1d79d2303a65c63cbcfa56798f9fa563c316a",
+                    "semId": "d13d0cc32a1bad7a9cac7a89f83a28bebb6f4e0951d0dbc80bf4c86487acb2de"
+                  }
+                },
+                {
+                  "inline": {
+                    "List": [
+                      {
+                        "extern": {
+                          "libId": "8289eb4d0f0b7054af744b05e8c1d79d2303a65c63cbcfa56798f9fa563c316a",
+                          "semId": "95c3bdc94d0260f9716a113cf6492d5d4e23988e33043005ca36da6d6eee67b4"
+                        }
+                      },
+                      {
+                        "max": 99,
+                        "min": 0
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "FieldSemId": {
+        "Struct": [
+          {
+            "name": "name",
+            "ty": {
+              "named": "1bb45801f260ae6dc8fc2902a5fcd4841ff1d75084ed1be0c1422d770237f872"
+            }
+          },
+          {
+            "name": "ty",
+            "ty": {
+              "named": "6b04a3149ea6950016679fef02b4ab24f5e6b78a64c8d9d0bd65fcd7a3584e8d"
+            }
+          }
+        ]
+      },
+      "Ident": {
+        "Tuple": [
+          {
+            "inline": {
+              "Tuple": [
+                {
+                  "extern": {
+                    "libId": "8289eb4d0f0b7054af744b05e8c1d79d2303a65c63cbcfa56798f9fa563c316a",
+                    "semId": "831bcb0c328608f3f9cd16633c16a8e6a52ac31c79a61042be9d864bc9f4a0f7"
+                  }
+                },
+                {
+                  "inline": {
+                    "List": [
+                      {
+                        "extern": {
+                          "libId": "8289eb4d0f0b7054af744b05e8c1d79d2303a65c63cbcfa56798f9fa563c316a",
+                          "semId": "95c3bdc94d0260f9716a113cf6492d5d4e23988e33043005ca36da6d6eee67b4"
+                        }
+                      },
+                      {
+                        "max": 99,
+                        "min": 0
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "InlineRef": {
+        "Union": {
+          "extern:2": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "aa2af8da841ff7c5f14e1bae82918a8312a999c356e9f1565f71eba3229f0196"
+                }
+              ]
+            }
+          },
+          "inline:0": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "4da6737b1b693467ec8d0ea28ecdaafc61b5599f8efb2631daa4bfc410fffd0c"
+                }
+              ]
+            }
+          },
+          "named:1": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "6b04a3149ea6950016679fef02b4ab24f5e6b78a64c8d9d0bd65fcd7a3584e8d"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "InlineRef1": {
+        "Union": {
+          "extern:2": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "aa2af8da841ff7c5f14e1bae82918a8312a999c356e9f1565f71eba3229f0196"
+                }
+              ]
+            }
+          },
+          "inline:0": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "00964dd9811f7ac8f3d73aaa41c43094b40ce23460660e95a5697a40349aef61"
+                }
+              ]
+            }
+          },
+          "named:1": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "6b04a3149ea6950016679fef02b4ab24f5e6b78a64c8d9d0bd65fcd7a3584e8d"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "InlineRef2": {
+        "Union": {
+          "extern:1": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "aa2af8da841ff7c5f14e1bae82918a8312a999c356e9f1565f71eba3229f0196"
+                }
+              ]
+            }
+          },
+          "named:0": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "6b04a3149ea6950016679fef02b4ab24f5e6b78a64c8d9d0bd65fcd7a3584e8d"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "ItemCase": {
+        "Union": {
+          "arrayItem:16": {
+            "inline": {
+              "Primitive": 0
+            }
+          },
+          "listItem:17": {
+            "inline": {
+              "Primitive": 0
+            }
+          },
+          "mapKey:19": {
+            "inline": {
+              "Primitive": 0
+            }
+          },
+          "mapValue:20": {
+            "inline": {
+              "Primitive": 0
+            }
+          },
+          "namedField:1": {
+            "inline": {
+              "Tuple": [
+                {
+                  "inline": {
+                    "Primitive": 1
+                  }
+                },
+                {
+                  "named": "1bb45801f260ae6dc8fc2902a5fcd4841ff1d75084ed1be0c1422d770237f872"
+                }
+              ]
+            }
+          },
+          "setItem:18": {
+            "inline": {
+              "Primitive": 0
+            }
+          },
+          "unionVariant:2": {
+            "inline": {
+              "Tuple": [
+                {
+                  "inline": {
+                    "Primitive": 1
+                  }
+                },
+                {
+                  "named": "0986c18b22fa35d16a24f49816c055f384e1244659e5a5c4d039c5ceae8e108f"
+                }
+              ]
+            }
+          },
+          "unnamedField:0": {
+            "inline": {
+              "Tuple": [
+                {
+                  "inline": {
+                    "Primitive": 1
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "LibName": {
+        "Tuple": [
+          {
+            "inline": {
+              "Tuple": [
+                {
+                  "extern": {
+                    "libId": "8289eb4d0f0b7054af744b05e8c1d79d2303a65c63cbcfa56798f9fa563c316a",
+                    "semId": "b9837ee740ae9213daeb346492fda55e20b8a283493c14b8b3cc74c79d87f9af"
+                  }
+                },
+                {
+                  "inline": {
+                    "List": [
+                      {
+                        "extern": {
+                          "libId": "8289eb4d0f0b7054af744b05e8c1d79d2303a65c63cbcfa56798f9fa563c316a",
+                          "semId": "95c3bdc94d0260f9716a113cf6492d5d4e23988e33043005ca36da6d6eee67b4"
+                        }
+                      },
+                      {
+                        "max": 99,
+                        "min": 0
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "LibRef": {
+        "Union": {
+          "extern:2": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "aa2af8da841ff7c5f14e1bae82918a8312a999c356e9f1565f71eba3229f0196"
+                }
+              ]
+            }
+          },
+          "inline:0": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "fe7515af3d6f61275ec694a3238bf61caf38821f707dfaa14b10cb47f382b7d8"
+                }
+              ]
+            }
+          },
+          "named:1": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "6b04a3149ea6950016679fef02b4ab24f5e6b78a64c8d9d0bd65fcd7a3584e8d"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "MemoryLayout": {
+        "Struct": [
+          {
+            "name": "items",
+            "ty": {
+              "inline": {
+                "List": [
+                  {
+                    "named": "13b55a6081e98157914d3ba0f6e9126461d4d5774f0e7680f7b5cc50afd6b510"
+                  },
+                  {
+                    "max": 4294967295,
+                    "min": 0
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "NamedFieldsInlineRef": {
+        "Tuple": [
+          {
+            "inline": {
+              "List": [
+                {
+                  "named": "543e89aa3538087dc23af38de58873bca8d99bddf1ec6a6e0b79f400b7567d2e"
+                },
+                {
+                  "max": 255,
+                  "min": 1
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "NamedFieldsInlineRef1": {
+        "Tuple": [
+          {
+            "inline": {
+              "List": [
+                {
+                  "named": "26d9663d312ccef3f4fc0a35729cf9dfb6aa205116e6ac6a24edc3db90522d53"
+                },
+                {
+                  "max": 255,
+                  "min": 1
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "NamedFieldsInlineRef2": {
+        "Tuple": [
+          {
+            "inline": {
+              "List": [
+                {
+                  "named": "54690959d4529c861af9b062f7c7c68f23af786a3109b03e4ccac658a36688cf"
+                },
+                {
+                  "max": 255,
+                  "min": 1
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "NamedFieldsLibRef": {
+        "Tuple": [
+          {
+            "inline": {
+              "List": [
+                {
+                  "named": "8021381f3a86ccc37db09183ad4fc5ce023843e14d08f237ff7f6bc50f699211"
+                },
+                {
+                  "max": 255,
+                  "min": 1
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "NamedFieldsSemId": {
+        "Tuple": [
+          {
+            "inline": {
+              "List": [
+                {
+                  "named": "444e3b7245ed7d6d1c05fb7fcd9e5617b37bdb153455c1c6571e6d3721ed4418"
+                },
+                {
+                  "max": 255,
+                  "min": 1
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "NestedCase": {
+        "Union": {
+          "asciiStr:17": {
+            "inline": {
+              "Tuple": [
+                {
+                  "inline": {
+                    "Union": {
+                      "none:0": {
+                        "inline": {
+                          "Primitive": 0
+                        }
+                      },
+                      "some:1": {
+                        "inline": {
+                          "Tuple": [
+                            {
+                              "named": "683ce9575d4cdb8fe160a97b68efb14eb9d68f69753844bfbe2f46e5bb13d3fa"
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "byteStr:16": {
+            "inline": {
+              "Primitive": 0
+            }
+          },
+          "newType:0": {
+            "inline": {
+              "Tuple": [
+                {
+                  "inline": {
+                    "Union": {
+                      "none:0": {
+                        "inline": {
+                          "Primitive": 0
+                        }
+                      },
+                      "some:1": {
+                        "inline": {
+                          "Tuple": [
+                            {
+                              "named": "683ce9575d4cdb8fe160a97b68efb14eb9d68f69753844bfbe2f46e5bb13d3fa"
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "option:1": {
+            "inline": {
+              "Primitive": 0
+            }
+          },
+          "rStr:19": {
+            "inline": {
+              "Tuple": [
+                {
+                  "inline": {
+                    "Union": {
+                      "none:0": {
+                        "inline": {
+                          "Primitive": 0
+                        }
+                      },
+                      "some:1": {
+                        "inline": {
+                          "Tuple": [
+                            {
+                              "named": "683ce9575d4cdb8fe160a97b68efb14eb9d68f69753844bfbe2f46e5bb13d3fa"
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "inline": {
+                    "Union": {
+                      "none:0": {
+                        "inline": {
+                          "Primitive": 0
+                        }
+                      },
+                      "some:1": {
+                        "inline": {
+                          "Tuple": [
+                            {
+                              "named": "683ce9575d4cdb8fe160a97b68efb14eb9d68f69753844bfbe2f46e5bb13d3fa"
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "named": "81d32c24d7c3e832d9c362fdc8f48f909d3f8728bc324e4de44ca1e1899b1906"
+                }
+              ]
+            }
+          },
+          "uniStr:18": {
+            "inline": {
+              "Primitive": 0
+            }
+          }
+        }
+      },
+      "Primitive": {
+        "Tuple": [
+          {
+            "inline": {
+              "Primitive": 1
+            }
+          }
+        ]
+      },
+      "SemId": {
+        "Tuple": [
+          {
+            "inline": {
+              "Array": [
+                {
+                  "inline": {
+                    "Primitive": 64
+                  }
+                },
+                32
+              ]
+            }
+          }
+        ]
+      },
+      "Sizing": {
+        "Struct": [
+          {
+            "name": "min",
+            "ty": {
+              "inline": {
+                "Primitive": 8
+              }
+            }
+          },
+          {
+            "name": "max",
+            "ty": {
+              "inline": {
+                "Primitive": 8
+              }
+            }
+          }
+        ]
+      },
+      "SymbolRef": {
+        "Struct": [
+          {
+            "name": "libName",
+            "ty": {
+              "named": "87b5efc03762e2d36b260acac87bac47a5bd45c55ef02c3d29c908e2ab1c417a"
+            }
+          },
+          {
+            "name": "tyName",
+            "ty": {
+              "named": "5316088414c98274a8be3ad693514c502edf129238644e9ecac9780f9bb76864"
+            }
+          },
+          {
+            "name": "libId",
+            "ty": {
+              "named": "b5b980cfff6d7caa89eda5e11e29c1048a61603f97b9e3ad33708dbda5c94136"
+            }
+          },
+          {
+            "name": "semId",
+            "ty": {
+              "named": "6b04a3149ea6950016679fef02b4ab24f5e6b78a64c8d9d0bd65fcd7a3584e8d"
+            }
+          }
+        ]
+      },
+      "SymbolicSys": {
+        "Struct": [
+          {
+            "name": "symbols",
+            "ty": {
+              "named": "fe76adf6bdb802fe199330a896233606ec9c73b99e60536d6cdc32284ef64143"
+            }
+          },
+          {
+            "name": "types",
+            "ty": {
+              "named": "fd81ae837e0b079ba84eebc8264c932280511f67e13591e49d759ce3ec4582a9"
+            }
+          }
+        ]
+      },
+      "Symbols": {
+        "Struct": [
+          {
+            "name": "libs",
+            "ty": {
+              "inline": {
+                "Set": [
+                  {
+                    "named": "ece0d932dbaa2f6341137b1beea09e6ebcf891ac47e309b2df8246d4352ac06c"
+                  },
+                  {
+                    "max": 65535,
+                    "min": 0
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "name": "symbols",
+            "ty": {
+              "inline": {
+                "Set": [
+                  {
+                    "named": "b11c6669b657b5090de3b4a02eb998fc75093cea07ba4cf52f7c3bef95520e6c"
+                  },
+                  {
+                    "max": 16777215,
+                    "min": 0
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "TyInlineRef": {
+        "Union": {
+          "array:7": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "b6e4eb3422b78a3c920bba2c17885d146fc780e6e38d104bace1eddbe1059734"
+                },
+                {
+                  "inline": {
+                    "Primitive": 2
+                  }
+                }
+              ]
+            }
+          },
+          "enum:3": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "972183aad11c4f41d108331912195be40de30c14b35b7e536c0f8b4b6d64c551"
+                }
+              ]
+            }
+          },
+          "list:8": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "b6e4eb3422b78a3c920bba2c17885d146fc780e6e38d104bace1eddbe1059734"
+                },
+                {
+                  "named": "81d32c24d7c3e832d9c362fdc8f48f909d3f8728bc324e4de44ca1e1899b1906"
+                }
+              ]
+            }
+          },
+          "map:10": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "b6e4eb3422b78a3c920bba2c17885d146fc780e6e38d104bace1eddbe1059734"
+                },
+                {
+                  "named": "b6e4eb3422b78a3c920bba2c17885d146fc780e6e38d104bace1eddbe1059734"
+                },
+                {
+                  "named": "81d32c24d7c3e832d9c362fdc8f48f909d3f8728bc324e4de44ca1e1899b1906"
+                }
+              ]
+            }
+          },
+          "primitive:0": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "2463dabf7c4af1ea9120efbf80c2c789a15792d4f1fba32c589823b10f6921fa"
+                }
+              ]
+            }
+          },
+          "set:9": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "b6e4eb3422b78a3c920bba2c17885d146fc780e6e38d104bace1eddbe1059734"
+                },
+                {
+                  "named": "81d32c24d7c3e832d9c362fdc8f48f909d3f8728bc324e4de44ca1e1899b1906"
+                }
+              ]
+            }
+          },
+          "struct:6": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "a1d8875b7acd1ae816681a13ee509878155c6dcffc76a38143130f62e5740e46"
+                }
+              ]
+            }
+          },
+          "tuple:5": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "3ffc48871268495d96d56f2ac6a8f32491e96409834abe9fff1695f71f8ffb45"
+                }
+              ]
+            }
+          },
+          "unicode:1": {
+            "inline": {
+              "Primitive": 0
+            }
+          },
+          "union:4": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "865d4d1866a36484dcac725d85d6eadd0d9f13f0ca22442182595db35fb812f0"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "TyInlineRef1": {
+        "Union": {
+          "array:7": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "5b32554761eef5f6168fbab79bb2f5394d1ae76c84c42d888fb8583e0e0eb989"
+                },
+                {
+                  "inline": {
+                    "Primitive": 2
+                  }
+                }
+              ]
+            }
+          },
+          "enum:3": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "972183aad11c4f41d108331912195be40de30c14b35b7e536c0f8b4b6d64c551"
+                }
+              ]
+            }
+          },
+          "list:8": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "5b32554761eef5f6168fbab79bb2f5394d1ae76c84c42d888fb8583e0e0eb989"
+                },
+                {
+                  "named": "81d32c24d7c3e832d9c362fdc8f48f909d3f8728bc324e4de44ca1e1899b1906"
+                }
+              ]
+            }
+          },
+          "map:10": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "5b32554761eef5f6168fbab79bb2f5394d1ae76c84c42d888fb8583e0e0eb989"
+                },
+                {
+                  "named": "5b32554761eef5f6168fbab79bb2f5394d1ae76c84c42d888fb8583e0e0eb989"
+                },
+                {
+                  "named": "81d32c24d7c3e832d9c362fdc8f48f909d3f8728bc324e4de44ca1e1899b1906"
+                }
+              ]
+            }
+          },
+          "primitive:0": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "2463dabf7c4af1ea9120efbf80c2c789a15792d4f1fba32c589823b10f6921fa"
+                }
+              ]
+            }
+          },
+          "set:9": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "5b32554761eef5f6168fbab79bb2f5394d1ae76c84c42d888fb8583e0e0eb989"
+                },
+                {
+                  "named": "81d32c24d7c3e832d9c362fdc8f48f909d3f8728bc324e4de44ca1e1899b1906"
+                }
+              ]
+            }
+          },
+          "struct:6": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "6f82eac54c9156f77cd8f199c80ae29e52a2563530bb56c8ea4446969a887c16"
+                }
+              ]
+            }
+          },
+          "tuple:5": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "4383d765a012d70b3571a001e26b94a235523416f37674fe2ca1a9d2b262293c"
+                }
+              ]
+            }
+          },
+          "unicode:1": {
+            "inline": {
+              "Primitive": 0
+            }
+          },
+          "union:4": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "939a63036b4e93284ed93d30f6426fba3e887f30597050c10f7f17a19f54fb6a"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "TyInlineRef2": {
+        "Union": {
+          "array:7": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "b5a1ffa8920bbd9e496b7bc3b7049af6e8142603bfdd5bfd679bdc6a795deddc"
+                },
+                {
+                  "inline": {
+                    "Primitive": 2
+                  }
+                }
+              ]
+            }
+          },
+          "enum:3": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "972183aad11c4f41d108331912195be40de30c14b35b7e536c0f8b4b6d64c551"
+                }
+              ]
+            }
+          },
+          "list:8": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "b5a1ffa8920bbd9e496b7bc3b7049af6e8142603bfdd5bfd679bdc6a795deddc"
+                },
+                {
+                  "named": "81d32c24d7c3e832d9c362fdc8f48f909d3f8728bc324e4de44ca1e1899b1906"
+                }
+              ]
+            }
+          },
+          "map:10": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "b5a1ffa8920bbd9e496b7bc3b7049af6e8142603bfdd5bfd679bdc6a795deddc"
+                },
+                {
+                  "named": "b5a1ffa8920bbd9e496b7bc3b7049af6e8142603bfdd5bfd679bdc6a795deddc"
+                },
+                {
+                  "named": "81d32c24d7c3e832d9c362fdc8f48f909d3f8728bc324e4de44ca1e1899b1906"
+                }
+              ]
+            }
+          },
+          "primitive:0": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "2463dabf7c4af1ea9120efbf80c2c789a15792d4f1fba32c589823b10f6921fa"
+                }
+              ]
+            }
+          },
+          "set:9": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "b5a1ffa8920bbd9e496b7bc3b7049af6e8142603bfdd5bfd679bdc6a795deddc"
+                },
+                {
+                  "named": "81d32c24d7c3e832d9c362fdc8f48f909d3f8728bc324e4de44ca1e1899b1906"
+                }
+              ]
+            }
+          },
+          "struct:6": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "32244282bda531f7521234a5d98fd61266ed8531f5d7803d64a4caacfd4abda2"
+                }
+              ]
+            }
+          },
+          "tuple:5": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "6b9aa639d93359427f3bb7f56c8f5cdd4dc0d6ea290cfd131e6ab6e930db1708"
+                }
+              ]
+            }
+          },
+          "unicode:1": {
+            "inline": {
+              "Primitive": 0
+            }
+          },
+          "union:4": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "2b89e5690be94f0381d6c4dfae466edb20302ce7d8c0c1fd272ee4556d48d2a3"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "TyLibRef": {
+        "Union": {
+          "array:7": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "b33f63c6611e04f0a1e6faa74b3f986a8ea71b3a0619b25a1a36be5283315291"
+                },
+                {
+                  "inline": {
+                    "Primitive": 2
+                  }
+                }
+              ]
+            }
+          },
+          "enum:3": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "972183aad11c4f41d108331912195be40de30c14b35b7e536c0f8b4b6d64c551"
+                }
+              ]
+            }
+          },
+          "list:8": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "b33f63c6611e04f0a1e6faa74b3f986a8ea71b3a0619b25a1a36be5283315291"
+                },
+                {
+                  "named": "81d32c24d7c3e832d9c362fdc8f48f909d3f8728bc324e4de44ca1e1899b1906"
+                }
+              ]
+            }
+          },
+          "map:10": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "b33f63c6611e04f0a1e6faa74b3f986a8ea71b3a0619b25a1a36be5283315291"
+                },
+                {
+                  "named": "b33f63c6611e04f0a1e6faa74b3f986a8ea71b3a0619b25a1a36be5283315291"
+                },
+                {
+                  "named": "81d32c24d7c3e832d9c362fdc8f48f909d3f8728bc324e4de44ca1e1899b1906"
+                }
+              ]
+            }
+          },
+          "primitive:0": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "2463dabf7c4af1ea9120efbf80c2c789a15792d4f1fba32c589823b10f6921fa"
+                }
+              ]
+            }
+          },
+          "set:9": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "b33f63c6611e04f0a1e6faa74b3f986a8ea71b3a0619b25a1a36be5283315291"
+                },
+                {
+                  "named": "81d32c24d7c3e832d9c362fdc8f48f909d3f8728bc324e4de44ca1e1899b1906"
+                }
+              ]
+            }
+          },
+          "struct:6": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "b9054de814e9a8ef30dc69ea7be2208731f504c380923ea21ace0ce49f06b6f6"
+                }
+              ]
+            }
+          },
+          "tuple:5": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "f4cab62c4b7676f65d5514c3daf4189cb72a04c6e4b8060d1f069a3829a05148"
+                }
+              ]
+            }
+          },
+          "unicode:1": {
+            "inline": {
+              "Primitive": 0
+            }
+          },
+          "union:4": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "080d76030f089605840dde576faa2e5d18be4d37c436e5239fc2771bd8ad8598"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "TySemId": {
+        "Union": {
+          "array:7": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "6b04a3149ea6950016679fef02b4ab24f5e6b78a64c8d9d0bd65fcd7a3584e8d"
+                },
+                {
+                  "inline": {
+                    "Primitive": 2
+                  }
+                }
+              ]
+            }
+          },
+          "enum:3": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "972183aad11c4f41d108331912195be40de30c14b35b7e536c0f8b4b6d64c551"
+                }
+              ]
+            }
+          },
+          "list:8": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "6b04a3149ea6950016679fef02b4ab24f5e6b78a64c8d9d0bd65fcd7a3584e8d"
+                },
+                {
+                  "named": "81d32c24d7c3e832d9c362fdc8f48f909d3f8728bc324e4de44ca1e1899b1906"
+                }
+              ]
+            }
+          },
+          "map:10": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "6b04a3149ea6950016679fef02b4ab24f5e6b78a64c8d9d0bd65fcd7a3584e8d"
+                },
+                {
+                  "named": "6b04a3149ea6950016679fef02b4ab24f5e6b78a64c8d9d0bd65fcd7a3584e8d"
+                },
+                {
+                  "named": "81d32c24d7c3e832d9c362fdc8f48f909d3f8728bc324e4de44ca1e1899b1906"
+                }
+              ]
+            }
+          },
+          "primitive:0": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "2463dabf7c4af1ea9120efbf80c2c789a15792d4f1fba32c589823b10f6921fa"
+                }
+              ]
+            }
+          },
+          "set:9": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "6b04a3149ea6950016679fef02b4ab24f5e6b78a64c8d9d0bd65fcd7a3584e8d"
+                },
+                {
+                  "named": "81d32c24d7c3e832d9c362fdc8f48f909d3f8728bc324e4de44ca1e1899b1906"
+                }
+              ]
+            }
+          },
+          "struct:6": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "92d302f93e727bf38683f90c18070997b9d5566dcfbbc427cd70bdddaa46aeda"
+                }
+              ]
+            }
+          },
+          "tuple:5": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "648cd40fb06b86a98f67a1c049cd06a5c5f68a7740f01ef105e47e581287fd4f"
+                }
+              ]
+            }
+          },
+          "unicode:1": {
+            "inline": {
+              "Primitive": 0
+            }
+          },
+          "union:4": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "fd185573d2425ca7fa8369b43b28b6f1b345b8db803634541874d146d1380733"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "TypeFqn": {
+        "Struct": [
+          {
+            "name": "lib",
+            "ty": {
+              "named": "87b5efc03762e2d36b260acac87bac47a5bd45c55ef02c3d29c908e2ab1c417a"
+            }
+          },
+          {
+            "name": "name",
+            "ty": {
+              "named": "5316088414c98274a8be3ad693514c502edf129238644e9ecac9780f9bb76864"
+            }
+          }
+        ]
+      },
+      "TypeInfo": {
+        "Struct": [
+          {
+            "name": "depth",
+            "ty": {
+              "inline": {
+                "Primitive": 4
+              }
+            }
+          },
+          {
+            "name": "ty",
+            "ty": {
+              "named": "31fda0f0d79ba5aa536e473bd63673dde0a40c083a40a6dc8528074b0b61110b"
+            }
+          },
+          {
+            "name": "fqn",
+            "ty": {
+              "inline": {
+                "Union": {
+                  "none:0": {
+                    "inline": {
+                      "Primitive": 0
+                    }
+                  },
+                  "some:1": {
+                    "inline": {
+                      "Tuple": [
+                        {
+                          "named": "683ce9575d4cdb8fe160a97b68efb14eb9d68f69753844bfbe2f46e5bb13d3fa"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "name": "item",
+            "ty": {
+              "inline": {
+                "Union": {
+                  "none:0": {
+                    "inline": {
+                      "Primitive": 0
+                    }
+                  },
+                  "some:1": {
+                    "inline": {
+                      "Tuple": [
+                        {
+                          "named": "522cd69c32c8e2f19d4cab27702f1d60444d4ee5f6c46c7b67ab62ed430e7dfc"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "name": "nested",
+            "ty": {
+              "inline": {
+                "List": [
+                  {
+                    "named": "e2a91ac97fe7766fe8e998d796c0bec2f6ee8fb7d0cf95fbef5a8f6dac20564c"
+                  },
+                  {
+                    "max": 255,
+                    "min": 0
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "TypeLib": {
+        "Struct": [
+          {
+            "name": "name",
+            "ty": {
+              "named": "87b5efc03762e2d36b260acac87bac47a5bd45c55ef02c3d29c908e2ab1c417a"
+            }
+          },
+          {
+            "name": "dependencies",
+            "ty": {
+              "inline": {
+                "Set": [
+                  {
+                    "named": "ece0d932dbaa2f6341137b1beea09e6ebcf891ac47e309b2df8246d4352ac06c"
+                  },
+                  {
+                    "max": 255,
+                    "min": 0
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "name": "externTypes",
+            "ty": {
+              "inline": {
+                "Map": [
+                  {
+                    "named": "87b5efc03762e2d36b260acac87bac47a5bd45c55ef02c3d29c908e2ab1c417a"
+                  },
+                  {
+                    "inline": {
+                      "Map": [
+                        {
+                          "named": "6b04a3149ea6950016679fef02b4ab24f5e6b78a64c8d9d0bd65fcd7a3584e8d"
+                        },
+                        {
+                          "named": "5316088414c98274a8be3ad693514c502edf129238644e9ecac9780f9bb76864"
+                        },
+                        {
+                          "max": 65535,
+                          "min": 0
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "max": 255,
+                    "min": 0
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "name": "types",
+            "ty": {
+              "inline": {
+                "Map": [
+                  {
+                    "named": "5316088414c98274a8be3ad693514c502edf129238644e9ecac9780f9bb76864"
+                  },
+                  {
+                    "named": "70c1381de79f1073347005d929761708f760fc916efa2ab82b72f6cb4809f16e"
+                  },
+                  {
+                    "max": 65535,
+                    "min": 1
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "TypeLibId": {
+        "Tuple": [
+          {
+            "inline": {
+              "Array": [
+                {
+                  "inline": {
+                    "Primitive": 64
+                  }
+                },
+                32
+              ]
+            }
+          }
+        ]
+      },
+      "TypeName": {
+        "Tuple": [
+          {
+            "inline": {
+              "Tuple": [
+                {
+                  "extern": {
+                    "libId": "8289eb4d0f0b7054af744b05e8c1d79d2303a65c63cbcfa56798f9fa563c316a",
+                    "semId": "b9837ee740ae9213daeb346492fda55e20b8a283493c14b8b3cc74c79d87f9af"
+                  }
+                },
+                {
+                  "inline": {
+                    "List": [
+                      {
+                        "extern": {
+                          "libId": "8289eb4d0f0b7054af744b05e8c1d79d2303a65c63cbcfa56798f9fa563c316a",
+                          "semId": "95c3bdc94d0260f9716a113cf6492d5d4e23988e33043005ca36da6d6eee67b4"
+                        }
+                      },
+                      {
+                        "max": 99,
+                        "min": 0
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "TypeSymbol": {
+        "Struct": [
+          {
+            "name": "id",
+            "ty": {
+              "named": "6b04a3149ea6950016679fef02b4ab24f5e6b78a64c8d9d0bd65fcd7a3584e8d"
+            }
+          },
+          {
+            "name": "fqn",
+            "ty": {
+              "inline": {
+                "Union": {
+                  "none:0": {
+                    "inline": {
+                      "Primitive": 0
+                    }
+                  },
+                  "some:1": {
+                    "inline": {
+                      "Tuple": [
+                        {
+                          "named": "683ce9575d4cdb8fe160a97b68efb14eb9d68f69753844bfbe2f46e5bb13d3fa"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "TypeSysId": {
+        "Tuple": [
+          {
+            "inline": {
+              "Array": [
+                {
+                  "inline": {
+                    "Primitive": 64
+                  }
+                },
+                32
+              ]
+            }
+          }
+        ]
+      },
+      "TypeSystem": {
+        "Tuple": [
+          {
+            "inline": {
+              "Map": [
+                {
+                  "named": "6b04a3149ea6950016679fef02b4ab24f5e6b78a64c8d9d0bd65fcd7a3584e8d"
+                },
+                {
+                  "named": "31fda0f0d79ba5aa536e473bd63673dde0a40c083a40a6dc8528074b0b61110b"
+                },
+                {
+                  "max": 16777215,
+                  "min": 0
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "UnionVariantsInlineRef": {
+        "Tuple": [
+          {
+            "inline": {
+              "Map": [
+                {
+                  "inline": {
+                    "Primitive": 1
+                  }
+                },
+                {
+                  "named": "8b9c9129749f060fe7160c2ba89c53a5f7d5ccda7aed5a91f00720dff947d9d6"
+                },
+                {
+                  "max": 255,
+                  "min": 0
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "UnionVariantsInlineRef1": {
+        "Tuple": [
+          {
+            "inline": {
+              "Map": [
+                {
+                  "inline": {
+                    "Primitive": 1
+                  }
+                },
+                {
+                  "named": "119afebe44622d007261d8856bf15213bf1d605ace83740aa1dff783beb92181"
+                },
+                {
+                  "max": 255,
+                  "min": 0
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "UnionVariantsInlineRef2": {
+        "Tuple": [
+          {
+            "inline": {
+              "Map": [
+                {
+                  "inline": {
+                    "Primitive": 1
+                  }
+                },
+                {
+                  "named": "74bd70530314dfc9b7dec04e5f6827505f69df9e67b1221adbbb2fb23b777deb"
+                },
+                {
+                  "max": 255,
+                  "min": 0
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "UnionVariantsLibRef": {
+        "Tuple": [
+          {
+            "inline": {
+              "Map": [
+                {
+                  "inline": {
+                    "Primitive": 1
+                  }
+                },
+                {
+                  "named": "01261e96dcbcd6ba46101ffd196b8332ee190078d54bb7deaf5555aa4126e262"
+                },
+                {
+                  "max": 255,
+                  "min": 0
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "UnionVariantsSemId": {
+        "Tuple": [
+          {
+            "inline": {
+              "Map": [
+                {
+                  "inline": {
+                    "Primitive": 1
+                  }
+                },
+                {
+                  "named": "98ca13a3756f077bcb07432123a65907020a41b9c73ce48acf57083e4d249ee4"
+                },
+                {
+                  "max": 255,
+                  "min": 0
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "UnnamedFieldsInlineRef": {
+        "Tuple": [
+          {
+            "inline": {
+              "List": [
+                {
+                  "named": "b6e4eb3422b78a3c920bba2c17885d146fc780e6e38d104bace1eddbe1059734"
+                },
+                {
+                  "max": 255,
+                  "min": 1
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "UnnamedFieldsInlineRef1": {
+        "Tuple": [
+          {
+            "inline": {
+              "List": [
+                {
+                  "named": "5b32554761eef5f6168fbab79bb2f5394d1ae76c84c42d888fb8583e0e0eb989"
+                },
+                {
+                  "max": 255,
+                  "min": 1
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "UnnamedFieldsInlineRef2": {
+        "Tuple": [
+          {
+            "inline": {
+              "List": [
+                {
+                  "named": "b5a1ffa8920bbd9e496b7bc3b7049af6e8142603bfdd5bfd679bdc6a795deddc"
+                },
+                {
+                  "max": 255,
+                  "min": 1
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "UnnamedFieldsLibRef": {
+        "Tuple": [
+          {
+            "inline": {
+              "List": [
+                {
+                  "named": "b33f63c6611e04f0a1e6faa74b3f986a8ea71b3a0619b25a1a36be5283315291"
+                },
+                {
+                  "max": 255,
+                  "min": 1
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "UnnamedFieldsSemId": {
+        "Tuple": [
+          {
+            "inline": {
+              "List": [
+                {
+                  "named": "6b04a3149ea6950016679fef02b4ab24f5e6b78a64c8d9d0bd65fcd7a3584e8d"
+                },
+                {
+                  "max": 255,
+                  "min": 1
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "Variant": {
+        "Struct": [
+          {
+            "name": "name",
+            "ty": {
+              "named": "0986c18b22fa35d16a24f49816c055f384e1244659e5a5c4d039c5ceae8e108f"
+            }
+          },
+          {
+            "name": "tag",
+            "ty": {
+              "inline": {
+                "Primitive": 1
+              }
+            }
+          }
+        ]
+      },
+      "VariantInfoInlineRef": {
+        "Struct": [
+          {
+            "name": "name",
+            "ty": {
+              "named": "0986c18b22fa35d16a24f49816c055f384e1244659e5a5c4d039c5ceae8e108f"
+            }
+          },
+          {
+            "name": "ty",
+            "ty": {
+              "named": "b6e4eb3422b78a3c920bba2c17885d146fc780e6e38d104bace1eddbe1059734"
+            }
+          }
+        ]
+      },
+      "VariantInfoInlineRef1": {
+        "Struct": [
+          {
+            "name": "name",
+            "ty": {
+              "named": "0986c18b22fa35d16a24f49816c055f384e1244659e5a5c4d039c5ceae8e108f"
+            }
+          },
+          {
+            "name": "ty",
+            "ty": {
+              "named": "5b32554761eef5f6168fbab79bb2f5394d1ae76c84c42d888fb8583e0e0eb989"
+            }
+          }
+        ]
+      },
+      "VariantInfoInlineRef2": {
+        "Struct": [
+          {
+            "name": "name",
+            "ty": {
+              "named": "0986c18b22fa35d16a24f49816c055f384e1244659e5a5c4d039c5ceae8e108f"
+            }
+          },
+          {
+            "name": "ty",
+            "ty": {
+              "named": "b5a1ffa8920bbd9e496b7bc3b7049af6e8142603bfdd5bfd679bdc6a795deddc"
+            }
+          }
+        ]
+      },
+      "VariantInfoLibRef": {
+        "Struct": [
+          {
+            "name": "name",
+            "ty": {
+              "named": "0986c18b22fa35d16a24f49816c055f384e1244659e5a5c4d039c5ceae8e108f"
+            }
+          },
+          {
+            "name": "ty",
+            "ty": {
+              "named": "b33f63c6611e04f0a1e6faa74b3f986a8ea71b3a0619b25a1a36be5283315291"
+            }
+          }
+        ]
+      },
+      "VariantInfoSemId": {
+        "Struct": [
+          {
+            "name": "name",
+            "ty": {
+              "named": "0986c18b22fa35d16a24f49816c055f384e1244659e5a5c4d039c5ceae8e108f"
+            }
+          },
+          {
+            "name": "ty",
+            "ty": {
+              "named": "6b04a3149ea6950016679fef02b4ab24f5e6b78a64c8d9d0bd65fcd7a3584e8d"
+            }
+          }
+        ]
+      },
+      "VariantName": {
+        "Tuple": [
+          {
+            "inline": {
+              "Tuple": [
+                {
+                  "extern": {
+                    "libId": "8289eb4d0f0b7054af744b05e8c1d79d2303a65c63cbcfa56798f9fa563c316a",
+                    "semId": "d13d0cc32a1bad7a9cac7a89f83a28bebb6f4e0951d0dbc80bf4c86487acb2de"
+                  }
+                },
+                {
+                  "inline": {
+                    "List": [
+                      {
+                        "extern": {
+                          "libId": "8289eb4d0f0b7054af744b05e8c1d79d2303a65c63cbcfa56798f9fa563c316a",
+                          "semId": "95c3bdc94d0260f9716a113cf6492d5d4e23988e33043005ca36da6d6eee67b4"
+                        }
+                      },
+                      {
+                        "max": 99,
+                        "min": 0
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "namedSemIds": {
+    "Dependency": "ece0d932dbaa2f6341137b1beea09e6ebcf891ac47e309b2df8246d4352ac06c",
+    "EnumVariants": "972183aad11c4f41d108331912195be40de30c14b35b7e536c0f8b4b6d64c551",
+    "ExternRef": "aa2af8da841ff7c5f14e1bae82918a8312a999c356e9f1565f71eba3229f0196",
+    "FieldInlineRef": "543e89aa3538087dc23af38de58873bca8d99bddf1ec6a6e0b79f400b7567d2e",
+    "FieldInlineRef1": "26d9663d312ccef3f4fc0a35729cf9dfb6aa205116e6ac6a24edc3db90522d53",
+    "FieldInlineRef2": "54690959d4529c861af9b062f7c7c68f23af786a3109b03e4ccac658a36688cf",
+    "FieldLibRef": "8021381f3a86ccc37db09183ad4fc5ce023843e14d08f237ff7f6bc50f699211",
+    "FieldName": "1bb45801f260ae6dc8fc2902a5fcd4841ff1d75084ed1be0c1422d770237f872",
+    "FieldSemId": "444e3b7245ed7d6d1c05fb7fcd9e5617b37bdb153455c1c6571e6d3721ed4418",
+    "Ident": "6a1ab8bb8435c937cbf97abea073f71a9c37d2154058f161bd74c4caedfd1974",
+    "InlineRef": "b6e4eb3422b78a3c920bba2c17885d146fc780e6e38d104bace1eddbe1059734",
+    "InlineRef1": "5b32554761eef5f6168fbab79bb2f5394d1ae76c84c42d888fb8583e0e0eb989",
+    "InlineRef2": "b5a1ffa8920bbd9e496b7bc3b7049af6e8142603bfdd5bfd679bdc6a795deddc",
+    "ItemCase": "522cd69c32c8e2f19d4cab27702f1d60444d4ee5f6c46c7b67ab62ed430e7dfc",
+    "LibName": "87b5efc03762e2d36b260acac87bac47a5bd45c55ef02c3d29c908e2ab1c417a",
+    "LibRef": "b33f63c6611e04f0a1e6faa74b3f986a8ea71b3a0619b25a1a36be5283315291",
+    "MemoryLayout": "0fd52fd05f30dfb65bcbd833b33ff2681e51ff3608c55277849d520fa3d3f1e7",
+    "NamedFieldsInlineRef": "a1d8875b7acd1ae816681a13ee509878155c6dcffc76a38143130f62e5740e46",
+    "NamedFieldsInlineRef1": "6f82eac54c9156f77cd8f199c80ae29e52a2563530bb56c8ea4446969a887c16",
+    "NamedFieldsInlineRef2": "32244282bda531f7521234a5d98fd61266ed8531f5d7803d64a4caacfd4abda2",
+    "NamedFieldsLibRef": "b9054de814e9a8ef30dc69ea7be2208731f504c380923ea21ace0ce49f06b6f6",
+    "NamedFieldsSemId": "92d302f93e727bf38683f90c18070997b9d5566dcfbbc427cd70bdddaa46aeda",
+    "NestedCase": "e2a91ac97fe7766fe8e998d796c0bec2f6ee8fb7d0cf95fbef5a8f6dac20564c",
+    "Primitive": "2463dabf7c4af1ea9120efbf80c2c789a15792d4f1fba32c589823b10f6921fa",
+    "SemId": "6b04a3149ea6950016679fef02b4ab24f5e6b78a64c8d9d0bd65fcd7a3584e8d",
+    "Sizing": "81d32c24d7c3e832d9c362fdc8f48f909d3f8728bc324e4de44ca1e1899b1906",
+    "SymbolRef": "7ae50eb5fe1310f1ac26c41e4311e7eb3c13c78e854ce898aa116643d1299abb",
+    "SymbolicSys": "c0724dbfa9812c1526cfbbcea5f2b8d12fac9b5f15ddcbb3c17c2d2534e926ed",
+    "Symbols": "fe76adf6bdb802fe199330a896233606ec9c73b99e60536d6cdc32284ef64143",
+    "TyInlineRef": "fe7515af3d6f61275ec694a3238bf61caf38821f707dfaa14b10cb47f382b7d8",
+    "TyInlineRef1": "4da6737b1b693467ec8d0ea28ecdaafc61b5599f8efb2631daa4bfc410fffd0c",
+    "TyInlineRef2": "00964dd9811f7ac8f3d73aaa41c43094b40ce23460660e95a5697a40349aef61",
+    "TyLibRef": "70c1381de79f1073347005d929761708f760fc916efa2ab82b72f6cb4809f16e",
+    "TySemId": "31fda0f0d79ba5aa536e473bd63673dde0a40c083a40a6dc8528074b0b61110b",
+    "TypeFqn": "683ce9575d4cdb8fe160a97b68efb14eb9d68f69753844bfbe2f46e5bb13d3fa",
+    "TypeInfo": "13b55a6081e98157914d3ba0f6e9126461d4d5774f0e7680f7b5cc50afd6b510",
+    "TypeLib": "2753e9db5643b00f948699afb054a8cba4fe392db85549b91d13f5f1a9de49f9",
+    "TypeLibId": "b5b980cfff6d7caa89eda5e11e29c1048a61603f97b9e3ad33708dbda5c94136",
+    "TypeName": "5316088414c98274a8be3ad693514c502edf129238644e9ecac9780f9bb76864",
+    "TypeSymbol": "b11c6669b657b5090de3b4a02eb998fc75093cea07ba4cf52f7c3bef95520e6c",
+    "TypeSysId": "2e03977ddb8832795628375d07f7cc2bae7e270406b7c2f018350b47b4f1207a",
+    "TypeSystem": "fd81ae837e0b079ba84eebc8264c932280511f67e13591e49d759ce3ec4582a9",
+    "UnionVariantsInlineRef": "865d4d1866a36484dcac725d85d6eadd0d9f13f0ca22442182595db35fb812f0",
+    "UnionVariantsInlineRef1": "939a63036b4e93284ed93d30f6426fba3e887f30597050c10f7f17a19f54fb6a",
+    "UnionVariantsInlineRef2": "2b89e5690be94f0381d6c4dfae466edb20302ce7d8c0c1fd272ee4556d48d2a3",
+    "UnionVariantsLibRef": "080d76030f089605840dde576faa2e5d18be4d37c436e5239fc2771bd8ad8598",
+    "UnionVariantsSemId": "fd185573d2425ca7fa8369b43b28b6f1b345b8db803634541874d146d1380733",
+    "UnnamedFieldsInlineRef": "3ffc48871268495d96d56f2ac6a8f32491e96409834abe9fff1695f71f8ffb45",
+    "UnnamedFieldsInlineRef1": "4383d765a012d70b3571a001e26b94a235523416f37674fe2ca1a9d2b262293c",
+    "UnnamedFieldsInlineRef2": "6b9aa639d93359427f3bb7f56c8f5cdd4dc0d6ea290cfd131e6ab6e930db1708",
+    "UnnamedFieldsLibRef": "f4cab62c4b7676f65d5514c3daf4189cb72a04c6e4b8060d1f069a3829a05148",
+    "UnnamedFieldsSemId": "648cd40fb06b86a98f67a1c049cd06a5c5f68a7740f01ef105e47e581287fd4f",
+    "Variant": "7dc94227d46200d926968524efcc7d92f923fd479418034c6d22e47a16a8764e",
+    "VariantInfoInlineRef": "8b9c9129749f060fe7160c2ba89c53a5f7d5ccda7aed5a91f00720dff947d9d6",
+    "VariantInfoInlineRef1": "119afebe44622d007261d8856bf15213bf1d605ace83740aa1dff783beb92181",
+    "VariantInfoInlineRef2": "74bd70530314dfc9b7dec04e5f6827505f69df9e67b1221adbbb2fb23b777deb",
+    "VariantInfoLibRef": "01261e96dcbcd6ba46101ffd196b8332ee190078d54bb7deaf5555aa4126e262",
+    "VariantInfoSemId": "98ca13a3756f077bcb07432123a65907020a41b9c73ce48acf57083e4d249ee4",
+    "VariantName": "0986c18b22fa35d16a24f49816c055f384e1244659e5a5c4d039c5ceae8e108f"
+  }
+}

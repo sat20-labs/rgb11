@@ -1,0 +1,343 @@
+{
+  "id": "15957095c109a742e108980253a6b0bd7f514e8d924f71b985811a8042428d40",
+  "library": {
+    "dependencies": [
+      {
+        "id": "b1c6aeb1c15b1eb68477ab69abfaa807098164db6303ee0aaad3459e2431af96",
+        "name": "CommitVerify"
+      },
+      {
+        "id": "e5b79918d1d9d9b67976ea95901e73d44426ac7a2f944971d18fe7b83c8eb702",
+        "name": "Bitcoin"
+      }
+    ],
+    "extern_types": {
+      "Bitcoin": {
+        "21e33e43c5aa5cf2292753a338c167ed3b639c4dd9cebda98f346917bac94375": "Vout",
+        "25abf5b9121417baa339d45f7b1575a7714be17a75185dd031357ad4c92de986": "ScriptBytes",
+        "31bbaee8848977c5b007317231cd92f630b6292dcd897fdcbadec5bac4e97fd9": "TapNodeHash",
+        "5facd96de53f4ec514d9b18d6780da0aabeb2d260bfd372da3c07aa45d399f4d": "LeafScript",
+        "a38242f3cbd7d1d0a112da8de1602f56d4f86f0ec4c476c5c068594c4b046556": "Txid",
+        "b63309a918bfb6920d6ec858a4248723465a693f724307bfff1dd73a73814ec9": "LeafVer",
+        "fca2a72abe91fecd82a8b198906322c24e76aaaa35f224d1730563a0182e8859": "XOnlyPk"
+      },
+      "CommitVerify": {
+        "36a4b4db8009d8790433ae3d1aed61719206e799fdd1abd504867b9d374c076f": "MerkleProof",
+        "389e438627150538461b597f1fc51481ae4cff0c85b00617e2347ebe9b15e233": "MerkleHash"
+      }
+    },
+    "name": "BPCore",
+    "types": {
+      "AnchorOpretProof": {
+        "Struct": [
+          {
+            "name": "mpcProof",
+            "ty": {
+              "extern": {
+                "libId": "b1c6aeb1c15b1eb68477ab69abfaa807098164db6303ee0aaad3459e2431af96",
+                "semId": "36a4b4db8009d8790433ae3d1aed61719206e799fdd1abd504867b9d374c076f"
+              }
+            }
+          },
+          {
+            "name": "dbcProof",
+            "ty": {
+              "named": "474ecf5cd0e84c3e78eafb3c3e58ecb859cd7737b36764046a1e134a9b383b97"
+            }
+          }
+        ]
+      },
+      "AnchorTapretProof": {
+        "Struct": [
+          {
+            "name": "mpcProof",
+            "ty": {
+              "extern": {
+                "libId": "b1c6aeb1c15b1eb68477ab69abfaa807098164db6303ee0aaad3459e2431af96",
+                "semId": "36a4b4db8009d8790433ae3d1aed61719206e799fdd1abd504867b9d374c076f"
+              }
+            }
+          },
+          {
+            "name": "dbcProof",
+            "ty": {
+              "named": "357a4ed58b660b4a85ee115443a97c6973abbcded0e000a95f95c4787cce2d9b"
+            }
+          }
+        ]
+      },
+      "BlindSealTxPtr": {
+        "Struct": [
+          {
+            "name": "txid",
+            "ty": {
+              "named": "b1e53839140a38bef06f1acfbe1c60a56fe1e1f47d78082879bfd1fad31021dd"
+            }
+          },
+          {
+            "name": "vout",
+            "ty": {
+              "extern": {
+                "libId": "e5b79918d1d9d9b67976ea95901e73d44426ac7a2f944971d18fe7b83c8eb702",
+                "semId": "21e33e43c5aa5cf2292753a338c167ed3b639c4dd9cebda98f346917bac94375"
+              }
+            }
+          },
+          {
+            "name": "blinding",
+            "ty": {
+              "inline": {
+                "Primitive": 8
+              }
+            }
+          }
+        ]
+      },
+      "BlindSealTxid": {
+        "Struct": [
+          {
+            "name": "txid",
+            "ty": {
+              "extern": {
+                "libId": "e5b79918d1d9d9b67976ea95901e73d44426ac7a2f944971d18fe7b83c8eb702",
+                "semId": "a38242f3cbd7d1d0a112da8de1602f56d4f86f0ec4c476c5c068594c4b046556"
+              }
+            }
+          },
+          {
+            "name": "vout",
+            "ty": {
+              "extern": {
+                "libId": "e5b79918d1d9d9b67976ea95901e73d44426ac7a2f944971d18fe7b83c8eb702",
+                "semId": "21e33e43c5aa5cf2292753a338c167ed3b639c4dd9cebda98f346917bac94375"
+              }
+            }
+          },
+          {
+            "name": "blinding",
+            "ty": {
+              "inline": {
+                "Primitive": 8
+              }
+            }
+          }
+        ]
+      },
+      "ExplicitSealTxPtr": {
+        "Struct": [
+          {
+            "name": "txid",
+            "ty": {
+              "named": "b1e53839140a38bef06f1acfbe1c60a56fe1e1f47d78082879bfd1fad31021dd"
+            }
+          },
+          {
+            "name": "vout",
+            "ty": {
+              "extern": {
+                "libId": "e5b79918d1d9d9b67976ea95901e73d44426ac7a2f944971d18fe7b83c8eb702",
+                "semId": "21e33e43c5aa5cf2292753a338c167ed3b639c4dd9cebda98f346917bac94375"
+              }
+            }
+          }
+        ]
+      },
+      "ExplicitSealTxid": {
+        "Struct": [
+          {
+            "name": "txid",
+            "ty": {
+              "extern": {
+                "libId": "e5b79918d1d9d9b67976ea95901e73d44426ac7a2f944971d18fe7b83c8eb702",
+                "semId": "a38242f3cbd7d1d0a112da8de1602f56d4f86f0ec4c476c5c068594c4b046556"
+              }
+            }
+          },
+          {
+            "name": "vout",
+            "ty": {
+              "extern": {
+                "libId": "e5b79918d1d9d9b67976ea95901e73d44426ac7a2f944971d18fe7b83c8eb702",
+                "semId": "21e33e43c5aa5cf2292753a338c167ed3b639c4dd9cebda98f346917bac94375"
+              }
+            }
+          }
+        ]
+      },
+      "OpretProof": {
+        "Tuple": [
+          {
+            "inline": {
+              "Primitive": 0
+            }
+          }
+        ]
+      },
+      "SecretSeal": {
+        "Tuple": [
+          {
+            "inline": {
+              "Array": [
+                {
+                  "inline": {
+                    "Primitive": 64
+                  }
+                },
+                32
+              ]
+            }
+          }
+        ]
+      },
+      "TapretNodePartner": {
+        "Union": {
+          "leftNode:0": {
+            "inline": {
+              "Tuple": [
+                {
+                  "extern": {
+                    "libId": "e5b79918d1d9d9b67976ea95901e73d44426ac7a2f944971d18fe7b83c8eb702",
+                    "semId": "31bbaee8848977c5b007317231cd92f630b6292dcd897fdcbadec5bac4e97fd9"
+                  }
+                }
+              ]
+            }
+          },
+          "rightBranch:2": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "383f622e7153d2c821913ccb771d9f3d64df76f22855592df8464394164d6d05"
+                }
+              ]
+            }
+          },
+          "rightLeaf:1": {
+            "inline": {
+              "Tuple": [
+                {
+                  "extern": {
+                    "libId": "e5b79918d1d9d9b67976ea95901e73d44426ac7a2f944971d18fe7b83c8eb702",
+                    "semId": "5facd96de53f4ec514d9b18d6780da0aabeb2d260bfd372da3c07aa45d399f4d"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "TapretPathProof": {
+        "Struct": [
+          {
+            "name": "partnerNode",
+            "ty": {
+              "inline": {
+                "Union": {
+                  "none:0": {
+                    "inline": {
+                      "Primitive": 0
+                    }
+                  },
+                  "some:1": {
+                    "inline": {
+                      "Tuple": [
+                        {
+                          "named": "017c075d00404b1695981b17c3612dc6b8eaae0d7f7059629216755ae5199311"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "name": "nonce",
+            "ty": {
+              "inline": {
+                "Primitive": 1
+              }
+            }
+          }
+        ]
+      },
+      "TapretProof": {
+        "Struct": [
+          {
+            "name": "pathProof",
+            "ty": {
+              "named": "13c453526627bb44258c3b67f4ccc27efefce427b7cf5e0ffd818f2f7e7bd87c"
+            }
+          },
+          {
+            "name": "internalPk",
+            "ty": {
+              "extern": {
+                "libId": "e5b79918d1d9d9b67976ea95901e73d44426ac7a2f944971d18fe7b83c8eb702",
+                "semId": "fca2a72abe91fecd82a8b198906322c24e76aaaa35f224d1730563a0182e8859"
+              }
+            }
+          }
+        ]
+      },
+      "TapretRightBranch": {
+        "Struct": [
+          {
+            "name": "leftNodeHash",
+            "ty": {
+              "extern": {
+                "libId": "e5b79918d1d9d9b67976ea95901e73d44426ac7a2f944971d18fe7b83c8eb702",
+                "semId": "31bbaee8848977c5b007317231cd92f630b6292dcd897fdcbadec5bac4e97fd9"
+              }
+            }
+          },
+          {
+            "name": "rightNodeHash",
+            "ty": {
+              "extern": {
+                "libId": "e5b79918d1d9d9b67976ea95901e73d44426ac7a2f944971d18fe7b83c8eb702",
+                "semId": "31bbaee8848977c5b007317231cd92f630b6292dcd897fdcbadec5bac4e97fd9"
+              }
+            }
+          }
+        ]
+      },
+      "TxPtr": {
+        "Union": {
+          "txid:1": {
+            "inline": {
+              "Tuple": [
+                {
+                  "extern": {
+                    "libId": "e5b79918d1d9d9b67976ea95901e73d44426ac7a2f944971d18fe7b83c8eb702",
+                    "semId": "a38242f3cbd7d1d0a112da8de1602f56d4f86f0ec4c476c5c068594c4b046556"
+                  }
+                }
+              ]
+            }
+          },
+          "witnessTx:0": {
+            "inline": {
+              "Primitive": 0
+            }
+          }
+        }
+      }
+    }
+  },
+  "namedSemIds": {
+    "AnchorOpretProof": "a322c6f9ddbc858bd6f5523e6e571ee8656344d9de7a55dbabbc90fa900fa443",
+    "AnchorTapretProof": "6184e60cd7076c133d521e5e0173e530949cbccf8e29a60e18d41ce548509748",
+    "BlindSealTxPtr": "a7a8f2b903124f85923598855569052d3106440e08bbb6f82bc7f320ca5d5746",
+    "BlindSealTxid": "2c038d484b47f5043c67ba7605cd278df71b8cef1f4252bf8e213a5eeb58ec50",
+    "ExplicitSealTxPtr": "0d1e6df4bdca8b4bba619e814be2ca19810550f909f16c991d1f210fe538bb4d",
+    "ExplicitSealTxid": "a03c81f7f6285ca724380a42806144d7a7054a57470225d813dc60da90498d38",
+    "OpretProof": "474ecf5cd0e84c3e78eafb3c3e58ecb859cd7737b36764046a1e134a9b383b97",
+    "SecretSeal": "6819ebbcd5b318ab97b398a54b3665dddaa7066fe8e924e70360a994b3bd064e",
+    "TapretNodePartner": "017c075d00404b1695981b17c3612dc6b8eaae0d7f7059629216755ae5199311",
+    "TapretPathProof": "13c453526627bb44258c3b67f4ccc27efefce427b7cf5e0ffd818f2f7e7bd87c",
+    "TapretProof": "357a4ed58b660b4a85ee115443a97c6973abbcded0e000a95f95c4787cce2d9b",
+    "TapretRightBranch": "383f622e7153d2c821913ccb771d9f3d64df76f22855592df8464394164d6d05",
+    "TxPtr": "b1e53839140a38bef06f1acfbe1c60a56fe1e1f47d78082879bfd1fad31021dd"
+  }
+}

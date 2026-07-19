@@ -1,0 +1,111 @@
+{
+  "format_version": 1,
+  "generated_at": "2026-07-19T00:00:00+08:00",
+  "target_protocol": "RGB 0.11.1",
+  "engine_build_id": "rgb11-go/0.1.0-dev+rc11",
+  "wallet_schema_scope": ["NIA", "IFA", "CFA", "UDA"],
+  "differential_gate": {
+    "rust_oracle_vectors": 75,
+    "go_direct_vectors": 45,
+    "canonical_sha256": "5dbb3cf4bb27a8db4195d047d7c0594b518db18bbf880475f2c21334f8e796bf"
+  },
+  "release_set": {
+    "wallet_oracle": {
+      "repository": "https://github.com/RGB-Tools/rgb-lib",
+      "tag": "0.3.0-beta.7",
+      "commit": "538f2abaa67d7ce96be32d94092e8f1b9e3ea38e"
+    },
+    "crates": [
+      {
+        "name": "rgb-consensus",
+        "version": "0.11.1-rc.11",
+        "repository": "https://github.com/rgb-protocol/rgb-consensus",
+        "commit": "44e79963aa4603270eee9aa112ef07a512345e98",
+        "crate_sha256": "cee44070883ac31a112814ee635623b0bde44a2afab71ff3c591700a878a76d9"
+      },
+      {
+        "name": "rgb-invoicing",
+        "version": "0.11.1-rc.11",
+        "repository": "https://github.com/rgb-protocol/rgb-ops",
+        "commit": "5308b9d46c91857513ff5be2459992264687632b",
+        "crate_sha256": "b44153a2411b2d1ddc859a011061f95ec07acf32e70c414193838244207e232e"
+      },
+      {
+        "name": "rgb-ops",
+        "version": "0.11.1-rc.11",
+        "repository": "https://github.com/rgb-protocol/rgb-ops",
+        "commit": "5308b9d46c91857513ff5be2459992264687632b",
+        "crate_sha256": "e454f98d8ab2ef78a2e0ba924e2a5c67b5ed55ba1664f4a6ee269d2f271353bc"
+      },
+      {
+        "name": "rgb-psbt-utils",
+        "version": "0.11.1-rc.11",
+        "repository": "https://github.com/rgb-protocol/rgb-api",
+        "commit": "8d448f46c866d44ca0495ad0e924e57d9fd294dd",
+        "crate_sha256": "9df8f48e7c851814306af91411d7d6f7e8571939d509d4a786597a5eba0efbbf"
+      },
+      {
+        "name": "rgb-schemas",
+        "version": "0.11.1-rc.11",
+        "repository": "https://github.com/rgb-protocol/rgb-schemas",
+        "commit": "c5e43e987d18a2398d5f5f6c78629480fd792abd",
+        "crate_sha256": "4fa6cd396adb8e48b558c12750d8c8837aefe230ad905f1be5424b1d57b4f55b"
+      },
+      {
+        "name": "rgb-strict-encoding",
+        "version": "1.0.2",
+        "repository": "https://github.com/rgb-protocol/rgb-strict-encoding",
+        "commit": "7698a5e96a2a27d5bfa4cd3560da0e8af8e4a18a",
+        "crate_sha256": "0f68326e14d4b627f86634ea324510135cb551e27c5583a74811fa230b0cf34d"
+      },
+      {
+        "name": "rgb-strict-types",
+        "version": "1.0.2",
+        "repository": "https://github.com/rgb-protocol/rgb-strict-types",
+        "commit": "09b58e6c2db25cef8bdb15e33b8654530607b972",
+        "crate_sha256": "e920bdf61b662a3743572a03696b0d88992eeb7d4f7afa0902915968327b3ce6"
+      }
+    ]
+  },
+  "translation": [
+    {
+      "upstream_file": "rgb-strict-encoding/rust/src/traits.rs",
+      "go_files": ["strict_encoding/encoder.go", "strict_encoding/decoder.go"],
+      "status": "translated"
+    },
+    {
+      "upstream_file": "rgb-consensus/src/commit_verify/digest.rs",
+      "go_files": ["consensus/tagged_hash.go"],
+      "status": "translated"
+    },
+    {
+      "upstream_file": "rgb-consensus/src/operation/commit.rs",
+      "go_files": ["consensus/id.go"],
+      "status": "translated"
+    },
+    {
+      "upstream_file": "rgb-consensus/src/seals/txout/blind.rs",
+      "go_files": ["seals/blind.go"],
+      "status": "translated"
+    },
+    {
+      "upstream_file": "rgb-ops/src/containers/consignment.rs",
+      "go_files": ["consignment/armor.go"],
+      "status": "translated"
+    }
+  ],
+  "intentional_divergences": [
+    {
+      "area": "wallet derivation",
+      "reason": "SAT20 keeps one logical BIP86 account; derivation is wallet policy and not RGB consensus"
+    },
+    {
+      "area": "asset ticker",
+      "reason": "SAT20 stores the official asset ID without its fixed rgb: prefix to preserve AssetName delimiter parsing"
+    },
+    {
+      "area": "wallet head finality",
+      "reason": "SAT20 uses the latest valid wallet-signed DKVS personal record; no system/checkpoint signing key is part of wallet-head authority"
+    }
+  ]
+}

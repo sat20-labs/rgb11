@@ -1,0 +1,1733 @@
+{
+  "id": "7c73ef9269b68e794875ff38e1fada766fc46d8624d8eaa488a62546886469ce",
+  "library": {
+    "dependencies": [
+      {
+        "id": "15957095c109a742e108980253a6b0bd7f514e8d924f71b985811a8042428d40",
+        "name": "BPCore"
+      },
+      {
+        "id": "8289eb4d0f0b7054af744b05e8c1d79d2303a65c63cbcfa56798f9fa563c316a",
+        "name": "Std"
+      },
+      {
+        "id": "9b2a3dd2e660b8697f3e9556c9ebefaa6cae389bd2d9b28724358d7e0bfdb231",
+        "name": "AluVM"
+      },
+      {
+        "id": "b1c6aeb1c15b1eb68477ab69abfaa807098164db6303ee0aaad3459e2431af96",
+        "name": "CommitVerify"
+      },
+      {
+        "id": "e5b79918d1d9d9b67976ea95901e73d44426ac7a2f944971d18fe7b83c8eb702",
+        "name": "Bitcoin"
+      },
+      {
+        "id": "e99e92e73b40977f917e85ae3885bf2b4d38b7b47edca222072844d56e2b3c50",
+        "name": "StrictTypes"
+      }
+    ],
+    "extern_types": {
+      "AluVM": {
+        "6defa126e1bc75e1ff484bfb85c134d10c32dc8c1e40e0694b1cd6a7ebdcdc61": "LibSite",
+        "a73055022df95cc8f089a345a23f96de5129c013b70ef127d821904195fb530a": "LibId"
+      },
+      "BPCore": {
+        "2c038d484b47f5043c67ba7605cd278df71b8cef1f4252bf8e213a5eeb58ec50": "BlindSealTxid",
+        "6819ebbcd5b318ab97b398a54b3665dddaa7066fe8e924e70360a994b3bd064e": "SecretSeal",
+        "a7a8f2b903124f85923598855569052d3106440e08bbb6f82bc7f320ca5d5746": "BlindSealTxPtr",
+        "b1e53839140a38bef06f1acfbe1c60a56fe1e1f47d78082879bfd1fad31021dd": "TxPtr"
+      },
+      "Bitcoin": {
+        "21e33e43c5aa5cf2292753a338c167ed3b639c4dd9cebda98f346917bac94375": "Vout",
+        "a38242f3cbd7d1d0a112da8de1602f56d4f86f0ec4c476c5c068594c4b046556": "Txid"
+      },
+      "CommitVerify": {
+        "389e438627150538461b597f1fc51481ae4cff0c85b00617e2347ebe9b15e233": "MerkleHash",
+        "6dafadc5f5a72006c8a3a2daca8cdb98c6b7ddba8382d5ff88fafa40a7f6d306": "StrictHash"
+      },
+      "Std": {
+        "48be23172ae884459ae78334a0063f09fa0e317bea8b233ce782a38875e796b8": "AsciiPrintable",
+        "95c3bdc94d0260f9716a113cf6492d5d4e23988e33043005ca36da6d6eee67b4": "AlphaNumLodash",
+        "b9837ee740ae9213daeb346492fda55e20b8a283493c14b8b3cc74c79d87f9af": "AlphaCapsLodash",
+        "d13d0cc32a1bad7a9cac7a89f83a28bebb6f4e0951d0dbc80bf4c86487acb2de": "AlphaSmallLodash"
+      },
+      "StrictTypes": {
+        "1bb45801f260ae6dc8fc2902a5fcd4841ff1d75084ed1be0c1422d770237f872": "FieldName",
+        "5316088414c98274a8be3ad693514c502edf129238644e9ecac9780f9bb76864": "TypeName",
+        "6b04a3149ea6950016679fef02b4ab24f5e6b78a64c8d9d0bd65fcd7a3584e8d": "SemId"
+      }
+    },
+    "name": "RGBCommit",
+    "types": {
+      "AssignRevealedDataBlindSealTxPtr": {
+        "Union": {
+          "confidentialSeal:1": {
+            "inline": {
+              "Struct": [
+                {
+                  "name": "seal",
+                  "ty": {
+                    "extern": {
+                      "libId": "15957095c109a742e108980253a6b0bd7f514e8d924f71b985811a8042428d40",
+                      "semId": "6819ebbcd5b318ab97b398a54b3665dddaa7066fe8e924e70360a994b3bd064e"
+                    }
+                  }
+                },
+                {
+                  "name": "state",
+                  "ty": {
+                    "named": "20f25056228f66cefc91faea67bc5fc6f0695c3d477973593facd137ca724865"
+                  }
+                }
+              ]
+            }
+          },
+          "revealed:0": {
+            "inline": {
+              "Struct": [
+                {
+                  "name": "seal",
+                  "ty": {
+                    "extern": {
+                      "libId": "15957095c109a742e108980253a6b0bd7f514e8d924f71b985811a8042428d40",
+                      "semId": "a7a8f2b903124f85923598855569052d3106440e08bbb6f82bc7f320ca5d5746"
+                    }
+                  }
+                },
+                {
+                  "name": "state",
+                  "ty": {
+                    "named": "20f25056228f66cefc91faea67bc5fc6f0695c3d477973593facd137ca724865"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "AssignRevealedDataBlindSealTxid": {
+        "Union": {
+          "confidentialSeal:1": {
+            "inline": {
+              "Struct": [
+                {
+                  "name": "seal",
+                  "ty": {
+                    "extern": {
+                      "libId": "15957095c109a742e108980253a6b0bd7f514e8d924f71b985811a8042428d40",
+                      "semId": "6819ebbcd5b318ab97b398a54b3665dddaa7066fe8e924e70360a994b3bd064e"
+                    }
+                  }
+                },
+                {
+                  "name": "state",
+                  "ty": {
+                    "named": "20f25056228f66cefc91faea67bc5fc6f0695c3d477973593facd137ca724865"
+                  }
+                }
+              ]
+            }
+          },
+          "revealed:0": {
+            "inline": {
+              "Struct": [
+                {
+                  "name": "seal",
+                  "ty": {
+                    "extern": {
+                      "libId": "15957095c109a742e108980253a6b0bd7f514e8d924f71b985811a8042428d40",
+                      "semId": "2c038d484b47f5043c67ba7605cd278df71b8cef1f4252bf8e213a5eeb58ec50"
+                    }
+                  }
+                },
+                {
+                  "name": "state",
+                  "ty": {
+                    "named": "20f25056228f66cefc91faea67bc5fc6f0695c3d477973593facd137ca724865"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "AssignRevealedValueBlindSealTxPtr": {
+        "Union": {
+          "confidentialSeal:1": {
+            "inline": {
+              "Struct": [
+                {
+                  "name": "seal",
+                  "ty": {
+                    "extern": {
+                      "libId": "15957095c109a742e108980253a6b0bd7f514e8d924f71b985811a8042428d40",
+                      "semId": "6819ebbcd5b318ab97b398a54b3665dddaa7066fe8e924e70360a994b3bd064e"
+                    }
+                  }
+                },
+                {
+                  "name": "state",
+                  "ty": {
+                    "named": "e2c69f5db5234a9cb79e1041933f82fd093fc08b55afa0476a7258d0311542ff"
+                  }
+                }
+              ]
+            }
+          },
+          "revealed:0": {
+            "inline": {
+              "Struct": [
+                {
+                  "name": "seal",
+                  "ty": {
+                    "extern": {
+                      "libId": "15957095c109a742e108980253a6b0bd7f514e8d924f71b985811a8042428d40",
+                      "semId": "a7a8f2b903124f85923598855569052d3106440e08bbb6f82bc7f320ca5d5746"
+                    }
+                  }
+                },
+                {
+                  "name": "state",
+                  "ty": {
+                    "named": "e2c69f5db5234a9cb79e1041933f82fd093fc08b55afa0476a7258d0311542ff"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "AssignRevealedValueBlindSealTxid": {
+        "Union": {
+          "confidentialSeal:1": {
+            "inline": {
+              "Struct": [
+                {
+                  "name": "seal",
+                  "ty": {
+                    "extern": {
+                      "libId": "15957095c109a742e108980253a6b0bd7f514e8d924f71b985811a8042428d40",
+                      "semId": "6819ebbcd5b318ab97b398a54b3665dddaa7066fe8e924e70360a994b3bd064e"
+                    }
+                  }
+                },
+                {
+                  "name": "state",
+                  "ty": {
+                    "named": "e2c69f5db5234a9cb79e1041933f82fd093fc08b55afa0476a7258d0311542ff"
+                  }
+                }
+              ]
+            }
+          },
+          "revealed:0": {
+            "inline": {
+              "Struct": [
+                {
+                  "name": "seal",
+                  "ty": {
+                    "extern": {
+                      "libId": "15957095c109a742e108980253a6b0bd7f514e8d924f71b985811a8042428d40",
+                      "semId": "2c038d484b47f5043c67ba7605cd278df71b8cef1f4252bf8e213a5eeb58ec50"
+                    }
+                  }
+                },
+                {
+                  "name": "state",
+                  "ty": {
+                    "named": "e2c69f5db5234a9cb79e1041933f82fd093fc08b55afa0476a7258d0311542ff"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "AssignVecAssignRevealedDataBlindSealTxPtr": {
+        "Tuple": [
+          {
+            "inline": {
+              "List": [
+                {
+                  "named": "0c42dda9b8de4f9fd9c550e5fa734100db0b97fcbad2d2ae60999667c81231cc"
+                },
+                {
+                  "max": 65535,
+                  "min": 1
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "AssignVecAssignRevealedDataBlindSealTxid": {
+        "Tuple": [
+          {
+            "inline": {
+              "List": [
+                {
+                  "named": "96644dfc4987d63305cceabdd0ff41720c04e23d3f1d560ad1df772753e4bb64"
+                },
+                {
+                  "max": 65535,
+                  "min": 1
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "AssignVecAssignRevealedValueBlindSealTxPtr": {
+        "Tuple": [
+          {
+            "inline": {
+              "List": [
+                {
+                  "named": "f7cddfc7ea7176d3874a9d9bfba4ed298ad9e739cc33a216363ae4d31f3ce409"
+                },
+                {
+                  "max": 65535,
+                  "min": 1
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "AssignVecAssignRevealedValueBlindSealTxid": {
+        "Tuple": [
+          {
+            "inline": {
+              "List": [
+                {
+                  "named": "34ef9e9725a3980217828bc9f5124dde53ae75852b6bc08c6f24612c5336cfd3"
+                },
+                {
+                  "max": 65535,
+                  "min": 1
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "AssignVecAssignVoidStateBlindSealTxPtr": {
+        "Tuple": [
+          {
+            "inline": {
+              "List": [
+                {
+                  "named": "164e4ab4a91cf245cea1439beffc42521bcefce5429210efca1fab9a729ed996"
+                },
+                {
+                  "max": 65535,
+                  "min": 1
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "AssignVecAssignVoidStateBlindSealTxid": {
+        "Tuple": [
+          {
+            "inline": {
+              "List": [
+                {
+                  "named": "5a99b124380fe79e4f71f424a3c6d98b4cb4fdef35771cdab991dd0ecf90c35e"
+                },
+                {
+                  "max": 65535,
+                  "min": 1
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "AssignVoidStateBlindSealTxPtr": {
+        "Union": {
+          "confidentialSeal:1": {
+            "inline": {
+              "Struct": [
+                {
+                  "name": "seal",
+                  "ty": {
+                    "extern": {
+                      "libId": "15957095c109a742e108980253a6b0bd7f514e8d924f71b985811a8042428d40",
+                      "semId": "6819ebbcd5b318ab97b398a54b3665dddaa7066fe8e924e70360a994b3bd064e"
+                    }
+                  }
+                },
+                {
+                  "name": "state",
+                  "ty": {
+                    "named": "2eb2a5fe17c030443098e05c9b1b5a6cd61eed760d61decb8026d364f316e1bb"
+                  }
+                }
+              ]
+            }
+          },
+          "revealed:0": {
+            "inline": {
+              "Struct": [
+                {
+                  "name": "seal",
+                  "ty": {
+                    "extern": {
+                      "libId": "15957095c109a742e108980253a6b0bd7f514e8d924f71b985811a8042428d40",
+                      "semId": "a7a8f2b903124f85923598855569052d3106440e08bbb6f82bc7f320ca5d5746"
+                    }
+                  }
+                },
+                {
+                  "name": "state",
+                  "ty": {
+                    "named": "2eb2a5fe17c030443098e05c9b1b5a6cd61eed760d61decb8026d364f316e1bb"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "AssignVoidStateBlindSealTxid": {
+        "Union": {
+          "confidentialSeal:1": {
+            "inline": {
+              "Struct": [
+                {
+                  "name": "seal",
+                  "ty": {
+                    "extern": {
+                      "libId": "15957095c109a742e108980253a6b0bd7f514e8d924f71b985811a8042428d40",
+                      "semId": "6819ebbcd5b318ab97b398a54b3665dddaa7066fe8e924e70360a994b3bd064e"
+                    }
+                  }
+                },
+                {
+                  "name": "state",
+                  "ty": {
+                    "named": "2eb2a5fe17c030443098e05c9b1b5a6cd61eed760d61decb8026d364f316e1bb"
+                  }
+                }
+              ]
+            }
+          },
+          "revealed:0": {
+            "inline": {
+              "Struct": [
+                {
+                  "name": "seal",
+                  "ty": {
+                    "extern": {
+                      "libId": "15957095c109a742e108980253a6b0bd7f514e8d924f71b985811a8042428d40",
+                      "semId": "2c038d484b47f5043c67ba7605cd278df71b8cef1f4252bf8e213a5eeb58ec50"
+                    }
+                  }
+                },
+                {
+                  "name": "state",
+                  "ty": {
+                    "named": "2eb2a5fe17c030443098e05c9b1b5a6cd61eed760d61decb8026d364f316e1bb"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "AssignmentDetails": {
+        "Struct": [
+          {
+            "name": "ownedStateSchema",
+            "ty": {
+              "named": "1155779866e455158498e19722937e23e09e1605b39155f92b8c78010722d511"
+            }
+          },
+          {
+            "name": "name",
+            "ty": {
+              "extern": {
+                "libId": "e99e92e73b40977f917e85ae3885bf2b4d38b7b47edca222072844d56e2b3c50",
+                "semId": "1bb45801f260ae6dc8fc2902a5fcd4841ff1d75084ed1be0c1422d770237f872"
+              }
+            }
+          },
+          {
+            "name": "defaultTransition",
+            "ty": {
+              "named": "34520fae13961a5ebd29fc11233f854ef21038047fd404bedfa146d916a53268"
+            }
+          }
+        ]
+      },
+      "AssignmentType": {
+        "Tuple": [
+          {
+            "inline": {
+              "Primitive": 2
+            }
+          }
+        ]
+      },
+      "AssignmentsBlindSealTxPtr": {
+        "Tuple": [
+          {
+            "inline": {
+              "Map": [
+                {
+                  "named": "87fee26558886ce81cbe8684b3796327136583c5b668015e8b141636b14487b9"
+                },
+                {
+                  "named": "1706aec129efd5029664ea56b27f70fe657375932ca0a028b1355a207ea7e026"
+                },
+                {
+                  "max": 65535,
+                  "min": 0
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "AssignmentsBlindSealTxid": {
+        "Tuple": [
+          {
+            "inline": {
+              "Map": [
+                {
+                  "named": "87fee26558886ce81cbe8684b3796327136583c5b668015e8b141636b14487b9"
+                },
+                {
+                  "named": "379bf39ac2544ffce8de9244ea4af79721197f0b65fca0840a293e485997e7bc"
+                },
+                {
+                  "max": 65535,
+                  "min": 0
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "BaseCommitment": {
+        "Struct": [
+          {
+            "name": "schemaId",
+            "ty": {
+              "named": "9452d3db03ababa8519fa7f63ed014ebd44d7d313ffcfe00fa5d247a54049010"
+            }
+          },
+          {
+            "name": "timestamp",
+            "ty": {
+              "inline": {
+                "Primitive": 72
+              }
+            }
+          },
+          {
+            "name": "issuer",
+            "ty": {
+              "extern": {
+                "libId": "b1c6aeb1c15b1eb68477ab69abfaa807098164db6303ee0aaad3459e2431af96",
+                "semId": "6dafadc5f5a72006c8a3a2daca8cdb98c6b7ddba8382d5ff88fafa40a7f6d306"
+              }
+            }
+          },
+          {
+            "name": "chainNet",
+            "ty": {
+              "named": "315155e0a87aba947706f3a6181f96c4fb4d4e45d4af5bac13c1bd720ad902b2"
+            }
+          },
+          {
+            "name": "sealClosingStrategy",
+            "ty": {
+              "named": "9a2dd4c0bfe02a589f17de07b1f4ba3634436e3013b5803310cbb2b34c52c9a9"
+            }
+          }
+        ]
+      },
+      "BundleId": {
+        "Tuple": [
+          {
+            "inline": {
+              "Array": [
+                {
+                  "inline": {
+                    "Primitive": 64
+                  }
+                },
+                32
+              ]
+            }
+          }
+        ]
+      },
+      "ChainNet": {
+        "Enum": [
+          "bitcoinMainnet:0",
+          "bitcoinTestnet3:1",
+          "bitcoinTestnet4:2",
+          "bitcoinSignet:3",
+          "bitcoinRegtest:4",
+          "liquidMainnet:5",
+          "liquidTestnet:6",
+          "bitcoinSignetCustom:7"
+        ]
+      },
+      "ContractId": {
+        "Tuple": [
+          {
+            "inline": {
+              "Array": [
+                {
+                  "inline": {
+                    "Primitive": 64
+                  }
+                },
+                32
+              ]
+            }
+          }
+        ]
+      },
+      "Ffv": {
+        "Tuple": [
+          {
+            "inline": {
+              "Primitive": 2
+            }
+          }
+        ]
+      },
+      "FungibleState": {
+        "Union": {
+          "bits64:8": {
+            "inline": {
+              "Tuple": [
+                {
+                  "inline": {
+                    "Primitive": 8
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "FungibleType": {
+        "Enum": [
+          "unsigned64Bit:8"
+        ]
+      },
+      "Genesis": {
+        "Struct": [
+          {
+            "name": "ffv",
+            "ty": {
+              "named": "da9b5113581656769087fb99e55694723680d7390c06a1cc24982c0564f7ccd5"
+            }
+          },
+          {
+            "name": "schemaId",
+            "ty": {
+              "named": "9452d3db03ababa8519fa7f63ed014ebd44d7d313ffcfe00fa5d247a54049010"
+            }
+          },
+          {
+            "name": "timestamp",
+            "ty": {
+              "inline": {
+                "Primitive": 72
+              }
+            }
+          },
+          {
+            "name": "issuer",
+            "ty": {
+              "named": "b6e880861c2875227b0e76afdc957b4bc89509c57948c9a71260725b903b259c"
+            }
+          },
+          {
+            "name": "chainNet",
+            "ty": {
+              "named": "315155e0a87aba947706f3a6181f96c4fb4d4e45d4af5bac13c1bd720ad902b2"
+            }
+          },
+          {
+            "name": "sealClosingStrategy",
+            "ty": {
+              "named": "9a2dd4c0bfe02a589f17de07b1f4ba3634436e3013b5803310cbb2b34c52c9a9"
+            }
+          },
+          {
+            "name": "metadata",
+            "ty": {
+              "named": "f57a4d38597ef930d5ac048f735abc673124dea2f74031cbb7bd47f1eaf87935"
+            }
+          },
+          {
+            "name": "globals",
+            "ty": {
+              "named": "a233c9e8284ecc7598fc0639e734d0cb028c4b2cdc84913e99d9aa463e24d652"
+            }
+          },
+          {
+            "name": "assignments",
+            "ty": {
+              "named": "cc3b207109abc708384421428a6aecc2ed21785f27b14dfd93685e244f023990"
+            }
+          }
+        ]
+      },
+      "GenesisSchema": {
+        "Struct": [
+          {
+            "name": "metadata",
+            "ty": {
+              "inline": {
+                "Set": [
+                  {
+                    "named": "75e44df8dfce8b021bd546c88c9f2463c9d6e69445aef3703795a7f4e10909a2"
+                  },
+                  {
+                    "max": 255,
+                    "min": 0
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "name": "globals",
+            "ty": {
+              "inline": {
+                "Map": [
+                  {
+                    "named": "d5ee920e4988b369f16a53d1074afbb523f8c752711efb363d565905e1e415cb"
+                  },
+                  {
+                    "named": "36c134a1faa08113a7dd30803c5eb0f2c2fdda14b0d5a3d693c36e9e0f32aa79"
+                  },
+                  {
+                    "max": 255,
+                    "min": 0
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "name": "assignments",
+            "ty": {
+              "inline": {
+                "Map": [
+                  {
+                    "named": "87fee26558886ce81cbe8684b3796327136583c5b668015e8b141636b14487b9"
+                  },
+                  {
+                    "named": "36c134a1faa08113a7dd30803c5eb0f2c2fdda14b0d5a3d693c36e9e0f32aa79"
+                  },
+                  {
+                    "max": 255,
+                    "min": 0
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "name": "validator",
+            "ty": {
+              "inline": {
+                "Union": {
+                  "none:0": {
+                    "inline": {
+                      "Primitive": 0
+                    }
+                  },
+                  "some:1": {
+                    "inline": {
+                      "Tuple": [
+                        {
+                          "extern": {
+                            "libId": "9b2a3dd2e660b8697f3e9556c9ebefaa6cae389bd2d9b28724358d7e0bfdb231",
+                            "semId": "6defa126e1bc75e1ff484bfb85c134d10c32dc8c1e40e0694b1cd6a7ebdcdc61"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "GlobalDetails": {
+        "Struct": [
+          {
+            "name": "globalStateSchema",
+            "ty": {
+              "named": "7698e35eebe543f8119625ff08528e6bf4d08ef17d7a8f6aee4db1f2520745a6"
+            }
+          },
+          {
+            "name": "name",
+            "ty": {
+              "extern": {
+                "libId": "e99e92e73b40977f917e85ae3885bf2b4d38b7b47edca222072844d56e2b3c50",
+                "semId": "1bb45801f260ae6dc8fc2902a5fcd4841ff1d75084ed1be0c1422d770237f872"
+              }
+            }
+          }
+        ]
+      },
+      "GlobalState": {
+        "Tuple": [
+          {
+            "inline": {
+              "Map": [
+                {
+                  "named": "d5ee920e4988b369f16a53d1074afbb523f8c752711efb363d565905e1e415cb"
+                },
+                {
+                  "named": "46347da51eed680c5efb6f2fa6c46fe9d9c352ef898e29b29446a68dc6a05ea6"
+                },
+                {
+                  "max": 255,
+                  "min": 0
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "GlobalStateSchema": {
+        "Struct": [
+          {
+            "name": "semId",
+            "ty": {
+              "extern": {
+                "libId": "e99e92e73b40977f917e85ae3885bf2b4d38b7b47edca222072844d56e2b3c50",
+                "semId": "6b04a3149ea6950016679fef02b4ab24f5e6b78a64c8d9d0bd65fcd7a3584e8d"
+              }
+            }
+          },
+          {
+            "name": "maxItems",
+            "ty": {
+              "inline": {
+                "Primitive": 3
+              }
+            }
+          }
+        ]
+      },
+      "GlobalStateType": {
+        "Tuple": [
+          {
+            "inline": {
+              "Primitive": 2
+            }
+          }
+        ]
+      },
+      "GlobalValues": {
+        "Tuple": [
+          {
+            "inline": {
+              "List": [
+                {
+                  "named": "20f25056228f66cefc91faea67bc5fc6f0695c3d477973593facd137ca724865"
+                },
+                {
+                  "max": 65535,
+                  "min": 1
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "Identity": {
+        "Tuple": [
+          {
+            "inline": {
+              "Tuple": [
+                {
+                  "extern": {
+                    "libId": "8289eb4d0f0b7054af744b05e8c1d79d2303a65c63cbcfa56798f9fa563c316a",
+                    "semId": "48be23172ae884459ae78334a0063f09fa0e317bea8b233ce782a38875e796b8"
+                  }
+                },
+                {
+                  "inline": {
+                    "List": [
+                      {
+                        "extern": {
+                          "libId": "8289eb4d0f0b7054af744b05e8c1d79d2303a65c63cbcfa56798f9fa563c316a",
+                          "semId": "48be23172ae884459ae78334a0063f09fa0e317bea8b233ce782a38875e796b8"
+                        }
+                      },
+                      {
+                        "max": 4095,
+                        "min": 0
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "Inputs": {
+        "Tuple": [
+          {
+            "inline": {
+              "Set": [
+                {
+                  "named": "9310bc80b1345a8b2fc35852ee0f4d68d01db7fa35cb9b6492ab56099af49a97"
+                },
+                {
+                  "max": 65535,
+                  "min": 1
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "KnownTransition": {
+        "Struct": [
+          {
+            "name": "opid",
+            "ty": {
+              "named": "95c8e67a1e75625fd49655426a91eb7e4290a16f5a98f1be50f7b68a2412f7c5"
+            }
+          },
+          {
+            "name": "transition",
+            "ty": {
+              "named": "421d679da2a6eef02857eb10660f35ba0924c42cd5f8c574abbf96b5e043dad2"
+            }
+          }
+        ]
+      },
+      "MetaDetails": {
+        "Struct": [
+          {
+            "name": "semId",
+            "ty": {
+              "extern": {
+                "libId": "e99e92e73b40977f917e85ae3885bf2b4d38b7b47edca222072844d56e2b3c50",
+                "semId": "6b04a3149ea6950016679fef02b4ab24f5e6b78a64c8d9d0bd65fcd7a3584e8d"
+              }
+            }
+          },
+          {
+            "name": "name",
+            "ty": {
+              "extern": {
+                "libId": "e99e92e73b40977f917e85ae3885bf2b4d38b7b47edca222072844d56e2b3c50",
+                "semId": "1bb45801f260ae6dc8fc2902a5fcd4841ff1d75084ed1be0c1422d770237f872"
+              }
+            }
+          }
+        ]
+      },
+      "MetaType": {
+        "Tuple": [
+          {
+            "inline": {
+              "Primitive": 2
+            }
+          }
+        ]
+      },
+      "MetaValue": {
+        "Tuple": [
+          {
+            "inline": {
+              "List": [
+                {
+                  "inline": {
+                    "Primitive": 64
+                  }
+                },
+                {
+                  "max": 65535,
+                  "min": 0
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "Metadata": {
+        "Tuple": [
+          {
+            "inline": {
+              "Map": [
+                {
+                  "named": "75e44df8dfce8b021bd546c88c9f2463c9d6e69445aef3703795a7f4e10909a2"
+                },
+                {
+                  "named": "14253c8e50c5a68f0bd1f335a8327e46b6b02bee5a07f9c49542ead7309c7b30"
+                },
+                {
+                  "max": 255,
+                  "min": 0
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "Occurrences": {
+        "Struct": [
+          {
+            "name": "min",
+            "ty": {
+              "inline": {
+                "Primitive": 2
+              }
+            }
+          },
+          {
+            "name": "max",
+            "ty": {
+              "inline": {
+                "Primitive": 2
+              }
+            }
+          }
+        ]
+      },
+      "OpCommitment": {
+        "Struct": [
+          {
+            "name": "ffv",
+            "ty": {
+              "named": "da9b5113581656769087fb99e55694723680d7390c06a1cc24982c0564f7ccd5"
+            }
+          },
+          {
+            "name": "nonce",
+            "ty": {
+              "inline": {
+                "Primitive": 8
+              }
+            }
+          },
+          {
+            "name": "opType",
+            "ty": {
+              "named": "707c829c2c9ceed0eb8e8953523ba9bf88b7310959a5007a258c28ef5eb492ce"
+            }
+          },
+          {
+            "name": "metadata",
+            "ty": {
+              "extern": {
+                "libId": "b1c6aeb1c15b1eb68477ab69abfaa807098164db6303ee0aaad3459e2431af96",
+                "semId": "6dafadc5f5a72006c8a3a2daca8cdb98c6b7ddba8382d5ff88fafa40a7f6d306"
+              }
+            }
+          },
+          {
+            "name": "globals",
+            "ty": {
+              "extern": {
+                "libId": "b1c6aeb1c15b1eb68477ab69abfaa807098164db6303ee0aaad3459e2431af96",
+                "semId": "389e438627150538461b597f1fc51481ae4cff0c85b00617e2347ebe9b15e233"
+              }
+            }
+          },
+          {
+            "name": "inputs",
+            "ty": {
+              "extern": {
+                "libId": "b1c6aeb1c15b1eb68477ab69abfaa807098164db6303ee0aaad3459e2431af96",
+                "semId": "389e438627150538461b597f1fc51481ae4cff0c85b00617e2347ebe9b15e233"
+              }
+            }
+          },
+          {
+            "name": "assignments",
+            "ty": {
+              "extern": {
+                "libId": "b1c6aeb1c15b1eb68477ab69abfaa807098164db6303ee0aaad3459e2431af96",
+                "semId": "389e438627150538461b597f1fc51481ae4cff0c85b00617e2347ebe9b15e233"
+              }
+            }
+          }
+        ]
+      },
+      "OpId": {
+        "Tuple": [
+          {
+            "inline": {
+              "Array": [
+                {
+                  "inline": {
+                    "Primitive": 64
+                  }
+                },
+                32
+              ]
+            }
+          }
+        ]
+      },
+      "Opout": {
+        "Struct": [
+          {
+            "name": "op",
+            "ty": {
+              "named": "95c8e67a1e75625fd49655426a91eb7e4290a16f5a98f1be50f7b68a2412f7c5"
+            }
+          },
+          {
+            "name": "ty",
+            "ty": {
+              "named": "87fee26558886ce81cbe8684b3796327136583c5b668015e8b141636b14487b9"
+            }
+          },
+          {
+            "name": "no",
+            "ty": {
+              "inline": {
+                "Primitive": 2
+              }
+            }
+          }
+        ]
+      },
+      "OwnedStateSchema": {
+        "Union": {
+          "declarative:0": {
+            "inline": {
+              "Primitive": 0
+            }
+          },
+          "fungible:1": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "f9f4ac0866ae417766d4fd0c117d04b1d954fd0e675e123b6204eb714fe9e546"
+                }
+              ]
+            }
+          },
+          "structured:2": {
+            "inline": {
+              "Tuple": [
+                {
+                  "extern": {
+                    "libId": "e99e92e73b40977f917e85ae3885bf2b4d38b7b47edca222072844d56e2b3c50",
+                    "semId": "6b04a3149ea6950016679fef02b4ab24f5e6b78a64c8d9d0bd65fcd7a3584e8d"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "RevealedData": {
+        "Tuple": [
+          {
+            "inline": {
+              "List": [
+                {
+                  "inline": {
+                    "Primitive": 64
+                  }
+                },
+                {
+                  "max": 65535,
+                  "min": 0
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "RevealedValue": {
+        "Tuple": [
+          {
+            "named": "a68c3091474bca3ac2628cc795448d2cddaac5149f053395abf63c5561071726"
+          }
+        ]
+      },
+      "Schema": {
+        "Struct": [
+          {
+            "name": "ffv",
+            "ty": {
+              "named": "da9b5113581656769087fb99e55694723680d7390c06a1cc24982c0564f7ccd5"
+            }
+          },
+          {
+            "name": "name",
+            "ty": {
+              "extern": {
+                "libId": "e99e92e73b40977f917e85ae3885bf2b4d38b7b47edca222072844d56e2b3c50",
+                "semId": "5316088414c98274a8be3ad693514c502edf129238644e9ecac9780f9bb76864"
+              }
+            }
+          },
+          {
+            "name": "metaTypes",
+            "ty": {
+              "inline": {
+                "Map": [
+                  {
+                    "named": "75e44df8dfce8b021bd546c88c9f2463c9d6e69445aef3703795a7f4e10909a2"
+                  },
+                  {
+                    "named": "8418e789fb4e1b04a8e5e3f5af7fbaf99479f13d965bf18d9c4a1b14c5df5b36"
+                  },
+                  {
+                    "max": 255,
+                    "min": 0
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "name": "globalTypes",
+            "ty": {
+              "inline": {
+                "Map": [
+                  {
+                    "named": "d5ee920e4988b369f16a53d1074afbb523f8c752711efb363d565905e1e415cb"
+                  },
+                  {
+                    "named": "0fb6cb2868234d3ceb14cbb86c3ef0d3554a4bfa48ca8eae89f656c6233a4f73"
+                  },
+                  {
+                    "max": 255,
+                    "min": 0
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "name": "ownedTypes",
+            "ty": {
+              "inline": {
+                "Map": [
+                  {
+                    "named": "87fee26558886ce81cbe8684b3796327136583c5b668015e8b141636b14487b9"
+                  },
+                  {
+                    "named": "ab65787cbc062884bb826ca72edbd291eb25c4bf3e6af4ae3564d20f2d4c5082"
+                  },
+                  {
+                    "max": 255,
+                    "min": 0
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "name": "genesis",
+            "ty": {
+              "named": "4e6cca9aa0126fd24f940f9d6a7a021fa59e952712b05e4cb8d8946e1632558e"
+            }
+          },
+          {
+            "name": "transitions",
+            "ty": {
+              "inline": {
+                "Map": [
+                  {
+                    "named": "34520fae13961a5ebd29fc11233f854ef21038047fd404bedfa146d916a53268"
+                  },
+                  {
+                    "named": "a7b66a9d542d97e8e431edd329b1418f9fe24e5d973213e0304ae5258f2eba40"
+                  },
+                  {
+                    "max": 255,
+                    "min": 0
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "name": "defaultAssignment",
+            "ty": {
+              "inline": {
+                "Union": {
+                  "none:0": {
+                    "inline": {
+                      "Primitive": 0
+                    }
+                  },
+                  "some:1": {
+                    "inline": {
+                      "Tuple": [
+                        {
+                          "named": "87fee26558886ce81cbe8684b3796327136583c5b668015e8b141636b14487b9"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "SchemaId": {
+        "Tuple": [
+          {
+            "inline": {
+              "Array": [
+                {
+                  "inline": {
+                    "Primitive": 64
+                  }
+                },
+                32
+              ]
+            }
+          }
+        ]
+      },
+      "SealClosingStrategy": {
+        "Enum": [
+          "firstOpretOrTapret:0"
+        ]
+      },
+      "Signature": {
+        "Tuple": [
+          {
+            "inline": {
+              "Array": [
+                {
+                  "inline": {
+                    "Primitive": 64
+                  }
+                },
+                64
+              ]
+            }
+          }
+        ]
+      },
+      "Transition": {
+        "Struct": [
+          {
+            "name": "ffv",
+            "ty": {
+              "named": "da9b5113581656769087fb99e55694723680d7390c06a1cc24982c0564f7ccd5"
+            }
+          },
+          {
+            "name": "contractId",
+            "ty": {
+              "named": "9f082c493ac802a2bac5dddc0b227c20af94d468c448cf1a5a21e0bdc2f53a32"
+            }
+          },
+          {
+            "name": "nonce",
+            "ty": {
+              "inline": {
+                "Primitive": 8
+              }
+            }
+          },
+          {
+            "name": "transitionType",
+            "ty": {
+              "named": "34520fae13961a5ebd29fc11233f854ef21038047fd404bedfa146d916a53268"
+            }
+          },
+          {
+            "name": "metadata",
+            "ty": {
+              "named": "f57a4d38597ef930d5ac048f735abc673124dea2f74031cbb7bd47f1eaf87935"
+            }
+          },
+          {
+            "name": "globals",
+            "ty": {
+              "named": "a233c9e8284ecc7598fc0639e734d0cb028c4b2cdc84913e99d9aa463e24d652"
+            }
+          },
+          {
+            "name": "inputs",
+            "ty": {
+              "named": "36064b93572122dc48a0fa21c793e2b381929f1d40d39329776e9b7795f12a62"
+            }
+          },
+          {
+            "name": "assignments",
+            "ty": {
+              "named": "8bae542a7c11305948f9447e301a68640e576f64c81bd7f3943b18f958f82b0f"
+            }
+          },
+          {
+            "name": "signature",
+            "ty": {
+              "inline": {
+                "Union": {
+                  "none:0": {
+                    "inline": {
+                      "Primitive": 0
+                    }
+                  },
+                  "some:1": {
+                    "inline": {
+                      "Tuple": [
+                        {
+                          "named": "44c2ed867f4dbe34c027403515e4697afa878c95d8e6c486831a57f1d6dc3ecb"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "TransitionBundle": {
+        "Struct": [
+          {
+            "name": "inputMap",
+            "ty": {
+              "inline": {
+                "Map": [
+                  {
+                    "named": "9310bc80b1345a8b2fc35852ee0f4d68d01db7fa35cb9b6492ab56099af49a97"
+                  },
+                  {
+                    "named": "95c8e67a1e75625fd49655426a91eb7e4290a16f5a98f1be50f7b68a2412f7c5"
+                  },
+                  {
+                    "max": 65535,
+                    "min": 1
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "name": "knownTransitions",
+            "ty": {
+              "inline": {
+                "List": [
+                  {
+                    "named": "6c224e0a6ec0c61a0b72ff80812c4038a509ca9c6d1d1d78d01982e85b8f259b"
+                  },
+                  {
+                    "max": 65535,
+                    "min": 1
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "TransitionDetails": {
+        "Struct": [
+          {
+            "name": "transitionSchema",
+            "ty": {
+              "named": "ac7fa91e3921f6f7554d640bd3c71d506010442b287315b4fb800ea25a322a72"
+            }
+          },
+          {
+            "name": "name",
+            "ty": {
+              "extern": {
+                "libId": "e99e92e73b40977f917e85ae3885bf2b4d38b7b47edca222072844d56e2b3c50",
+                "semId": "1bb45801f260ae6dc8fc2902a5fcd4841ff1d75084ed1be0c1422d770237f872"
+              }
+            }
+          }
+        ]
+      },
+      "TransitionSchema": {
+        "Struct": [
+          {
+            "name": "metadata",
+            "ty": {
+              "inline": {
+                "Set": [
+                  {
+                    "named": "75e44df8dfce8b021bd546c88c9f2463c9d6e69445aef3703795a7f4e10909a2"
+                  },
+                  {
+                    "max": 255,
+                    "min": 0
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "name": "globals",
+            "ty": {
+              "inline": {
+                "Map": [
+                  {
+                    "named": "d5ee920e4988b369f16a53d1074afbb523f8c752711efb363d565905e1e415cb"
+                  },
+                  {
+                    "named": "36c134a1faa08113a7dd30803c5eb0f2c2fdda14b0d5a3d693c36e9e0f32aa79"
+                  },
+                  {
+                    "max": 255,
+                    "min": 0
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "name": "inputs",
+            "ty": {
+              "inline": {
+                "Map": [
+                  {
+                    "named": "87fee26558886ce81cbe8684b3796327136583c5b668015e8b141636b14487b9"
+                  },
+                  {
+                    "named": "36c134a1faa08113a7dd30803c5eb0f2c2fdda14b0d5a3d693c36e9e0f32aa79"
+                  },
+                  {
+                    "max": 255,
+                    "min": 0
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "name": "assignments",
+            "ty": {
+              "inline": {
+                "Map": [
+                  {
+                    "named": "87fee26558886ce81cbe8684b3796327136583c5b668015e8b141636b14487b9"
+                  },
+                  {
+                    "named": "36c134a1faa08113a7dd30803c5eb0f2c2fdda14b0d5a3d693c36e9e0f32aa79"
+                  },
+                  {
+                    "max": 255,
+                    "min": 0
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "name": "validator",
+            "ty": {
+              "inline": {
+                "Union": {
+                  "none:0": {
+                    "inline": {
+                      "Primitive": 0
+                    }
+                  },
+                  "some:1": {
+                    "inline": {
+                      "Tuple": [
+                        {
+                          "extern": {
+                            "libId": "9b2a3dd2e660b8697f3e9556c9ebefaa6cae389bd2d9b28724358d7e0bfdb231",
+                            "semId": "6defa126e1bc75e1ff484bfb85c134d10c32dc8c1e40e0694b1cd6a7ebdcdc61"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "TransitionType": {
+        "Tuple": [
+          {
+            "inline": {
+              "Primitive": 2
+            }
+          }
+        ]
+      },
+      "TypeCommitment": {
+        "Union": {
+          "genesis:0": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "4732f2ca40acc83712b5d2e7623a66170ab57ff224b30d0648ce1b674c577144"
+                }
+              ]
+            }
+          },
+          "transition:1": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "9f082c493ac802a2bac5dddc0b227c20af94d468c448cf1a5a21e0bdc2f53a32"
+                },
+                {
+                  "named": "34520fae13961a5ebd29fc11233f854ef21038047fd404bedfa146d916a53268"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "TypedAssignsBlindSealTxPtr": {
+        "Union": {
+          "declarative:0": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "9617fc8a63938554c37d2c92e8e7bc1b9b32df61cc5a767e52dc1421a9386b5d"
+                }
+              ]
+            }
+          },
+          "fungible:1": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "ada2f4c0abad41b7a37c3dd4513905eeae2cfc7878681e59071196d53c20946c"
+                }
+              ]
+            }
+          },
+          "structured:2": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "b788a23eda93dabe0a9965985cae7195b0432120e5598b04d8c19ec94298b7d1"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "TypedAssignsBlindSealTxid": {
+        "Union": {
+          "declarative:0": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "f75c635944650092a95551f5330042b07a1dccd9962b9f40f37f92cd804261df"
+                }
+              ]
+            }
+          },
+          "fungible:1": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "933acddf7af720b349759ece95a5db600712fad531d64052459e8650ac1a82b6"
+                }
+              ]
+            }
+          },
+          "structured:2": {
+            "inline": {
+              "Tuple": [
+                {
+                  "named": "38b27b6267676afe7b5c3637f4dff3ae153e6735232520f717fea16f5ba0ca19"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "VoidState": {
+        "Tuple": [
+          {
+            "inline": {
+              "Primitive": 0
+            }
+          }
+        ]
+      }
+    }
+  },
+  "namedSemIds": {
+    "AssignRevealedDataBlindSealTxPtr": "0c42dda9b8de4f9fd9c550e5fa734100db0b97fcbad2d2ae60999667c81231cc",
+    "AssignRevealedDataBlindSealTxid": "96644dfc4987d63305cceabdd0ff41720c04e23d3f1d560ad1df772753e4bb64",
+    "AssignRevealedValueBlindSealTxPtr": "f7cddfc7ea7176d3874a9d9bfba4ed298ad9e739cc33a216363ae4d31f3ce409",
+    "AssignRevealedValueBlindSealTxid": "34ef9e9725a3980217828bc9f5124dde53ae75852b6bc08c6f24612c5336cfd3",
+    "AssignVecAssignRevealedDataBlindSealTxPtr": "b788a23eda93dabe0a9965985cae7195b0432120e5598b04d8c19ec94298b7d1",
+    "AssignVecAssignRevealedDataBlindSealTxid": "38b27b6267676afe7b5c3637f4dff3ae153e6735232520f717fea16f5ba0ca19",
+    "AssignVecAssignRevealedValueBlindSealTxPtr": "ada2f4c0abad41b7a37c3dd4513905eeae2cfc7878681e59071196d53c20946c",
+    "AssignVecAssignRevealedValueBlindSealTxid": "933acddf7af720b349759ece95a5db600712fad531d64052459e8650ac1a82b6",
+    "AssignVecAssignVoidStateBlindSealTxPtr": "9617fc8a63938554c37d2c92e8e7bc1b9b32df61cc5a767e52dc1421a9386b5d",
+    "AssignVecAssignVoidStateBlindSealTxid": "f75c635944650092a95551f5330042b07a1dccd9962b9f40f37f92cd804261df",
+    "AssignVoidStateBlindSealTxPtr": "164e4ab4a91cf245cea1439beffc42521bcefce5429210efca1fab9a729ed996",
+    "AssignVoidStateBlindSealTxid": "5a99b124380fe79e4f71f424a3c6d98b4cb4fdef35771cdab991dd0ecf90c35e",
+    "AssignmentDetails": "ab65787cbc062884bb826ca72edbd291eb25c4bf3e6af4ae3564d20f2d4c5082",
+    "AssignmentType": "87fee26558886ce81cbe8684b3796327136583c5b668015e8b141636b14487b9",
+    "AssignmentsBlindSealTxPtr": "8bae542a7c11305948f9447e301a68640e576f64c81bd7f3943b18f958f82b0f",
+    "AssignmentsBlindSealTxid": "cc3b207109abc708384421428a6aecc2ed21785f27b14dfd93685e244f023990",
+    "BaseCommitment": "4732f2ca40acc83712b5d2e7623a66170ab57ff224b30d0648ce1b674c577144",
+    "BundleId": "037b93b53d1a852e0759012577cdb641f008ad4ee700586183b5c04abde0025c",
+    "ChainNet": "315155e0a87aba947706f3a6181f96c4fb4d4e45d4af5bac13c1bd720ad902b2",
+    "ContractId": "9f082c493ac802a2bac5dddc0b227c20af94d468c448cf1a5a21e0bdc2f53a32",
+    "Ffv": "da9b5113581656769087fb99e55694723680d7390c06a1cc24982c0564f7ccd5",
+    "FungibleState": "a68c3091474bca3ac2628cc795448d2cddaac5149f053395abf63c5561071726",
+    "FungibleType": "f9f4ac0866ae417766d4fd0c117d04b1d954fd0e675e123b6204eb714fe9e546",
+    "Genesis": "bb914fd184a0ae8ca599154484cb29491e74cab7bb679a67496889c09494dcac",
+    "GenesisSchema": "4e6cca9aa0126fd24f940f9d6a7a021fa59e952712b05e4cb8d8946e1632558e",
+    "GlobalDetails": "0fb6cb2868234d3ceb14cbb86c3ef0d3554a4bfa48ca8eae89f656c6233a4f73",
+    "GlobalState": "a233c9e8284ecc7598fc0639e734d0cb028c4b2cdc84913e99d9aa463e24d652",
+    "GlobalStateSchema": "7698e35eebe543f8119625ff08528e6bf4d08ef17d7a8f6aee4db1f2520745a6",
+    "GlobalStateType": "d5ee920e4988b369f16a53d1074afbb523f8c752711efb363d565905e1e415cb",
+    "GlobalValues": "46347da51eed680c5efb6f2fa6c46fe9d9c352ef898e29b29446a68dc6a05ea6",
+    "Identity": "b6e880861c2875227b0e76afdc957b4bc89509c57948c9a71260725b903b259c",
+    "Inputs": "36064b93572122dc48a0fa21c793e2b381929f1d40d39329776e9b7795f12a62",
+    "KnownTransition": "6c224e0a6ec0c61a0b72ff80812c4038a509ca9c6d1d1d78d01982e85b8f259b",
+    "MetaDetails": "8418e789fb4e1b04a8e5e3f5af7fbaf99479f13d965bf18d9c4a1b14c5df5b36",
+    "MetaType": "75e44df8dfce8b021bd546c88c9f2463c9d6e69445aef3703795a7f4e10909a2",
+    "MetaValue": "14253c8e50c5a68f0bd1f335a8327e46b6b02bee5a07f9c49542ead7309c7b30",
+    "Metadata": "f57a4d38597ef930d5ac048f735abc673124dea2f74031cbb7bd47f1eaf87935",
+    "Occurrences": "36c134a1faa08113a7dd30803c5eb0f2c2fdda14b0d5a3d693c36e9e0f32aa79",
+    "OpCommitment": "bdf3975e12431fc61f6fa07676903c3f7e5d666b87822ea6458c0e55c426323e",
+    "OpId": "95c8e67a1e75625fd49655426a91eb7e4290a16f5a98f1be50f7b68a2412f7c5",
+    "Opout": "9310bc80b1345a8b2fc35852ee0f4d68d01db7fa35cb9b6492ab56099af49a97",
+    "OwnedStateSchema": "1155779866e455158498e19722937e23e09e1605b39155f92b8c78010722d511",
+    "RevealedData": "20f25056228f66cefc91faea67bc5fc6f0695c3d477973593facd137ca724865",
+    "RevealedValue": "e2c69f5db5234a9cb79e1041933f82fd093fc08b55afa0476a7258d0311542ff",
+    "Schema": "ce8c35c9ce5462abc0e2ed26b57a3d7ce53fb66d4d6fdc1ffe87384948a70414",
+    "SchemaId": "9452d3db03ababa8519fa7f63ed014ebd44d7d313ffcfe00fa5d247a54049010",
+    "SealClosingStrategy": "9a2dd4c0bfe02a589f17de07b1f4ba3634436e3013b5803310cbb2b34c52c9a9",
+    "Signature": "44c2ed867f4dbe34c027403515e4697afa878c95d8e6c486831a57f1d6dc3ecb",
+    "Transition": "421d679da2a6eef02857eb10660f35ba0924c42cd5f8c574abbf96b5e043dad2",
+    "TransitionBundle": "892dc50e8e119837ab96166a7f07911441af230c0a88c62c86135d51a8fb26f8",
+    "TransitionDetails": "a7b66a9d542d97e8e431edd329b1418f9fe24e5d973213e0304ae5258f2eba40",
+    "TransitionSchema": "ac7fa91e3921f6f7554d640bd3c71d506010442b287315b4fb800ea25a322a72",
+    "TransitionType": "34520fae13961a5ebd29fc11233f854ef21038047fd404bedfa146d916a53268",
+    "TypeCommitment": "707c829c2c9ceed0eb8e8953523ba9bf88b7310959a5007a258c28ef5eb492ce",
+    "TypedAssignsBlindSealTxPtr": "1706aec129efd5029664ea56b27f70fe657375932ca0a028b1355a207ea7e026",
+    "TypedAssignsBlindSealTxid": "379bf39ac2544ffce8de9244ea4af79721197f0b65fca0840a293e485997e7bc",
+    "VoidState": "2eb2a5fe17c030443098e05c9b1b5a6cd61eed760d61decb8026d364f316e1bb"
+  }
+}

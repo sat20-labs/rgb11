@@ -1,0 +1,368 @@
+{
+  "id": "e5b79918d1d9d9b67976ea95901e73d44426ac7a2f944971d18fe7b83c8eb702",
+  "library": {
+    "dependencies": [],
+    "extern_types": {},
+    "name": "Bitcoin",
+    "types": {
+      "ByteStr": {
+        "Tuple": [
+          {
+            "inline": {
+              "List": [
+                {
+                  "inline": {
+                    "Primitive": 64
+                  }
+                },
+                {
+                  "max": 4294967295,
+                  "min": 0
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "ChainHash": {
+        "Tuple": [
+          {
+            "inline": {
+              "Array": [
+                {
+                  "inline": {
+                    "Primitive": 64
+                  }
+                },
+                32
+              ]
+            }
+          }
+        ]
+      },
+      "CompressedPk": {
+        "Tuple": [
+          {
+            "inline": {
+              "Array": [
+                {
+                  "inline": {
+                    "Primitive": 64
+                  }
+                },
+                33
+              ]
+            }
+          }
+        ]
+      },
+      "LeafScript": {
+        "Struct": [
+          {
+            "name": "version",
+            "ty": {
+              "named": "b63309a918bfb6920d6ec858a4248723465a693f724307bfff1dd73a73814ec9"
+            }
+          },
+          {
+            "name": "script",
+            "ty": {
+              "named": "25abf5b9121417baa339d45f7b1575a7714be17a75185dd031357ad4c92de986"
+            }
+          }
+        ]
+      },
+      "LeafVer": {
+        "Tuple": [
+          {
+            "inline": {
+              "Primitive": 1
+            }
+          }
+        ]
+      },
+      "LockTime": {
+        "Tuple": [
+          {
+            "inline": {
+              "Primitive": 4
+            }
+          }
+        ]
+      },
+      "Outpoint": {
+        "Struct": [
+          {
+            "name": "txid",
+            "ty": {
+              "named": "a38242f3cbd7d1d0a112da8de1602f56d4f86f0ec4c476c5c068594c4b046556"
+            }
+          },
+          {
+            "name": "vout",
+            "ty": {
+              "named": "21e33e43c5aa5cf2292753a338c167ed3b639c4dd9cebda98f346917bac94375"
+            }
+          }
+        ]
+      },
+      "OutputPk": {
+        "Tuple": [
+          {
+            "named": "fca2a72abe91fecd82a8b198906322c24e76aaaa35f224d1730563a0182e8859"
+          }
+        ]
+      },
+      "Sats": {
+        "Tuple": [
+          {
+            "inline": {
+              "Primitive": 8
+            }
+          }
+        ]
+      },
+      "ScriptBytes": {
+        "Tuple": [
+          {
+            "inline": {
+              "List": [
+                {
+                  "inline": {
+                    "Primitive": 64
+                  }
+                },
+                {
+                  "max": 4294967295,
+                  "min": 0
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "ScriptPubkey": {
+        "Tuple": [
+          {
+            "named": "25abf5b9121417baa339d45f7b1575a7714be17a75185dd031357ad4c92de986"
+          }
+        ]
+      },
+      "SeqNo": {
+        "Tuple": [
+          {
+            "inline": {
+              "Primitive": 4
+            }
+          }
+        ]
+      },
+      "SigScript": {
+        "Tuple": [
+          {
+            "named": "25abf5b9121417baa339d45f7b1575a7714be17a75185dd031357ad4c92de986"
+          }
+        ]
+      },
+      "TapNodeHash": {
+        "Tuple": [
+          {
+            "inline": {
+              "Array": [
+                {
+                  "inline": {
+                    "Primitive": 64
+                  }
+                },
+                32
+              ]
+            }
+          }
+        ]
+      },
+      "Tx": {
+        "Struct": [
+          {
+            "name": "version",
+            "ty": {
+              "named": "a87cc6796467e557d744e5c9623ae00ccb95d91a0d2f03df74c075124fbec79e"
+            }
+          },
+          {
+            "name": "inputs",
+            "ty": {
+              "inline": {
+                "List": [
+                  {
+                    "named": "0a1990d753f20a95661f133bf5234a258ffe4bc8dd0927a41be404bd8ea246aa"
+                  },
+                  {
+                    "max": 4294967295,
+                    "min": 0
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "name": "outputs",
+            "ty": {
+              "inline": {
+                "List": [
+                  {
+                    "named": "903b647079848f1b26532ae4cec6a68944a05358b8f081cb26b3bbf82d9e3bf3"
+                  },
+                  {
+                    "max": 4294967295,
+                    "min": 0
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "name": "lockTime",
+            "ty": {
+              "named": "35da1d1539206ebbdddca4c33d8731eaf29ba7da74df3dc882201c4e16b5b91c"
+            }
+          }
+        ]
+      },
+      "TxIn": {
+        "Struct": [
+          {
+            "name": "prevOutput",
+            "ty": {
+              "named": "e86a40cd5c25f9bde284ff69a51132a7412b2155bd0e5612c1bfe3849560c506"
+            }
+          },
+          {
+            "name": "sigScript",
+            "ty": {
+              "named": "387504b14b7c0e466d479e17477d2474247ff80364ec3d4baaf73a20f741746b"
+            }
+          },
+          {
+            "name": "sequence",
+            "ty": {
+              "named": "01196d8529c8f6da444d154e8d9c8cbd9e0f8d89025a3bb09121c63d52b01e87"
+            }
+          },
+          {
+            "name": "witness",
+            "ty": {
+              "named": "9d5593acbaf9cde09b3846f8830971d338c92f6e75bc7ce320459eab3819a61e"
+            }
+          }
+        ]
+      },
+      "TxOut": {
+        "Struct": [
+          {
+            "name": "value",
+            "ty": {
+              "named": "97f5d70642ae2a3392253ba84e1dcec493e3bf3ed371b1877386354ecc88826b"
+            }
+          },
+          {
+            "name": "scriptPubkey",
+            "ty": {
+              "named": "befc1efc66a519fd64526a3a138740e7f1102d0bbeff3ac1464ef3f74076745c"
+            }
+          }
+        ]
+      },
+      "TxVer": {
+        "Tuple": [
+          {
+            "inline": {
+              "Primitive": 68
+            }
+          }
+        ]
+      },
+      "Txid": {
+        "Tuple": [
+          {
+            "inline": {
+              "Array": [
+                {
+                  "inline": {
+                    "Primitive": 64
+                  }
+                },
+                32
+              ]
+            }
+          }
+        ]
+      },
+      "Vout": {
+        "Tuple": [
+          {
+            "inline": {
+              "Primitive": 4
+            }
+          }
+        ]
+      },
+      "Witness": {
+        "Tuple": [
+          {
+            "inline": {
+              "List": [
+                {
+                  "named": "c4726b8f8f28d17ac197c81d8e0da19b62449ce6d0645dfec7e9783cb587f1a3"
+                },
+                {
+                  "max": 4294967295,
+                  "min": 0
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "XOnlyPk": {
+        "Tuple": [
+          {
+            "inline": {
+              "Array": [
+                {
+                  "inline": {
+                    "Primitive": 64
+                  }
+                },
+                32
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "namedSemIds": {
+    "ByteStr": "c4726b8f8f28d17ac197c81d8e0da19b62449ce6d0645dfec7e9783cb587f1a3",
+    "ChainHash": "e2a001cbc594d8fdea078d56577fedb3852be19405b627e87cd0cee3ff7fdd6c",
+    "CompressedPk": "cd02f34b350c831896d305a2ac527ae62447d1c02bb2f30c4f6a9af4c857407f",
+    "LeafScript": "5facd96de53f4ec514d9b18d6780da0aabeb2d260bfd372da3c07aa45d399f4d",
+    "LeafVer": "b63309a918bfb6920d6ec858a4248723465a693f724307bfff1dd73a73814ec9",
+    "LockTime": "35da1d1539206ebbdddca4c33d8731eaf29ba7da74df3dc882201c4e16b5b91c",
+    "Outpoint": "e86a40cd5c25f9bde284ff69a51132a7412b2155bd0e5612c1bfe3849560c506",
+    "OutputPk": "58098264e94de6aa60739bd174df917d3f6f3132d22b72a63396bf6ce944acc7",
+    "Sats": "97f5d70642ae2a3392253ba84e1dcec493e3bf3ed371b1877386354ecc88826b",
+    "ScriptBytes": "25abf5b9121417baa339d45f7b1575a7714be17a75185dd031357ad4c92de986",
+    "ScriptPubkey": "befc1efc66a519fd64526a3a138740e7f1102d0bbeff3ac1464ef3f74076745c",
+    "SeqNo": "01196d8529c8f6da444d154e8d9c8cbd9e0f8d89025a3bb09121c63d52b01e87",
+    "SigScript": "387504b14b7c0e466d479e17477d2474247ff80364ec3d4baaf73a20f741746b",
+    "TapNodeHash": "31bbaee8848977c5b007317231cd92f630b6292dcd897fdcbadec5bac4e97fd9",
+    "Tx": "c57b219abff7396e724680ad45562f7ceca16c6e3f26dddcfffc7e6c03e6dc44",
+    "TxIn": "0a1990d753f20a95661f133bf5234a258ffe4bc8dd0927a41be404bd8ea246aa",
+    "TxOut": "903b647079848f1b26532ae4cec6a68944a05358b8f081cb26b3bbf82d9e3bf3",
+    "TxVer": "a87cc6796467e557d744e5c9623ae00ccb95d91a0d2f03df74c075124fbec79e",
+    "Txid": "a38242f3cbd7d1d0a112da8de1602f56d4f86f0ec4c476c5c068594c4b046556",
+    "Vout": "21e33e43c5aa5cf2292753a338c167ed3b639c4dd9cebda98f346917bac94375",
+    "Witness": "9d5593acbaf9cde09b3846f8830971d338c92f6e75bc7ce320459eab3819a61e",
+    "XOnlyPk": "fca2a72abe91fecd82a8b198906322c24e76aaaa35f224d1730563a0182e8859"
+  }
+}

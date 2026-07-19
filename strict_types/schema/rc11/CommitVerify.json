@@ -1,0 +1,449 @@
+{
+  "id": "b1c6aeb1c15b1eb68477ab69abfaa807098164db6303ee0aaad3459e2431af96",
+  "library": {
+    "dependencies": [
+      {
+        "id": "8289eb4d0f0b7054af744b05e8c1d79d2303a65c63cbcfa56798f9fa563c316a",
+        "name": "Std"
+      }
+    ],
+    "extern_types": {
+      "Std": {
+        "665870d88e5cd10990e94c17583ddc9fa3539cb54258a0c36099dfae3a030b92": "U5"
+      }
+    },
+    "name": "CommitVerify",
+    "types": {
+      "Commitment": {
+        "Tuple": [
+          {
+            "inline": {
+              "Array": [
+                {
+                  "inline": {
+                    "Primitive": 64
+                  }
+                },
+                32
+              ]
+            }
+          }
+        ]
+      },
+      "Leaf": {
+        "Union": {
+          "entropy:17": {
+            "inline": {
+              "Struct": [
+                {
+                  "name": "entropy",
+                  "ty": {
+                    "inline": {
+                      "Primitive": 8
+                    }
+                  }
+                },
+                {
+                  "name": "pos",
+                  "ty": {
+                    "inline": {
+                      "Primitive": 4
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "inhabited:16": {
+            "inline": {
+              "Struct": [
+                {
+                  "name": "protocol",
+                  "ty": {
+                    "named": "30957ee61d613459bb0508e4e1af3d6a21bfd6fbfb1d3182a779e54574e056b1"
+                  }
+                },
+                {
+                  "name": "message",
+                  "ty": {
+                    "named": "3537a95115c8ea85dc52f7ab81f2716551052653944257af8913e87bd49bb1d3"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "MerkleBlock": {
+        "Struct": [
+          {
+            "name": "depth",
+            "ty": {
+              "extern": {
+                "libId": "8289eb4d0f0b7054af744b05e8c1d79d2303a65c63cbcfa56798f9fa563c316a",
+                "semId": "665870d88e5cd10990e94c17583ddc9fa3539cb54258a0c36099dfae3a030b92"
+              }
+            }
+          },
+          {
+            "name": "cofactor",
+            "ty": {
+              "inline": {
+                "Primitive": 2
+              }
+            }
+          },
+          {
+            "name": "crossSection",
+            "ty": {
+              "inline": {
+                "List": [
+                  {
+                    "named": "d8b5b996f355c0dd3efe7d1fdd5e34dbcd31879713f500d06cba76368bd5d057"
+                  },
+                  {
+                    "max": 4294967295,
+                    "min": 1
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "name": "entropy",
+            "ty": {
+              "inline": {
+                "Union": {
+                  "none:0": {
+                    "inline": {
+                      "Primitive": 0
+                    }
+                  },
+                  "some:1": {
+                    "inline": {
+                      "Tuple": [
+                        {
+                          "inline": {
+                            "Primitive": 8
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "MerkleConcealed": {
+        "Struct": [
+          {
+            "name": "depth",
+            "ty": {
+              "extern": {
+                "libId": "8289eb4d0f0b7054af744b05e8c1d79d2303a65c63cbcfa56798f9fa563c316a",
+                "semId": "665870d88e5cd10990e94c17583ddc9fa3539cb54258a0c36099dfae3a030b92"
+              }
+            }
+          },
+          {
+            "name": "cofactor",
+            "ty": {
+              "inline": {
+                "Primitive": 2
+              }
+            }
+          },
+          {
+            "name": "merkleRoot",
+            "ty": {
+              "named": "389e438627150538461b597f1fc51481ae4cff0c85b00617e2347ebe9b15e233"
+            }
+          }
+        ]
+      },
+      "MerkleHash": {
+        "Tuple": [
+          {
+            "inline": {
+              "Array": [
+                {
+                  "inline": {
+                    "Primitive": 64
+                  }
+                },
+                32
+              ]
+            }
+          }
+        ]
+      },
+      "MerkleNode": {
+        "Struct": [
+          {
+            "name": "branching",
+            "ty": {
+              "named": "bb4c6e0b1be0d06e3c7c84ab5ffa6ef3aa20f477d5dcd365cac69c767f624bc2"
+            }
+          },
+          {
+            "name": "depth",
+            "ty": {
+              "inline": {
+                "Primitive": 1
+              }
+            }
+          },
+          {
+            "name": "width",
+            "ty": {
+              "inline": {
+                "Primitive": 32
+              }
+            }
+          },
+          {
+            "name": "node1",
+            "ty": {
+              "named": "389e438627150538461b597f1fc51481ae4cff0c85b00617e2347ebe9b15e233"
+            }
+          },
+          {
+            "name": "node2",
+            "ty": {
+              "named": "389e438627150538461b597f1fc51481ae4cff0c85b00617e2347ebe9b15e233"
+            }
+          }
+        ]
+      },
+      "MerkleProof": {
+        "Struct": [
+          {
+            "name": "pos",
+            "ty": {
+              "inline": {
+                "Primitive": 4
+              }
+            }
+          },
+          {
+            "name": "cofactor",
+            "ty": {
+              "inline": {
+                "Primitive": 2
+              }
+            }
+          },
+          {
+            "name": "path",
+            "ty": {
+              "inline": {
+                "List": [
+                  {
+                    "named": "389e438627150538461b597f1fc51481ae4cff0c85b00617e2347ebe9b15e233"
+                  },
+                  {
+                    "max": 31,
+                    "min": 0
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "MerkleTree": {
+        "Struct": [
+          {
+            "name": "depth",
+            "ty": {
+              "extern": {
+                "libId": "8289eb4d0f0b7054af744b05e8c1d79d2303a65c63cbcfa56798f9fa563c316a",
+                "semId": "665870d88e5cd10990e94c17583ddc9fa3539cb54258a0c36099dfae3a030b92"
+              }
+            }
+          },
+          {
+            "name": "entropy",
+            "ty": {
+              "inline": {
+                "Primitive": 8
+              }
+            }
+          },
+          {
+            "name": "cofactor",
+            "ty": {
+              "inline": {
+                "Primitive": 2
+              }
+            }
+          },
+          {
+            "name": "messages",
+            "ty": {
+              "inline": {
+                "Map": [
+                  {
+                    "named": "30957ee61d613459bb0508e4e1af3d6a21bfd6fbfb1d3182a779e54574e056b1"
+                  },
+                  {
+                    "named": "3537a95115c8ea85dc52f7ab81f2716551052653944257af8913e87bd49bb1d3"
+                  },
+                  {
+                    "max": 16777215,
+                    "min": 0
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "name": "map",
+            "ty": {
+              "inline": {
+                "Map": [
+                  {
+                    "inline": {
+                      "Primitive": 4
+                    }
+                  },
+                  {
+                    "inline": {
+                      "Tuple": [
+                        {
+                          "named": "30957ee61d613459bb0508e4e1af3d6a21bfd6fbfb1d3182a779e54574e056b1"
+                        },
+                        {
+                          "named": "3537a95115c8ea85dc52f7ab81f2716551052653944257af8913e87bd49bb1d3"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "max": 16777215,
+                    "min": 0
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "Message": {
+        "Tuple": [
+          {
+            "inline": {
+              "Array": [
+                {
+                  "inline": {
+                    "Primitive": 64
+                  }
+                },
+                32
+              ]
+            }
+          }
+        ]
+      },
+      "NodeBranching": {
+        "Enum": [
+          "void:0",
+          "single:1",
+          "branch:2"
+        ]
+      },
+      "ProtocolId": {
+        "Tuple": [
+          {
+            "inline": {
+              "Array": [
+                {
+                  "inline": {
+                    "Primitive": 64
+                  }
+                },
+                32
+              ]
+            }
+          }
+        ]
+      },
+      "StrictHash": {
+        "Tuple": [
+          {
+            "inline": {
+              "Array": [
+                {
+                  "inline": {
+                    "Primitive": 64
+                  }
+                },
+                32
+              ]
+            }
+          }
+        ]
+      },
+      "TreeNode": {
+        "Union": {
+          "commitmentLeaf:1": {
+            "inline": {
+              "Struct": [
+                {
+                  "name": "protocolId",
+                  "ty": {
+                    "named": "30957ee61d613459bb0508e4e1af3d6a21bfd6fbfb1d3182a779e54574e056b1"
+                  }
+                },
+                {
+                  "name": "message",
+                  "ty": {
+                    "named": "3537a95115c8ea85dc52f7ab81f2716551052653944257af8913e87bd49bb1d3"
+                  }
+                }
+              ]
+            }
+          },
+          "concealedNode:0": {
+            "inline": {
+              "Struct": [
+                {
+                  "name": "depth",
+                  "ty": {
+                    "extern": {
+                      "libId": "8289eb4d0f0b7054af744b05e8c1d79d2303a65c63cbcfa56798f9fa563c316a",
+                      "semId": "665870d88e5cd10990e94c17583ddc9fa3539cb54258a0c36099dfae3a030b92"
+                    }
+                  }
+                },
+                {
+                  "name": "hash",
+                  "ty": {
+                    "named": "389e438627150538461b597f1fc51481ae4cff0c85b00617e2347ebe9b15e233"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "namedSemIds": {
+    "Commitment": "d200f61fb88b274e7473f4f001d6270f87d000a83d734fbf93ef8206e2400c91",
+    "Leaf": "c739fc150f3a94b6e776ec190c663a6ecf09f63c4ca371152910678de283fac8",
+    "MerkleBlock": "5ccde5fe7bfe4872de5aec3d2f2278d0eda86b4b649e6180faf1b021fd80aadc",
+    "MerkleConcealed": "2a474d09add2796ba77147ce0f19245d5ab61afbcd558e8182ffa7554a95db19",
+    "MerkleHash": "389e438627150538461b597f1fc51481ae4cff0c85b00617e2347ebe9b15e233",
+    "MerkleNode": "9bf6e875756ece84a8fc89b8e4afdfadd4a800373ffe05644d25160a74bea1f4",
+    "MerkleProof": "36a4b4db8009d8790433ae3d1aed61719206e799fdd1abd504867b9d374c076f",
+    "MerkleTree": "0856f77f1ee53ee551265f6e145061cea3986d5c353d6a3b64de7f7299d674f2",
+    "Message": "3537a95115c8ea85dc52f7ab81f2716551052653944257af8913e87bd49bb1d3",
+    "NodeBranching": "bb4c6e0b1be0d06e3c7c84ab5ffa6ef3aa20f477d5dcd365cac69c767f624bc2",
+    "ProtocolId": "30957ee61d613459bb0508e4e1af3d6a21bfd6fbfb1d3182a779e54574e056b1",
+    "StrictHash": "6dafadc5f5a72006c8a3a2daca8cdb98c6b7ddba8382d5ff88fafa40a7f6d306",
+    "TreeNode": "d8b5b996f355c0dd3efe7d1fdd5e34dbcd31879713f500d06cba76368bd5d057"
+  }
+}

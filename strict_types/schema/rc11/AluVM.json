@@ -1,0 +1,180 @@
+{
+  "id": "9b2a3dd2e660b8697f3e9556c9ebefaa6cae389bd2d9b28724358d7e0bfdb231",
+  "library": {
+    "dependencies": [
+      {
+        "id": "8289eb4d0f0b7054af744b05e8c1d79d2303a65c63cbcfa56798f9fa563c316a",
+        "name": "Std"
+      }
+    ],
+    "extern_types": {
+      "Std": {
+        "2784d18c6b0ec63caf5f18ff34bea7a759f32757426a7cf8ed3e9a721d4c3698": "AlphaCaps",
+        "7a4786a50f4fb5a1e50a03a7bb00de3a4bae11f10388ae03336316b939a5516c": "AlphaCapsNum"
+      }
+    },
+    "name": "AluVM",
+    "types": {
+      "IsaName": {
+        "Tuple": [
+          {
+            "inline": {
+              "Tuple": [
+                {
+                  "extern": {
+                    "libId": "8289eb4d0f0b7054af744b05e8c1d79d2303a65c63cbcfa56798f9fa563c316a",
+                    "semId": "2784d18c6b0ec63caf5f18ff34bea7a759f32757426a7cf8ed3e9a721d4c3698"
+                  }
+                },
+                {
+                  "inline": {
+                    "List": [
+                      {
+                        "extern": {
+                          "libId": "8289eb4d0f0b7054af744b05e8c1d79d2303a65c63cbcfa56798f9fa563c316a",
+                          "semId": "7a4786a50f4fb5a1e50a03a7bb00de3a4bae11f10388ae03336316b939a5516c"
+                        }
+                      },
+                      {
+                        "max": 7,
+                        "min": 1
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "IsaSeg": {
+        "Tuple": [
+          {
+            "inline": {
+              "Set": [
+                {
+                  "named": "92e53fca79ee74591150254dd7f9a328a277c44c6e002283a21aec85c7a147df"
+                },
+                {
+                  "max": 64,
+                  "min": 0
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "Lib": {
+        "Struct": [
+          {
+            "name": "isae",
+            "ty": {
+              "named": "b30d2931cdc3ea26a0fd52e57412b0a6add21ecf338ac9d0c85b84a692af18b3"
+            }
+          },
+          {
+            "name": "code",
+            "ty": {
+              "inline": {
+                "List": [
+                  {
+                    "inline": {
+                      "Primitive": 64
+                    }
+                  },
+                  {
+                    "max": 65535,
+                    "min": 0
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "name": "data",
+            "ty": {
+              "inline": {
+                "List": [
+                  {
+                    "inline": {
+                      "Primitive": 64
+                    }
+                  },
+                  {
+                    "max": 65535,
+                    "min": 0
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "name": "libs",
+            "ty": {
+              "named": "d2e2185b277105e644fbda07719194555646928decb312ff9c5ac064e836e998"
+            }
+          }
+        ]
+      },
+      "LibId": {
+        "Tuple": [
+          {
+            "inline": {
+              "Array": [
+                {
+                  "inline": {
+                    "Primitive": 64
+                  }
+                },
+                32
+              ]
+            }
+          }
+        ]
+      },
+      "LibSeg": {
+        "Tuple": [
+          {
+            "inline": {
+              "Set": [
+                {
+                  "named": "a73055022df95cc8f089a345a23f96de5129c013b70ef127d821904195fb530a"
+                },
+                {
+                  "max": 255,
+                  "min": 0
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "LibSite": {
+        "Struct": [
+          {
+            "name": "lib",
+            "ty": {
+              "named": "a73055022df95cc8f089a345a23f96de5129c013b70ef127d821904195fb530a"
+            }
+          },
+          {
+            "name": "pos",
+            "ty": {
+              "inline": {
+                "Primitive": 2
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "namedSemIds": {
+    "IsaName": "92e53fca79ee74591150254dd7f9a328a277c44c6e002283a21aec85c7a147df",
+    "IsaSeg": "b30d2931cdc3ea26a0fd52e57412b0a6add21ecf338ac9d0c85b84a692af18b3",
+    "Lib": "1204a7b602107c8a442ff536d6056e5959f8e5397816f80dfdc50f717044cee6",
+    "LibId": "a73055022df95cc8f089a345a23f96de5129c013b70ef127d821904195fb530a",
+    "LibSeg": "d2e2185b277105e644fbda07719194555646928decb312ff9c5ac064e836e998",
+    "LibSite": "6defa126e1bc75e1ff484bfb85c134d10c32dc8c1e40e0694b1cd6a7ebdcdc61"
+  }
+}
