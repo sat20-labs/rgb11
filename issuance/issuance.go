@@ -21,7 +21,7 @@ import (
 
 var (
 	ErrInvalidSpec       = errors.New("invalid RGB11 issuance specification")
-	ErrUnsupportedSchema = errors.New("RGB11 schema is not exposed by the frozen wallet API")
+	ErrUnsupportedSchema = errors.New("RGB11 schema is not enabled for first-release issuance")
 )
 
 type ChainNet uint8
@@ -40,7 +40,8 @@ type Allocation struct {
 }
 
 // Spec is the schema-neutral subset exposed by the frozen rgb-lib wallet API.
-// CFA does not use Ticker. UDA always issues a single non-fractional token.
+// First-release issuance supports the official NIA, IFA and UDA schemas. UDA
+// always issues a single non-fractional token.
 type Spec struct {
 	Kind            schemas.Kind
 	Network         ChainNet
@@ -65,7 +66,7 @@ type Result struct {
 	Container  *consignment.Container
 }
 
-//go:embed templates/*.rgba
+//go:embed templates/nia.rgba templates/ifa.rgba templates/uda.rgba
 var templates embed.FS
 
 func Issue(spec Spec) (*Result, error) {
@@ -121,15 +122,17 @@ func Issue(spec Spec) (*Result, error) {
 }
 
 func validateSpec(spec Spec) error {
+	switch spec.Kind {
+	case schemas.NIA, schemas.IFA, schemas.UDA:
+	default:
+		return ErrUnsupportedSchema
+	}
 	if spec.Network > BitcoinTestnet4 || spec.Precision > 18 || !validText(spec.Name, 1, 40) ||
 		(spec.Details != "" && !validText(spec.Details, 1, 255)) ||
 		(spec.Terms != "" && !validText(spec.Terms, 1, 65535)) {
 		return ErrInvalidSpec
 	}
-	if spec.Kind != schemas.CFA && !validTicker(spec.Ticker) {
-		return ErrInvalidSpec
-	}
-	if spec.Kind == schemas.CFA && spec.Ticker != "" {
+	if !validTicker(spec.Ticker) {
 		return ErrInvalidSpec
 	}
 	if spec.Kind == schemas.UDA {
@@ -202,8 +205,6 @@ func templatePath(kind schemas.Kind) (string, error) {
 		return "templates/nia.rgba", nil
 	case schemas.IFA:
 		return "templates/ifa.rgba", nil
-	case schemas.CFA:
-		return "templates/cfa.rgba", nil
 	case schemas.UDA:
 		return "templates/uda.rgba", nil
 	default:
@@ -242,18 +243,6 @@ func setGenesisGlobals(registry *strict_types.Registry, schema strict_types.Valu
 			return err
 		}
 		if err := putGlobal(registry, schema, genesis, 2000, semID, state); err != nil {
-			return err
-		}
-	case schemas.CFA:
-		if err := putGlobal(registry, schema, genesis, 3001, "", textValue(spec.Name)); err != nil {
-			return err
-		}
-		if err := putGlobal(registry, schema, genesis, 3005, "", precisionValue(spec.Precision)); err != nil {
-			return err
-		}
-		if spec.Details == "" {
-			removeGlobal(genesis, 3004)
-		} else if err := putGlobal(registry, schema, genesis, 3004, "", textValue(spec.Details)); err != nil {
 			return err
 		}
 	}

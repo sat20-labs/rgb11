@@ -20,7 +20,7 @@ func (existingOutputs) ResolveRGB11Outpoint(consignment.Outpoint) (consignment.O
 	return consignment.OutpointEvidence{Known: true, Exists: true}, nil
 }
 
-func TestIssueEveryFrozenWalletSchema(t *testing.T) {
+func TestIssueFirstReleaseSchemas(t *testing.T) {
 	txidA := bytes.Repeat([]byte{0x11}, 32)
 	txidB := bytes.Repeat([]byte{0x22}, 32)
 	txidC := bytes.Repeat([]byte{0x33}, 32)
@@ -40,11 +40,6 @@ func TestIssueEveryFrozenWalletSchema(t *testing.T) {
 			Allocations:     []issuance.Allocation{{Seal: sealA, Amount: 100}},
 			InflationRights: []issuance.Allocation{{Seal: sealC, Amount: 900}},
 			RejectListURL:   "https://example.com/reject.txt", Timestamp: 1_700_000_002,
-		},
-		{
-			Kind: schemas.CFA, Network: issuance.BitcoinMainnet,
-			Name: "SAT20 Collectible", Details: "collectible units", Precision: 0,
-			Allocations: []issuance.Allocation{{Seal: sealA, Amount: 5}}, Timestamp: 1_700_000_003,
 		},
 		{
 			Kind: schemas.UDA, Network: issuance.BitcoinTestnet3,
@@ -75,5 +70,20 @@ func TestIssueEveryFrozenWalletSchema(t *testing.T) {
 				t.Fatalf("unexpected validation report: %+v", report)
 			}
 		})
+	}
+}
+
+func TestIssueRejectsCFAInFirstRelease(t *testing.T) {
+	txid := bytes.Repeat([]byte{0x44}, 32)
+	seal, err := seals.NewGraphBlindSeal(txid, 0, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = issuance.Issue(issuance.Spec{
+		Kind: schemas.CFA, Network: issuance.BitcoinTestnet4,
+		Name: "SAT20 CFA", Allocations: []issuance.Allocation{{Seal: seal, Amount: 1}},
+	})
+	if err != issuance.ErrUnsupportedSchema {
+		t.Fatalf("CFA issuance error=%v, want %v", err, issuance.ErrUnsupportedSchema)
 	}
 }

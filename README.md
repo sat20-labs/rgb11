@@ -20,8 +20,13 @@
 当前载体边界：
 
 - 接收、导入和验证路径支持 Opret 与 Tapret commitment；
-- Wallet SDK 可用同一普通 P2TR 子账户的 BIP86 internal key 签名并消费 Tapret carrier；
-- 新建转移当前遵循冻结版本的 Opret 默认 commitment method，不另建 RGB 专用派生路径。
+- Tapret carrier 直接使用当前普通 P2TR/BIP86 子账户的 internal key；carrier binding 保存该普通收款/找零地址所用的同一个 derivation index，并按该 index 验证和签名；
+- 新建转移优先使用 Opret，不另建 RGB 专用派生路径。
+
+首版发行边界：
+
+- 发行入口只开放官方 NIA、IFA、UDA；
+- CFA 仍可按官方 schema 导入和验证，但首版 SDK/PWA 不提供 CFA 发行入口。
 
 运行基础测试：
 

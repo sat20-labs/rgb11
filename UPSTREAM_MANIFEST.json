@@ -3,7 +3,8 @@
   "generated_at": "2026-07-19T00:00:00+08:00",
   "target_protocol": "RGB 0.11.1",
   "engine_build_id": "rgb11-go/0.1.0-dev+rc11",
-  "wallet_schema_scope": ["NIA", "IFA", "CFA", "UDA"],
+  "wallet_import_validation_scope": ["NIA", "IFA", "CFA", "UDA"],
+  "wallet_issuance_scope": ["NIA", "IFA", "UDA"],
   "differential_gate": {
     "rust_oracle_vectors": 75,
     "go_direct_vectors": 45,
@@ -97,7 +98,7 @@
   "intentional_divergences": [
     {
       "area": "wallet derivation",
-      "reason": "SAT20 keeps one logical BIP86 account; derivation is wallet policy and not RGB consensus"
+      "reason": "Tapret uses the current ordinary P2TR/BIP86 subaccount internal key and the same derivation index as its corresponding receive/change address; new transfers prefer Opret"
     },
     {
       "area": "asset ticker",
