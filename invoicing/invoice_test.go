@@ -1,10 +1,42 @@
 package invoicing
 
 import (
+	"bytes"
+	"encoding/hex"
 	"encoding/json"
 	"os"
 	"testing"
 )
+
+func TestWitnessBeneficiaryScriptRoundTrips(t *testing.T) {
+	hash20 := bytes.Repeat([]byte{0x11}, 20)
+	hash32 := bytes.Repeat([]byte{0xff}, 32) // Deliberately not required to be a curve point for P2WSH.
+	validXOnly, err := hex.DecodeString("79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798")
+	if err != nil {
+		t.Fatal(err)
+	}
+	scripts := [][]byte{
+		append(append([]byte{0x76, 0xa9, 0x14}, hash20...), 0x88, 0xac),
+		append(append([]byte{0xa9, 0x14}, hash20...), 0x87),
+		append([]byte{0x00, 0x14}, hash20...),
+		append([]byte{0x00, 0x20}, hash32...),
+		append([]byte{0x51, 0x20}, validXOnly...),
+	}
+	for _, script := range scripts {
+		beneficiary, err := NewWitnessBeneficiary(BitcoinRegtest, script, nil)
+		if err != nil {
+			t.Fatalf("encode %x: %v", script, err)
+		}
+		parsed, err := ParseBeneficiary(beneficiary.String())
+		if err != nil {
+			t.Fatalf("parse %x: %v", script, err)
+		}
+		got, err := parsed.WitnessScript()
+		if err != nil || !bytes.Equal(got, script) {
+			t.Fatalf("script roundtrip got %x, %v; want %x", got, err, script)
+		}
+	}
+}
 
 const (
 	niaInvoice     = "rgb:eIbQx5Am-XRDjj01-RM~5eo7-rv2nluD-OnBJRAy-S9~Yfts/XvmU3d4_nQQ8S7oagbXi07x5vjMm7P~ERukQNX6SC4M/BF/bc:utxob:4vm1CX2Z-K8hMo59-e7dgGBS-Jka7mYn-Xe~yP85-yUiHHxr-aVlYa"

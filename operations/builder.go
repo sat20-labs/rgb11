@@ -7,6 +7,7 @@ import (
 	"sort"
 
 	"github.com/sat20-labs/rgb11/anchors"
+	"github.com/sat20-labs/rgb11/seals"
 	"github.com/sat20-labs/rgb11/strict_types"
 )
 
@@ -24,6 +25,7 @@ type TransitionOutput struct {
 	Amount         uint64
 	Data           []byte
 	SecretSeal     [32]byte
+	RevealedSeal   *seals.GraphBlindSeal
 }
 
 type TransitionSpec struct {
@@ -53,7 +55,7 @@ func BuildTransition(spec TransitionSpec) (strict_types.Value, TransitionCommitm
 		}
 	}
 
-	groups := make(map[uint16][]TransitionOutput)
+	groups := make(map[uint16][]encodedTransitionOutput)
 	classes := make(map[uint16]string)
 	for _, output := range spec.Outputs {
 		if output.Class != "declarative" && output.Class != "fungible" && output.Class != "structured" {
@@ -65,8 +67,12 @@ func BuildTransition(spec TransitionSpec) (strict_types.Value, TransitionCommitm
 		if output.Class == "structured" && len(output.Data) > 0xffff {
 			return strict_types.Value{}, TransitionCommitment{}, ErrBuildTransition
 		}
+		assignment, err := encodeTransitionOutput(output)
+		if err != nil {
+			return strict_types.Value{}, TransitionCommitment{}, err
+		}
 		classes[output.AssignmentType] = output.Class
-		groups[output.AssignmentType] = append(groups[output.AssignmentType], output)
+		groups[output.AssignmentType] = append(groups[output.AssignmentType], assignment)
 	}
 	types := make([]int, 0, len(groups))
 	for assignmentType := range groups {
@@ -96,10 +102,10 @@ func BuildTransition(spec TransitionSpec) (strict_types.Value, TransitionCommitm
 		assignmentType := uint16(typeNumber)
 		outputs := groups[assignmentType]
 		sort.Slice(outputs, func(i, j int) bool {
-			return bytes.Compare(outputs[i].SecretSeal[:], outputs[j].SecretSeal[:]) < 0
+			return bytes.Compare(outputs[i].encoded, outputs[j].encoded) < 0
 		})
 		for index := 1; index < len(outputs); index++ {
-			if outputs[index-1].SecretSeal == outputs[index].SecretSeal {
+			if bytes.Equal(outputs[index-1].encoded, outputs[index].encoded) {
 				return strict_types.Value{}, TransitionCommitment{}, ErrBuildTransition
 			}
 		}
@@ -114,17 +120,7 @@ func BuildTransition(spec TransitionSpec) (strict_types.Value, TransitionCommitm
 		}
 		writeU16(&encoded, uint16(len(outputs)))
 		for _, output := range outputs {
-			encoded.WriteByte(1) // Assign::ConfidentialSeal
-			encoded.Write(output.SecretSeal[:])
-			switch output.Class {
-			case "declarative":
-			case "fungible":
-				encoded.WriteByte(8) // FungibleState::Bits64
-				writeU64(&encoded, output.Amount)
-			case "structured":
-				writeU16(&encoded, uint16(len(output.Data)))
-				encoded.Write(output.Data)
-			}
+			encoded.Write(output.encoded)
 		}
 	}
 	if len(spec.Signature) == 0 {
@@ -147,6 +143,41 @@ func BuildTransition(spec TransitionSpec) (strict_types.Value, TransitionCommitm
 		return strict_types.Value{}, TransitionCommitment{}, err
 	}
 	return value, commitment, nil
+}
+
+type encodedTransitionOutput struct {
+	encoded []byte
+}
+
+func encodeTransitionOutput(output TransitionOutput) (encodedTransitionOutput, error) {
+	secretSet := output.SecretSeal != [32]byte{}
+	if secretSet == (output.RevealedSeal != nil) {
+		return encodedTransitionOutput{}, ErrBuildTransition
+	}
+	var encoded bytes.Buffer
+	if output.RevealedSeal != nil {
+		seal, err := output.RevealedSeal.StrictBytes()
+		if err != nil {
+			return encodedTransitionOutput{}, ErrBuildTransition
+		}
+		encoded.WriteByte(0) // Assign::Revealed
+		encoded.Write(seal)
+	} else {
+		encoded.WriteByte(1) // Assign::ConfidentialSeal
+		encoded.Write(output.SecretSeal[:])
+	}
+	switch output.Class {
+	case "declarative":
+	case "fungible":
+		encoded.WriteByte(8) // FungibleState::Bits64
+		writeU64(&encoded, output.Amount)
+	case "structured":
+		writeU16(&encoded, uint16(len(output.Data)))
+		encoded.Write(output.Data)
+	default:
+		return encodedTransitionOutput{}, ErrBuildTransition
+	}
+	return encodedTransitionOutput{encoded: encoded.Bytes()}, nil
 }
 
 func writeMetadata(encoded *bytes.Buffer, metadata map[uint16][]byte) error {

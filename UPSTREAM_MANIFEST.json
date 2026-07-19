@@ -5,16 +5,42 @@
   "engine_build_id": "rgb11-go/0.1.0-dev+rc11",
   "wallet_import_validation_scope": ["NIA", "IFA", "CFA", "UDA"],
   "wallet_issuance_scope": ["NIA", "IFA", "UDA"],
+  "wallet_batch_scope": "single-contract-multi-witness-recipient",
+  "rbf_replacement_scope": "deferred-no-frozen-upstream-implementation",
   "differential_gate": {
     "rust_oracle_vectors": 75,
     "go_direct_vectors": 45,
     "canonical_sha256": "5dbb3cf4bb27a8db4195d047d7c0594b518db18bbf880475f2c21334f8e796bf"
   },
+  "secondary_oracles": [
+    {
+      "id": "bitlight-regtest-esplora",
+      "kind": "esplora",
+      "base_url": "http://127.0.0.1:3002",
+      "network": "regtest",
+      "recognition_url": "https://rgb.tech/integrate/",
+      "enabled_by_default": false
+    }
+  ],
   "release_set": {
     "wallet_oracle": {
       "repository": "https://github.com/RGB-Tools/rgb-lib",
       "tag": "0.3.0-beta.7",
       "commit": "538f2abaa67d7ce96be32d94092e8f1b9e3ea38e"
+    },
+    "manual_cli_oracle": {
+      "repository": "https://github.com/RGB-WG/rgb",
+      "tag": "v0.11.1-alpha.3",
+      "commit": "a9bba35ceed7e0c4bc4e477f663ab022d7b0a23e",
+      "version": "rgb-wallet 0.11.1-alpha.3+unreviewed",
+      "required_commands": [
+        "invoice",
+        "transfer",
+        "inspect",
+        "validate",
+        "accept",
+        "finalize"
+      ]
     },
     "crates": [
       {
@@ -107,6 +133,10 @@
     {
       "area": "wallet head finality",
       "reason": "SAT20 uses the latest valid wallet-signed DKVS personal record; no system/checkpoint signing key is part of wallet-head authority"
+    },
+    {
+      "area": "transfer retention",
+      "reason": "SAT20 does not permanently back up transfer consignments to DKVS blob; sender delivery copies are compacted after all recipients settle while spendable local history is retained"
     }
   ]
 }

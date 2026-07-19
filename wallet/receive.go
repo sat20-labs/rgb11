@@ -20,6 +20,13 @@ import (
 
 const ReceiveVersion uint32 = 1
 
+type ReceiveMode string
+
+const (
+	ReceiveBlind   ReceiveMode = "blind"
+	ReceiveWitness ReceiveMode = "witness"
+)
+
 var (
 	ErrInvalidReceive = errors.New("invalid RGB11 receive request")
 	ErrReceiveState   = errors.New("invalid RGB11 receive state transition")
@@ -39,23 +46,26 @@ const (
 // returned to the caller. This ordering prevents displaying an invoice whose
 // concealed seal cannot later be recovered.
 type ReceiveRequest struct {
-	Version     uint32               `json:"version"`
-	RequestID   string               `json:"request_id"`
-	RecipientID string               `json:"recipient_id"`
-	Seal        seals.GraphBlindSeal `json:"seal"`
-	Invoice     string               `json:"invoice"`
-	RelayKey    string               `json:"relay_key"`
-	AckKey      string               `json:"ack_key"`
-	CreatedAt   int64                `json:"created_at"`
-	Expiry      int64                `json:"expiry"`
-	Status      ReceiveStatus        `json:"status"`
-	TransferID  string               `json:"transfer_id,omitempty"`
-	ObjectHash  string               `json:"object_hash,omitempty"`
-	WitnessTxID string               `json:"witness_txid,omitempty"`
-	FailureCode string               `json:"failure_code,omitempty"`
+	Version       uint32               `json:"version"`
+	Mode          ReceiveMode          `json:"mode,omitempty"`
+	RequestID     string               `json:"request_id"`
+	RecipientID   string               `json:"recipient_id"`
+	Seal          seals.GraphBlindSeal `json:"seal"`
+	WitnessScript []byte               `json:"witness_script,omitempty"`
+	Invoice       string               `json:"invoice"`
+	RelayKey      string               `json:"relay_key"`
+	AckKey        string               `json:"ack_key"`
+	CreatedAt     int64                `json:"created_at"`
+	Expiry        int64                `json:"expiry"`
+	Status        ReceiveStatus        `json:"status"`
+	TransferID    string               `json:"transfer_id,omitempty"`
+	ObjectHash    string               `json:"object_hash,omitempty"`
+	WitnessTxID   string               `json:"witness_txid,omitempty"`
+	FailureCode   string               `json:"failure_code,omitempty"`
 }
 
 type ReceiveParams struct {
+	Mode           ReceiveMode
 	ContractID     string
 	SchemaID       string
 	Network        invoicing.ChainNet
@@ -63,6 +73,8 @@ type ReceiveParams struct {
 	AssignmentName string
 	RecipientID    string
 	WitnessVout    uint32
+	WitnessScript  []byte
+	InternalXOnly  *[32]byte
 	Expiry         int64
 	Transports     []invoicing.Transport
 }
@@ -86,17 +98,36 @@ func (e *Engine) CreateReceive(params ReceiveParams) (*ReceiveRequest, error) {
 	if _, err := invoicing.ParseChainNet(string(params.Network)); err != nil {
 		return nil, err
 	}
-	seal, err := seals.RandomWitnessBlindSeal(params.WitnessVout)
-	if err != nil {
-		return nil, err
+	mode := params.Mode
+	if mode == "" {
+		mode = ReceiveBlind
 	}
-	secretSeal, err := seal.Conceal()
-	if err != nil {
-		return nil, err
+	var seal seals.GraphBlindSeal
+	var beneficiary invoicing.Beneficiary
+	switch mode {
+	case ReceiveBlind:
+		var err error
+		seal, err = seals.RandomWitnessBlindSeal(params.WitnessVout)
+		if err != nil {
+			return nil, err
+		}
+		secretSeal, err := seal.Conceal()
+		if err != nil {
+			return nil, err
+		}
+		beneficiary = invoicing.Beneficiary{Network: params.Network, Kind: invoicing.BeneficiaryBlindedSeal, BlindedSeal: secretSeal}
+	case ReceiveWitness:
+		var err error
+		beneficiary, err = invoicing.NewWitnessBeneficiary(params.Network, params.WitnessScript, params.InternalXOnly)
+		if err != nil {
+			return nil, err
+		}
+	default:
+		return nil, ErrInvalidReceive
 	}
 	invoice := invoicing.Invoice{
 		Transports:  append([]invoicing.Transport(nil), params.Transports...),
-		Beneficiary: invoicing.Beneficiary{Network: params.Network, Kind: invoicing.BeneficiaryBlindedSeal, BlindedSeal: secretSeal},
+		Beneficiary: beneficiary,
 		Expiry:      &params.Expiry,
 		UnknownQuery: []invoicing.QueryParam{
 			{Key: "sat20_recipient", Value: params.RecipientID},
@@ -140,8 +171,8 @@ func (e *Engine) CreateReceive(params ReceiveParams) (*ReceiveRequest, error) {
 		return nil, err
 	}
 	request := &ReceiveRequest{
-		Version: ReceiveVersion, RequestID: requestID, RecipientID: params.RecipientID,
-		Seal: seal, Invoice: invoice.String(), RelayKey: relayKey, AckKey: ackKey,
+		Version: ReceiveVersion, Mode: mode, RequestID: requestID, RecipientID: params.RecipientID,
+		Seal: seal, WitnessScript: append([]byte(nil), params.WitnessScript...), Invoice: invoice.String(), RelayKey: relayKey, AckKey: ackKey,
 		CreatedAt: e.now().Unix(), Expiry: params.Expiry, Status: ReceivePrepared,
 	}
 	if err := e.putReceive(request); err != nil {

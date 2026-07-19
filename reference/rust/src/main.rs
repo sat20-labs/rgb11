@@ -1,4 +1,6 @@
 use std::collections::BTreeMap;
+use std::env;
+use std::fs;
 use std::str::FromStr;
 
 use armor::AsciiArmor;
@@ -38,7 +40,38 @@ fn strict_hex<T: StrictEncode>(value: &T) -> String {
 	hex(&writer.unbox().unconfine())
 }
 
+fn run_inspector() -> bool {
+	let args = env::args().collect::<Vec<_>>();
+	if args.len() != 3 {
+		return false;
+	}
+	match args[1].as_str() {
+		"inspect-transfer" => {
+			let armored = fs::read_to_string(&args[2]).expect("read transfer consignment");
+			let transfer = Transfer::from_ascii_armored_str(&armored)
+				.expect("official Rust parser rejected transfer consignment");
+			println!("{}", serde_json::json!({
+				"id": transfer.consignment_id().to_string(),
+				"contract_id": transfer.contract_id().to_string(),
+				"schema_id": transfer.schema_id().to_string(),
+				"canonical_roundtrip": Transfer::from_ascii_armored_str(&transfer.to_string()).is_ok(),
+			}));
+			true
+		}
+		"inspect-invoice" => {
+			let invoice = RgbInvoice::from_str(&args[2])
+				.expect("official Rust parser rejected invoice");
+			println!("{}", serde_json::json!({"invoice": invoice.to_string()}));
+			true
+		}
+		_ => false,
+	}
+}
+
 fn main() {
+	if run_inspector() {
+		return;
+	}
     let mut vectors = BTreeMap::<&str, String>::new();
 
     let contract = ContractId::from_str(
