@@ -6,6 +6,7 @@ import (
 	"errors"
 	"sort"
 
+	"github.com/btcsuite/btcd/wire"
 	"github.com/sat20-labs/rgb11/anchors"
 	"github.com/sat20-labs/rgb11/seals"
 	"github.com/sat20-labs/rgb11/strict_types"
@@ -293,6 +294,59 @@ func BuildOpretWitnessBundle(witnessTxID [32]byte, bundle strict_types.Value, pr
 		return strict_types.Value{}, err
 	}
 	return registry.Decode("RGBStd", "WitnessBundle", encoded.Bytes())
+}
+
+// BuildOpretWitnessBundleWithTx embeds the complete public witness transaction.
+// Witness recipients need PubWitness::Tx (not only PubWitness::Txid) so an
+// independent RGB wallet can match the invoice script to the assigned vout
+// before the transaction has been broadcast.
+func BuildOpretWitnessBundleWithTx(tx *wire.MsgTx, bundle strict_types.Value, proof anchors.MPCProof) (strict_types.Value, error) {
+	if tx == nil || len(proof.Path) > 31 {
+		return strict_types.Value{}, ErrBuildTransition
+	}
+	var encoded bytes.Buffer
+	encoded.WriteByte(1) // PubWitness::Tx
+	writeStrictBitcoinTx(&encoded, tx)
+	writeU32(&encoded, proof.Position)
+	writeU16(&encoded, proof.Cofactor)
+	encoded.WriteByte(byte(len(proof.Path)))
+	for _, node := range proof.Path {
+		encoded.Write(node[:])
+	}
+	encoded.WriteByte(2) // DbcProof::Opret(OpretProof)
+	encoded.Write(bundle.Encoded)
+	registry, err := strict_types.RC11Registry()
+	if err != nil {
+		return strict_types.Value{}, err
+	}
+	return registry.Decode("RGBStd", "WitnessBundle", encoded.Bytes())
+}
+
+// writeStrictBitcoinTx mirrors rgb-strict-encoding 1.0.2's Bitcoin Tx,
+// TxIn, TxOut, ScriptBuf and Witness encoders. Strict collections use fixed
+// little-endian u32 lengths, unlike Bitcoin consensus CompactSize encoding.
+func writeStrictBitcoinTx(encoded *bytes.Buffer, tx *wire.MsgTx) {
+	_ = binary.Write(encoded, binary.LittleEndian, tx.Version)
+	writeU32(encoded, uint32(len(tx.TxIn)))
+	for _, input := range tx.TxIn {
+		encoded.Write(input.PreviousOutPoint.Hash[:])
+		writeU32(encoded, input.PreviousOutPoint.Index)
+		writeU32(encoded, uint32(len(input.SignatureScript)))
+		encoded.Write(input.SignatureScript)
+		writeU32(encoded, input.Sequence)
+		writeU32(encoded, uint32(len(input.Witness)))
+		for _, item := range input.Witness {
+			writeU32(encoded, uint32(len(item)))
+			encoded.Write(item)
+		}
+	}
+	writeU32(encoded, uint32(len(tx.TxOut)))
+	for _, output := range tx.TxOut {
+		writeU64(encoded, uint64(output.Value))
+		writeU32(encoded, uint32(len(output.PkScript)))
+		encoded.Write(output.PkScript)
+	}
+	writeU32(encoded, tx.LockTime)
 }
 
 func compareOpout(left, right TransitionInput) int {

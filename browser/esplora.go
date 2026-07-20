@@ -4,6 +4,7 @@
 package browser
 
 import (
+	"bytes"
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
@@ -16,6 +17,8 @@ import (
 	"net/url"
 	"strings"
 	"time"
+
+	"github.com/btcsuite/btcd/wire"
 )
 
 const maxResponseBytes = 2 << 20
@@ -141,9 +144,14 @@ func (c *EsploraClient) CheckWitness(ctx context.Context, txid string, expectedR
 	}
 	report.Available = len(report.Responses) == len(paths)
 	if len(rawTx) != 0 {
-		report.ObservedTxID = bitcoinTxID(rawTx)
-		if report.ObservedTxID != report.TxID {
-			report.Differences = append(report.Differences, "Esplora transaction bytes do not match requested txid")
+		observedTxID, err := bitcoinTxID(rawTx)
+		if err != nil {
+			report.Differences = append(report.Differences, "Esplora returned invalid Bitcoin transaction encoding")
+		} else {
+			report.ObservedTxID = observedTxID
+			if report.ObservedTxID != report.TxID {
+				report.Differences = append(report.Differences, "Esplora transaction bytes do not match requested txid")
+			}
 		}
 		if len(expectedRaw) != 0 {
 			report.MatchesExpectedRaw = string(rawTx) == string(expectedRaw)
@@ -204,11 +212,10 @@ func validTxID(txid string) bool {
 	return err == nil && len(decoded) == 32
 }
 
-func bitcoinTxID(raw []byte) string {
-	first := sha256.Sum256(raw)
-	second := sha256.Sum256(first[:])
-	for left, right := 0, len(second)-1; left < right; left, right = left+1, right-1 {
-		second[left], second[right] = second[right], second[left]
+func bitcoinTxID(raw []byte) (string, error) {
+	var tx wire.MsgTx
+	if err := tx.Deserialize(bytes.NewReader(raw)); err != nil {
+		return "", err
 	}
-	return hex.EncodeToString(second[:])
+	return tx.TxHash().String(), nil
 }

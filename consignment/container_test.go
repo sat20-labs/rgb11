@@ -24,6 +24,32 @@ func TestDecodeOfficialNIAContract(t *testing.T) {
 	}
 }
 
+func TestDecodeOfficialStrictBinary(t *testing.T) {
+	armored, err := os.ReadFile("../testvectors/rc11/nia-transfer.rgba")
+	if err != nil {
+		t.Fatal(err)
+	}
+	parsed, err := DecodeArmor(string(armored))
+	if err != nil {
+		t.Fatal(err)
+	}
+	binary, err := Decode(parsed.Armor.Data)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if binary.ContractID != parsed.ContractID || binary.SchemaID != parsed.SchemaID || binary.Armor.Type != "transfer" {
+		t.Fatalf("binary decode mismatch: %+v", binary)
+	}
+	file := append([]byte("RGB\x00TFR"), parsed.Armor.Data...)
+	wrapped, err := Decode(file)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if wrapped.ContractID != parsed.ContractID || wrapped.Armor.Type != "transfer" {
+		t.Fatalf("official file decode mismatch: %+v", wrapped)
+	}
+}
+
 func TestDecodeEveryOfficialWalletSchemaContract(t *testing.T) {
 	for _, fixture := range []string{
 		"nia-example.rgba",

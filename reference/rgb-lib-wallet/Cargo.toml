@@ -1,0 +1,11 @@
+[package]
+name = "rgb-lib-wallet-interop"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+rgb-lib = { git = "https://github.com/RGB-Tools/rgb-lib", rev = "538f2abaa67d7ce96be32d94092e8f1b9e3ea38e", default-features = false, features = ["esplora"] }
+rgb-ascii-armor = "=1.0.2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"

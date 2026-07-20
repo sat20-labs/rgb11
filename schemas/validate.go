@@ -27,11 +27,12 @@ var (
 )
 
 const (
-	globalIssuedSupply uint64 = 2010
-	globalMaxSupply    uint64 = 2011
-	globalTokens       uint64 = 2102
-	ownedAsset         uint64 = 4000
-	ownedInflation     uint64 = 4010
+	globalIssuedSupply  uint64 = 2010
+	globalMaxSupply     uint64 = 2011
+	globalRejectListURL uint64 = 2012
+	globalTokens        uint64 = 2102
+	ownedAsset          uint64 = 4000
+	ownedInflation      uint64 = 4010
 )
 
 // GenesisValidation reports the independently checked layers of a genesis.

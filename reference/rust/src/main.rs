@@ -46,6 +46,19 @@ fn run_inspector() -> bool {
 		return false;
 	}
 	match args[1].as_str() {
+		"inspect-contract" => {
+			let armored = fs::read_to_string(&args[2]).expect("read contract consignment");
+			let contract = Contract::from_ascii_armored_str(&armored)
+				.expect("official Rust parser rejected contract consignment");
+			println!("{}", serde_json::json!({
+				"id": contract.consignment_id().to_string(),
+				"contract_id": contract.contract_id().to_string(),
+				"schema_id": contract.schema_id().to_string(),
+				"chain_net": contract.genesis().chain_net.prefix(),
+				"canonical_roundtrip": Contract::from_ascii_armored_str(&contract.to_string()).is_ok(),
+			}));
+			true
+		}
 		"inspect-transfer" => {
 			let armored = fs::read_to_string(&args[2]).expect("read transfer consignment");
 			let transfer = Transfer::from_ascii_armored_str(&armored)

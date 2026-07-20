@@ -214,6 +214,28 @@ func (e *Engine) MarkRelayAccepted(requestID, transferID, objectHash string) err
 	return e.putReceive(request)
 }
 
+// MarkRelayRejected records a terminal receiver decision without importing
+// any allocation into wallet balance. The failure code is suitable for an
+// authenticated NACK but deliberately carries no private consignment data.
+func (e *Engine) MarkRelayRejected(requestID, transferID, objectHash, failureCode string) error {
+	request, err := e.LoadReceive(requestID)
+	if err != nil {
+		return err
+	}
+	if request.Status != ReceivePrepared && request.Status != ReceiveRelayed {
+		return ErrReceiveState
+	}
+	decoded, err := hex.DecodeString(objectHash)
+	if err != nil || len(decoded) != 32 || transferID == "" || failureCode == "" || len(failureCode) > 128 {
+		return ErrInvalidReceive
+	}
+	request.Status = ReceiveFailed
+	request.TransferID = transferID
+	request.ObjectHash = objectHash
+	request.FailureCode = failureCode
+	return e.putReceive(request)
+}
+
 func (e *Engine) putReceive(request *ReceiveRequest) error {
 	encoded, err := json.Marshal(request)
 	if err != nil {

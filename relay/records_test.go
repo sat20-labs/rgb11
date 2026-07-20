@@ -88,3 +88,46 @@ func TestRelayImmutableRenewal(t *testing.T) {
 		t.Fatalf("expected immutable error, got %v", err)
 	}
 }
+
+func TestCompactRecordPayloadRoundTripRejectsJSON(t *testing.T) {
+	_, ackKey, err := NewTemporaryKeys()
+	if err != nil {
+		t.Fatal(err)
+	}
+	senderPub, sender := keyPair(t)
+	recipientPub, recipient := keyPair(t)
+	relay := RelayRecord{Version: RecordVersion, TransferID: "transfer", RecipientID: "recipient", ObjectHash: [32]byte{1}, ObjectSize: 1, SourcePeerID: "peer", AckRecordKey: ackKey, Expiry: 100, SenderPubKey: senderPub}
+	if err := relay.Sign(sender); err != nil {
+		t.Fatal(err)
+	}
+	encodedRelay, err := relay.MarshalBinary()
+	if err != nil || len(encodedRelay) == 0 || encodedRelay[0] == '{' {
+		t.Fatalf("relay encode err=%v", err)
+	}
+	decodedRelay, err := UnmarshalRelayRecord(encodedRelay)
+	if err != nil || decodedRelay.TransferID != relay.TransferID || decodedRelay.Signature == nil {
+		t.Fatalf("relay decode=%+v err=%v", decodedRelay, err)
+	}
+	if _, err := UnmarshalRelayRecord([]byte(`{"transfer_id":"transfer"}`)); err == nil {
+		t.Fatal("JSON relay unexpectedly accepted")
+	}
+	relayHash, err := relay.Hash()
+	if err != nil {
+		t.Fatal(err)
+	}
+	ack := AckRecord{Version: RecordVersion, TransferID: relay.TransferID, RecipientID: relay.RecipientID, RelayRecordHash: relayHash, ConsignmentHash: relay.ObjectHash, Accepted: true, RecipientPubKey: recipientPub}
+	if err := ack.Sign(recipient); err != nil {
+		t.Fatal(err)
+	}
+	encodedAck, err := ack.MarshalBinary()
+	if err != nil || len(encodedAck) == 0 || encodedAck[0] == '{' {
+		t.Fatalf("ack encode err=%v", err)
+	}
+	decodedAck, err := UnmarshalAckRecord(encodedAck)
+	if err != nil || !decodedAck.Accepted || decodedAck.Signature == nil {
+		t.Fatalf("ack decode=%+v err=%v", decodedAck, err)
+	}
+	if _, err := UnmarshalAckRecord([]byte(`{"accepted":true}`)); err == nil {
+		t.Fatal("JSON ACK unexpectedly accepted")
+	}
+}

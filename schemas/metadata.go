@@ -10,11 +10,12 @@ import (
 // by the standard-schema genesis. Amounts remain atomic u64 values; Precision
 // only controls their decimal representation.
 type GenesisAssetMetadata struct {
-	Ticker       string
-	DisplayName  string
-	Precision    uint8
-	IssuedSupply uint64
-	MaxSupply    uint64
+	Ticker        string
+	DisplayName   string
+	Precision     uint8
+	IssuedSupply  uint64
+	MaxSupply     uint64
+	RejectListURL string
 }
 
 // ExtractGenesisAssetMetadata decodes the official AssetSpec/ContractSpec and
@@ -99,6 +100,16 @@ func ExtractGenesisAssetMetadata(schema, typeSystem, genesis strict_types.Value)
 	}
 	if maximum, err := oneGlobalAmount(globals, globalMaxSupply); err == nil {
 		metadata.MaxSupply = maximum
+	}
+	if values := globals[globalRejectListURL]; len(values) > 0 {
+		if len(values) != 1 {
+			return GenesisAssetMetadata{}, fmt.Errorf("%w: reject list URL cardinality", ErrSchemaConformance)
+		}
+		url, ok := values[0].decoded.TextValue()
+		if !ok {
+			return GenesisAssetMetadata{}, fmt.Errorf("%w: reject list URL", ErrStateType)
+		}
+		metadata.RejectListURL = url
 	}
 	return metadata, nil
 }

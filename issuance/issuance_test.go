@@ -46,6 +46,11 @@ func TestIssueFirstReleaseSchemas(t *testing.T) {
 			Ticker: "SUDA", Name: "SAT20 Unique", Details: "unique token", Precision: 0,
 			Allocations: []issuance.Allocation{{Seal: sealA, Amount: 1}}, Timestamp: 1_700_000_004,
 		},
+		{
+			Kind: schemas.NIA, Network: issuance.BitcoinRegtest,
+			Ticker: "REG", Name: "SAT20 Regtest", Precision: 0,
+			Allocations: []issuance.Allocation{{Seal: sealC, Amount: 21}}, Timestamp: 1_700_000_005,
+		},
 	}
 
 	seen := make(map[string]struct{})
@@ -68,6 +73,12 @@ func TestIssueFirstReleaseSchemas(t *testing.T) {
 			}
 			if !report.ConsensusValid || len(report.CurrentStates) != len(spec.Allocations)+len(spec.InflationRights) {
 				t.Fatalf("unexpected validation report: %+v", report)
+			}
+			genesis, _ := issued.Container.Value.Field("genesis")
+			chainNet, ok := genesis.Field("chainNet")
+			chainNet = chainNet.Unwrap()
+			if !ok || chainNet.Tag != uint8(spec.Network) {
+				t.Fatalf("chain net=%+v, want tag %d", chainNet, spec.Network)
 			}
 		})
 	}

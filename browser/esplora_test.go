@@ -1,18 +1,20 @@
 package browser
 
 import (
+	"bytes"
 	"context"
-	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/btcsuite/btcd/chaincfg/chainhash"
+	"github.com/btcsuite/btcd/wire"
 )
 
 func TestAllowlistedEsploraWitnessSnapshotIsSecondaryOnly(t *testing.T) {
-	raw := []byte{1, 2, 3, 4, 5}
-	txid := testTxID(raw)
+	raw, txid := testWitnessTx(t)
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case "/tx/" + txid + "/status":
@@ -51,8 +53,7 @@ func TestAllowlistedEsploraWitnessSnapshotIsSecondaryOnly(t *testing.T) {
 }
 
 func TestEsploraDifferenceDoesNotBecomeConsensusResult(t *testing.T) {
-	raw := []byte{9, 8, 7}
-	txid := testTxID(raw)
+	raw, txid := testWitnessTx(t)
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/tx/"+txid+"/hex" {
 			fmt.Fprint(w, hex.EncodeToString(raw))
@@ -84,11 +85,21 @@ func TestReleaseManifestRejectsNonAllowlistedHTTP(t *testing.T) {
 	}
 }
 
-func testTxID(raw []byte) string {
-	first := sha256.Sum256(raw)
-	second := sha256.Sum256(first[:])
-	for left, right := 0, len(second)-1; left < right; left, right = left+1, right-1 {
-		second[left], second[right] = second[right], second[left]
+func testWitnessTx(t *testing.T) ([]byte, string) {
+	t.Helper()
+	prevHash := chainhash.Hash{1, 2, 3, 4}
+	tx := wire.NewMsgTx(2)
+	tx.AddTxIn(&wire.TxIn{
+		PreviousOutPoint: wire.OutPoint{Hash: prevHash, Index: 1},
+		Witness:          wire.TxWitness{[]byte{1, 2, 3}, []byte{4, 5}},
+	})
+	tx.AddTxOut(&wire.TxOut{Value: 1000, PkScript: []byte{0x51}})
+	var encoded bytes.Buffer
+	if err := tx.Serialize(&encoded); err != nil {
+		t.Fatal(err)
 	}
-	return hex.EncodeToString(second[:])
+	if tx.TxHash() == tx.WitnessHash() {
+		t.Fatal("test transaction must distinguish txid from wtxid")
+	}
+	return encoded.Bytes(), tx.TxHash().String()
 }

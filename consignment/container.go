@@ -22,6 +22,7 @@ var (
 	ErrContractMismatch = errors.New("RGB11 consignment contract id mismatch")
 	ErrSchemaMismatch   = errors.New("RGB11 consignment schema id mismatch")
 	ErrGenesisSchema    = errors.New("RGB11 genesis references a different schema")
+	ErrFileMagic        = errors.New("invalid RGB11 container file magic")
 )
 
 // Container is a strictly decoded RGB11 contract or transfer. DecodeArmor
@@ -38,6 +39,48 @@ type Container struct {
 	GenesisValid    bool
 	GenesisReport   schemas.GenesisValidation
 	ConsensusValid  bool
+}
+
+// Decode accepts either the official ASCII armor transport or the canonical
+// strict-encoded container bytes written by rgb-lib. Binary inputs are decoded
+// first and then passed through the same commitment and schema checks as armor.
+func Decode(raw []byte) (*Container, error) {
+	if bytes.Contains(raw, []byte(armorBegin)) {
+		return DecodeArmor(string(raw))
+	}
+	payload := raw
+	typeNames := []string{"Consignmenttrue", "Consignmentfalse"}
+	if len(raw) >= 7 && bytes.Equal(raw[:4], []byte{'R', 'G', 'B', 0}) {
+		switch string(raw[4:7]) {
+		case "TFR":
+			typeNames = []string{"Consignmenttrue"}
+		case "CON":
+			typeNames = []string{"Consignmentfalse"}
+		default:
+			return nil, ErrFileMagic
+		}
+		payload = raw[7:]
+	}
+	if len(payload) == 0 || len(payload) > maxArmoredDataSize {
+		return nil, ErrArmorTooLarge
+	}
+	registry, err := strict_types.RC11Registry()
+	if err != nil {
+		return nil, err
+	}
+	var value strict_types.Value
+	var decodeErr error
+	for _, typeName := range typeNames {
+		value, decodeErr = registry.Decode("RGBStd", typeName, payload)
+		if decodeErr == nil {
+			armored, err := EncodeArmor(value)
+			if err != nil {
+				return nil, err
+			}
+			return DecodeArmor(armored)
+		}
+	}
+	return nil, fmt.Errorf("strict decode RGB11 consignment: %w", decodeErr)
 }
 
 func DecodeArmor(text string) (*Container, error) {

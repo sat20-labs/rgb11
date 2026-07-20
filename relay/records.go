@@ -15,7 +15,12 @@ import (
 	strict "github.com/sat20-labs/rgb11/strict_encoding"
 )
 
-const RecordVersion uint32 = 1
+const (
+	RecordVersion        uint32 = 1
+	relayPayloadMagic           = "R11R"
+	ackPayloadMagic             = "R11A"
+	recordPayloadVersion        = uint8(1)
+)
 
 type Durability string
 
@@ -185,6 +190,103 @@ func (r RelayRecord) Hash() ([32]byte, error) {
 	return sha256.Sum256(buf.Bytes()), nil
 }
 
+// MarshalBinary writes the complete signed relay record in a compact,
+// versioned form suitable for a DKVS value.
+func (r RelayRecord) MarshalBinary() ([]byte, error) {
+	if err := r.validateFields(); err != nil || len(r.Signature) == 0 || len(r.Signature) > 256 {
+		return nil, ErrInvalidRecord
+	}
+	var buf bytes.Buffer
+	encoder := strict.NewEncoder(&buf)
+	if err := encoder.Raw([]byte(relayPayloadMagic)); err != nil {
+		return nil, err
+	}
+	if err := encoder.U8(recordPayloadVersion); err != nil {
+		return nil, err
+	}
+	for _, encode := range []func() error{
+		func() error { return encoder.U32(r.Version) },
+		func() error { return writeString(encoder, r.TransferID, 128) },
+		func() error { return writeString(encoder, r.RecipientID, 256) },
+		func() error { return encoder.Raw(r.ObjectHash[:]) },
+		func() error { return encoder.U64(r.ObjectSize) },
+		func() error { return writeString(encoder, r.LocalObjectID, 128) },
+		func() error { return writeString(encoder, r.DKVSBlobRef, 512) },
+		func() error { return writeString(encoder, r.SourcePeerID, 128) },
+		func() error { return writeString(encoder, r.WitnessTxID, 64) },
+		func() error { return writeString(encoder, r.AckRecordKey, 128) },
+		func() error { return encoder.U64(uint64(r.Expiry)) },
+		func() error { return encoder.Bytes(r.SenderPubKey, 1, 128) },
+		func() error { return encoder.Bytes(r.Signature, 1, 256) },
+	} {
+		if err := encode(); err != nil {
+			return nil, err
+		}
+	}
+	return buf.Bytes(), nil
+}
+
+func UnmarshalRelayRecord(data []byte) (*RelayRecord, error) {
+	reader := bytes.NewReader(data)
+	decoder := strict.NewDecoder(reader)
+	magic, err := decoder.Raw(uint64(len(relayPayloadMagic)))
+	if err != nil || string(magic) != relayPayloadMagic {
+		return nil, ErrInvalidRecord
+	}
+	version, err := decoder.U8()
+	if err != nil || version != recordPayloadVersion {
+		return nil, ErrInvalidRecord
+	}
+	record := &RelayRecord{}
+	if record.Version, err = decoder.U32(); err != nil {
+		return nil, ErrInvalidRecord
+	}
+	if record.TransferID, err = decoder.String(1, 128); err != nil {
+		return nil, ErrInvalidRecord
+	}
+	if record.RecipientID, err = decoder.String(1, 256); err != nil {
+		return nil, ErrInvalidRecord
+	}
+	objectHash, err := decoder.Raw(32)
+	if err != nil {
+		return nil, ErrInvalidRecord
+	}
+	copy(record.ObjectHash[:], objectHash)
+	if record.ObjectSize, err = decoder.U64(); err != nil {
+		return nil, ErrInvalidRecord
+	}
+	if record.LocalObjectID, err = decoder.String(0, 128); err != nil {
+		return nil, ErrInvalidRecord
+	}
+	if record.DKVSBlobRef, err = decoder.String(0, 512); err != nil {
+		return nil, ErrInvalidRecord
+	}
+	if record.SourcePeerID, err = decoder.String(0, 128); err != nil {
+		return nil, ErrInvalidRecord
+	}
+	if record.WitnessTxID, err = decoder.String(0, 64); err != nil {
+		return nil, ErrInvalidRecord
+	}
+	if record.AckRecordKey, err = decoder.String(1, 128); err != nil {
+		return nil, ErrInvalidRecord
+	}
+	expiry, err := decoder.U64()
+	if err != nil || expiry > uint64(^uint64(0)>>1) {
+		return nil, ErrInvalidRecord
+	}
+	record.Expiry = int64(expiry)
+	if record.SenderPubKey, err = decoder.Bytes(1, 128); err != nil {
+		return nil, ErrInvalidRecord
+	}
+	if record.Signature, err = decoder.Bytes(1, 256); err != nil || reader.Len() != 0 {
+		return nil, ErrInvalidRecord
+	}
+	if err := record.validateFields(); err != nil {
+		return nil, err
+	}
+	return record, nil
+}
+
 // ValidateRenewal permits locator, witness and expiry updates while preserving
 // the transfer result and object identity.
 func (r RelayRecord) ValidateRenewal(previous RelayRecord) error {
@@ -274,4 +376,85 @@ func (a AckRecord) ValidateImmutable(previous AckRecord) error {
 		return ErrImmutableUpdate
 	}
 	return nil
+}
+
+// MarshalBinary writes the complete signed ACK record in a compact,
+// versioned form suitable for a DKVS value.
+func (a AckRecord) MarshalBinary() ([]byte, error) {
+	if err := a.validateFields(); err != nil || len(a.Signature) == 0 || len(a.Signature) > 256 {
+		return nil, ErrInvalidRecord
+	}
+	var buf bytes.Buffer
+	encoder := strict.NewEncoder(&buf)
+	if err := encoder.Raw([]byte(ackPayloadMagic)); err != nil {
+		return nil, err
+	}
+	if err := encoder.U8(recordPayloadVersion); err != nil {
+		return nil, err
+	}
+	for _, encode := range []func() error{
+		func() error { return encoder.U32(a.Version) },
+		func() error { return writeString(encoder, a.TransferID, 128) },
+		func() error { return writeString(encoder, a.RecipientID, 256) },
+		func() error { return encoder.Raw(a.RelayRecordHash[:]) },
+		func() error { return encoder.Raw(a.ConsignmentHash[:]) },
+		func() error { return encoder.Bool(a.Accepted) },
+		func() error { return writeString(encoder, a.ReasonCode, 128) },
+		func() error { return encoder.Bytes(a.RecipientPubKey, 1, 128) },
+		func() error { return encoder.Bytes(a.Signature, 1, 256) },
+	} {
+		if err := encode(); err != nil {
+			return nil, err
+		}
+	}
+	return buf.Bytes(), nil
+}
+
+func UnmarshalAckRecord(data []byte) (*AckRecord, error) {
+	reader := bytes.NewReader(data)
+	decoder := strict.NewDecoder(reader)
+	magic, err := decoder.Raw(uint64(len(ackPayloadMagic)))
+	if err != nil || string(magic) != ackPayloadMagic {
+		return nil, ErrInvalidRecord
+	}
+	version, err := decoder.U8()
+	if err != nil || version != recordPayloadVersion {
+		return nil, ErrInvalidRecord
+	}
+	record := &AckRecord{}
+	if record.Version, err = decoder.U32(); err != nil {
+		return nil, ErrInvalidRecord
+	}
+	if record.TransferID, err = decoder.String(1, 128); err != nil {
+		return nil, ErrInvalidRecord
+	}
+	if record.RecipientID, err = decoder.String(1, 256); err != nil {
+		return nil, ErrInvalidRecord
+	}
+	relayHash, err := decoder.Raw(32)
+	if err != nil {
+		return nil, ErrInvalidRecord
+	}
+	copy(record.RelayRecordHash[:], relayHash)
+	consignmentHash, err := decoder.Raw(32)
+	if err != nil {
+		return nil, ErrInvalidRecord
+	}
+	copy(record.ConsignmentHash[:], consignmentHash)
+	if record.Accepted, err = decoder.Bool(); err != nil {
+		return nil, ErrInvalidRecord
+	}
+	if record.ReasonCode, err = decoder.String(0, 128); err != nil {
+		return nil, ErrInvalidRecord
+	}
+	if record.RecipientPubKey, err = decoder.Bytes(1, 128); err != nil {
+		return nil, ErrInvalidRecord
+	}
+	if record.Signature, err = decoder.Bytes(1, 256); err != nil || reader.Len() != 0 {
+		return nil, ErrInvalidRecord
+	}
+	if err := record.validateFields(); err != nil {
+		return nil, err
+	}
+	return record, nil
 }

@@ -30,6 +30,11 @@ const (
 	BitcoinMainnet ChainNet = iota
 	BitcoinTestnet3
 	BitcoinTestnet4
+	BitcoinSignet
+	BitcoinRegtest
+	LiquidMainnet
+	LiquidTestnet
+	BitcoinSignetCustom
 )
 
 // Allocation assigns newly created state to one explicit Bitcoin seal.
@@ -127,7 +132,7 @@ func validateSpec(spec Spec) error {
 	default:
 		return ErrUnsupportedSchema
 	}
-	if spec.Network > BitcoinTestnet4 || spec.Precision > 18 || !validText(spec.Name, 1, 40) ||
+	if spec.Network > BitcoinSignetCustom || spec.Precision > 18 || !validText(spec.Name, 1, 40) ||
 		(spec.Details != "" && !validText(spec.Details, 1, 255)) ||
 		(spec.Terms != "" && !validText(spec.Terms, 1, 65535)) {
 		return ErrInvalidSpec
@@ -223,7 +228,10 @@ func setGenesisHeader(genesis *strict_types.Value, spec Spec) error {
 		return ErrInvalidSpec
 	}
 	setSigned(timestampValue, timestamp)
-	names := [...]string{"bitcoinMainnet", "bitcoinTestnet3", "bitcoinTestnet4"}
+	names := [...]string{
+		"bitcoinMainnet", "bitcoinTestnet3", "bitcoinTestnet4", "bitcoinSignet",
+		"bitcoinRegtest", "liquidMainnet", "liquidTestnet", "bitcoinSignetCustom",
+	}
 	*chainNet = strict_types.Value{Kind: strict_types.ValueEnum, Name: names[spec.Network], Text: names[spec.Network], Tag: uint8(spec.Network)}
 	return nil
 }
