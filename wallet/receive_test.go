@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/sat20-labs/rgb11/invoicing"
+	"github.com/sat20-labs/rgb11/seals"
 	"github.com/sat20-labs/rgb11/storage"
 )
 
@@ -76,5 +77,30 @@ func TestCreateWitnessReceivePersistsScriptBeforeReturningInvoice(t *testing.T) 
 	}
 	if loaded.Mode != ReceiveWitness || !bytes.Equal(loaded.WitnessScript, script) || loaded.Seal.Blinding != 0 {
 		t.Fatalf("incomplete persisted witness receive: %+v", loaded)
+	}
+}
+
+func TestReceiveRequestStorageUsesStrictEncoding(t *testing.T) {
+	request := &ReceiveRequest{
+		Version: ReceiveVersion, Mode: ReceiveBlind, RequestID: "request-1", RecipientID: "recipient-1",
+		Seal: seals.NewWitnessBlindSeal(2, 42), Invoice: "rgb:invoice", RelayKey: "relay", AckKey: "ack",
+		CreatedAt: 1_800_000_000, Expiry: 1_800_003_600, Status: ReceivePrepared,
+	}
+	encoded, err := EncodeReceiveRequest(request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.HasPrefix(encoded, []byte(receiveStoreMagic)) {
+		t.Fatalf("receive request is not strict-encoded")
+	}
+	restored, err := DecodeReceiveRequest(encoded)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if restored.RequestID != request.RequestID || restored.Seal != request.Seal || restored.Invoice != request.Invoice {
+		t.Fatalf("strict round trip differs: %#v", restored)
+	}
+	if _, err := DecodeReceiveRequest([]byte(`{"request_id":"legacy"}`)); err == nil {
+		t.Fatal("legacy JSON receive record was accepted")
 	}
 }

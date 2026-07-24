@@ -5,7 +5,6 @@ package wallet
 import (
 	"crypto/rand"
 	"encoding/hex"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -189,11 +188,11 @@ func (e *Engine) LoadReceive(requestID string) (*ReceiveRequest, error) {
 	if err != nil {
 		return nil, err
 	}
-	var request ReceiveRequest
-	if err := json.Unmarshal(raw, &request); err != nil {
+	request, err := DecodeReceiveRequest(raw)
+	if err != nil {
 		return nil, err
 	}
-	return &request, nil
+	return request, nil
 }
 
 func (e *Engine) MarkRelayAccepted(requestID, transferID, objectHash string) error {
@@ -237,7 +236,7 @@ func (e *Engine) MarkRelayRejected(requestID, transferID, objectHash, failureCod
 }
 
 func (e *Engine) putReceive(request *ReceiveRequest) error {
-	encoded, err := json.Marshal(request)
+	encoded, err := EncodeReceiveRequest(request)
 	if err != nil {
 		return err
 	}

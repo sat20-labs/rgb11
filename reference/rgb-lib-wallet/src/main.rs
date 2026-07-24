@@ -15,6 +15,7 @@ use rgb_lib::{
         SyncStrategy, Wallet, WalletData, WitnessData,
     },
 };
+use rgbstd::containers::Contract;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
@@ -90,6 +91,14 @@ fn amount_arg(args: &[String], index: usize) -> Result<u64, DynError> {
     Ok(arg(args, index, "amount")?.parse()?)
 }
 
+fn bitcoin_network(value: &str) -> Result<BitcoinNetwork, DynError> {
+    match value {
+        "regtest" => Ok(BitcoinNetwork::Regtest),
+        "testnet4" => Ok(BitcoinNetwork::Testnet4),
+        _ => Err(format!("unsupported network: {value}").into()),
+    }
+}
+
 fn expiry() -> u64 {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -135,6 +144,22 @@ fn main() -> Result<(), DynError> {
                 })
             );
         }
+        "export-contract" => {
+            let asset_id = arg(&args, 3, "asset-id")?;
+            let output = PathBuf::from(arg(&args, 4, "armor-output")?);
+            let (wallet, _) = load_wallet(&data_dir)?;
+            let contract_path = wallet.get_wallet_dir().join("assets").join(&asset_id);
+            let contract = Contract::load_file(&contract_path)?;
+            fs::write(&output, contract.to_ascii_armored_string())?;
+            println!(
+                "{}",
+                json!({
+                    "asset_id": asset_id,
+                    "input": contract_path,
+                    "output": output,
+                })
+            );
+        }
         "init" => {
             if state_path(&data_dir).exists() {
                 let state = read_state(&data_dir)?;
@@ -145,11 +170,13 @@ fn main() -> Result<(), DynError> {
                 return Ok(());
             }
             fs::create_dir_all(&data_dir)?;
-            let keys = generate_keys(BitcoinNetwork::Regtest, WitnessVersion::Taproot);
+            let network_name = args.get(3).map(String::as_str).unwrap_or("regtest");
+            let network = bitcoin_network(network_name)?;
+            let keys = generate_keys(network, WitnessVersion::Taproot);
             let mut wallet = Wallet::new(
                 WalletData {
                     data_dir: data_dir.to_string_lossy().into_owned(),
-                    bitcoin_network: BitcoinNetwork::Regtest,
+                    bitcoin_network: network,
                     database_type: DatabaseType::Sqlite,
                     max_allocations_per_utxo: 5,
                     supported_schemas: vec![AssetSchema::Nia, AssetSchema::Ifa, AssetSchema::Uda],
@@ -166,7 +193,11 @@ fn main() -> Result<(), DynError> {
             )?;
             println!(
                 "{}",
-                json!({"funding_address": funding_address, "created": true})
+                json!({
+                    "funding_address": funding_address,
+                    "network": network_name,
+                    "created": true
+                })
             );
         }
         "address" => {
@@ -183,11 +214,35 @@ fn main() -> Result<(), DynError> {
         }
         "create-utxos" => {
             let esplora = arg(&args, 3, "esplora-url")?;
+            let count = args
+                .get(4)
+                .map(|value| value.parse())
+                .transpose()?
+                .unwrap_or(5);
+            let size = args
+                .get(5)
+                .map(|value| value.parse())
+                .transpose()?
+                .unwrap_or(10_000);
+            let fee_rate = args
+                .get(6)
+                .map(|value| value.parse())
+                .transpose()?
+                .unwrap_or(2);
             let (mut wallet, _) = load_wallet(&data_dir)?;
             let online = go_online(&mut wallet, &esplora)?;
             full_sync(&mut wallet, online)?;
-            let created = wallet.create_utxos(online, true, Some(5), Some(10_000), 2, true)?;
-            println!("{}", json!({"created": created}));
+            let created =
+                wallet.create_utxos(online, true, Some(count), Some(size), fee_rate, true)?;
+            println!(
+                "{}",
+                json!({
+                    "created": created,
+                    "requested": count,
+                    "size": size,
+                    "fee_rate": fee_rate,
+                })
+            );
         }
         "issue-nia" => {
             let ticker = arg(&args, 3, "ticker")?;
