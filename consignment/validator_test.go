@@ -1,18 +1,23 @@
 package consignment
 
 import (
+	"bytes"
 	"encoding/hex"
 	"errors"
 	"os"
 	"testing"
+
+	"github.com/btcsuite/btcd/wire"
 )
 
 type vectorResolver struct {
-	raw      []byte
-	txid     [32]byte
-	prev     Outpoint
-	archived bool
-	unknown  bool
+	raw            []byte
+	txid           [32]byte
+	prev           Outpoint
+	archived       bool
+	unknownWitness bool
+	unknown        bool
+	currentSpent   bool
 }
 
 func (r vectorResolver) ResolveRGB11Witness(txid [32]byte) (WitnessEvidence, error) {
@@ -22,6 +27,8 @@ func (r vectorResolver) ResolveRGB11Witness(txid [32]byte) (WitnessEvidence, err
 	state := WitnessTentative
 	if r.archived {
 		state = WitnessArchived
+	} else if r.unknownWitness {
+		state = WitnessUnknown
 	}
 	return WitnessEvidence{RawTx: r.raw, State: state}, nil
 }
@@ -31,11 +38,10 @@ func (r vectorResolver) ResolveRGB11Outpoint(outpoint Outpoint) (OutpointEvidenc
 		return OutpointEvidence{}, nil
 	}
 	if outpoint == r.prev {
-		spending := r.txid
-		return OutpointEvidence{Known: true, Exists: true, Spent: true, SpendingTxID: &spending}, nil
+		return OutpointEvidence{Known: true, Exists: true, Spent: true}, nil
 	}
 	if outpoint.TxID == r.txid {
-		return OutpointEvidence{Known: true, Exists: true}, nil
+		return OutpointEvidence{Known: true, Exists: true, Spent: r.currentSpent}, nil
 	}
 	return OutpointEvidence{}, nil
 }
@@ -64,11 +70,42 @@ func TestValidateRejectsReorgedWitness(t *testing.T) {
 	}
 }
 
+func TestValidateRejectsUnknownWitness(t *testing.T) {
+	container, resolver := loadValidationVector(t)
+	resolver.unknownWitness = true
+	if _, err := container.Validate(resolver); !errors.Is(err, ErrWitnessUnresolved) {
+		t.Fatalf("expected unknown witness rejection, got %v", err)
+	}
+}
+
 func TestValidateRejectsUnknownSpendState(t *testing.T) {
 	container, resolver := loadValidationVector(t)
 	resolver.unknown = true
 	if _, err := container.Validate(resolver); !errors.Is(err, ErrOutpointUnknown) {
 		t.Fatalf("expected unknown outpoint rejection, got %v", err)
+	}
+}
+
+func TestValidateRejectsSpentCurrentStateWithoutSpendingTxID(t *testing.T) {
+	container, resolver := loadValidationVector(t)
+	resolver.currentSpent = true
+	if _, err := container.Validate(resolver); !errors.Is(err, ErrOutpointSpend) {
+		t.Fatalf("expected spent current state rejection, got %v", err)
+	}
+}
+
+func TestTxSpendsRequiresExpectedInput(t *testing.T) {
+	_, resolver := loadValidationVector(t)
+	tx := wire.NewMsgTx(wire.TxVersion)
+	if err := tx.Deserialize(bytes.NewReader(resolver.raw)); err != nil {
+		t.Fatal(err)
+	}
+	if !txSpends(tx, resolver.prev) {
+		t.Fatal("expected witness to spend RGB11 state outpoint")
+	}
+	resolver.prev.Vout++
+	if txSpends(tx, resolver.prev) {
+		t.Fatal("witness must not close a different RGB11 state outpoint")
 	}
 }
 

@@ -76,6 +76,7 @@ type ReceiveParams struct {
 	InternalXOnly  *[32]byte
 	Expiry         int64
 	Transports     []invoicing.Transport
+	StandardOnly   bool
 }
 
 type Engine struct {
@@ -128,10 +129,12 @@ func (e *Engine) CreateReceive(params ReceiveParams) (*ReceiveRequest, error) {
 		Transports:  append([]invoicing.Transport(nil), params.Transports...),
 		Beneficiary: beneficiary,
 		Expiry:      &params.Expiry,
-		UnknownQuery: []invoicing.QueryParam{
+	}
+	if !params.StandardOnly {
+		invoice.UnknownQuery = []invoicing.QueryParam{
 			{Key: "sat20_recipient", Value: params.RecipientID},
 			{Key: "sat20_vout", Value: fmt.Sprintf("%d", params.WitnessVout)},
-		},
+		}
 	}
 	if params.ContractID != "" {
 		contract, err := consensus.ParseContractID(params.ContractID)
@@ -158,10 +161,12 @@ func (e *Engine) CreateReceive(params ReceiveParams) (*ReceiveRequest, error) {
 	if err != nil {
 		return nil, err
 	}
-	invoice.UnknownQuery = append(invoice.UnknownQuery,
-		invoicing.QueryParam{Key: "sat20_relay", Value: relayKey},
-		invoicing.QueryParam{Key: "sat20_ack", Value: ackKey},
-	)
+	if !params.StandardOnly {
+		invoice.UnknownQuery = append(invoice.UnknownQuery,
+			invoicing.QueryParam{Key: "sat20_relay", Value: relayKey},
+			invoicing.QueryParam{Key: "sat20_ack", Value: ackKey},
+		)
+	}
 	if err := invoice.Validate(e.now().Unix()); err != nil {
 		return nil, err
 	}

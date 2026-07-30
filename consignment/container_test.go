@@ -50,6 +50,70 @@ func TestDecodeOfficialStrictBinary(t *testing.T) {
 	}
 }
 
+func TestStandardFileRoundTrip(t *testing.T) {
+	for _, test := range []struct {
+		fixture string
+		kind    string
+		magic   string
+	}{
+		{fixture: "nia-example.rgba", kind: "contract", magic: "RGB\x00CON"},
+		{fixture: "nia-transfer.rgba", kind: "transfer", magic: "RGB\x00TFR"},
+	} {
+		t.Run(test.kind, func(t *testing.T) {
+			raw, err := os.ReadFile("../testvectors/rc11/" + test.fixture)
+			if err != nil {
+				t.Fatal(err)
+			}
+			container, err := DecodeArmor(string(raw))
+			if err != nil {
+				t.Fatal(err)
+			}
+			file, err := EncodeFile(container)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if !strings.HasPrefix(string(file), test.magic) {
+				t.Fatalf("file magic=%q want=%q", file[:7], test.magic)
+			}
+			decoded, err := DecodeFile(file)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if decoded.ContractID != container.ContractID || decoded.SchemaID != container.SchemaID ||
+				decoded.Armor.Type != test.kind {
+				t.Fatalf("standard file round trip mismatch: %+v", decoded)
+			}
+		})
+	}
+}
+
+func TestDecodeFileRejectsNonStandardInputs(t *testing.T) {
+	raw, err := os.ReadFile("../testvectors/rc11/nia-transfer.rgba")
+	if err != nil {
+		t.Fatal(err)
+	}
+	container, err := DecodeArmor(string(raw))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for name, input := range map[string][]byte{
+		"armor":  raw,
+		"strict": container.Armor.Data,
+		"magic":  append([]byte("RGB\x00BAD"), container.Armor.Data...),
+	} {
+		t.Run(name, func(t *testing.T) {
+			if _, err := DecodeFile(input); !errors.Is(err, ErrFileMagic) {
+				t.Fatalf("error=%v want=%v", err, ErrFileMagic)
+			}
+		})
+	}
+
+	wrongType := append([]byte("RGB\x00CON"), container.Armor.Data...)
+	if _, err := DecodeFile(wrongType); err == nil {
+		t.Fatal("accepted transfer payload with contract file magic")
+	}
+}
+
 func TestDecodeEveryOfficialWalletSchemaContract(t *testing.T) {
 	for _, fixture := range []string{
 		"nia-example.rgba",

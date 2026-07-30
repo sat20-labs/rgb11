@@ -80,6 +80,45 @@ func TestCreateWitnessReceivePersistsScriptBeforeReturningInvoice(t *testing.T) 
 	}
 }
 
+func TestCreateStandardWitnessReceiveOmitsSAT20Extensions(t *testing.T) {
+	store := storage.NewMemoryStore()
+	engine, err := NewEngine(store)
+	if err != nil {
+		t.Fatal(err)
+	}
+	engine.now = func() time.Time { return time.Unix(1_800_000_000, 0) }
+	xonly, _ := hex.DecodeString("79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798")
+	script := append([]byte{0x51, 0x20}, xonly...)
+	amount := uint64(100)
+	transport, err := invoicing.ParseTransport("rpcs://proxy.example.com/0.2/json-rpc")
+	if err != nil {
+		t.Fatal(err)
+	}
+	request, err := engine.CreateReceive(ReceiveParams{
+		Mode: ReceiveWitness, ContractID: "rgb:eIbQx5Am-XRDjj01-RM~5eo7-rv2nluD-OnBJRAy-S9~Yfts",
+		SchemaID: "XvmU3d4_nQQ8S7oagbXi07x5vjMm7P~ERukQNX6SC4M", Network: invoicing.BitcoinTestnet4,
+		Amount: &amount, AssignmentName: "assetOwner", RecipientID: "recipient-1",
+		WitnessVout: 1, WitnessScript: script, Expiry: 1_800_003_600,
+		Transports: []invoicing.Transport{transport}, StandardOnly: true,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	parsed, err := invoicing.Parse(request.Invoice)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(parsed.Transports) != 1 || parsed.Transports[0].String() != transport.String() {
+		t.Fatalf("unexpected transports: %+v", parsed.Transports)
+	}
+	if len(parsed.UnknownQuery) != 0 {
+		t.Fatalf("standard invoice leaked SAT20 query parameters: %+v", parsed.UnknownQuery)
+	}
+	if request.RelayKey == "" || request.AckKey == "" {
+		t.Fatal("local receive state did not retain internal lifecycle keys")
+	}
+}
+
 func TestReceiveRequestStorageUsesStrictEncoding(t *testing.T) {
 	request := &ReceiveRequest{
 		Version: ReceiveVersion, Mode: ReceiveBlind, RequestID: "request-1", RecipientID: "recipient-1",

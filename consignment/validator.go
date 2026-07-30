@@ -155,9 +155,6 @@ func (c *Container) Validate(resolver BitcoinResolver) (Validation, error) {
 				if !txSpends(witnessTx, previous.outpoint) {
 					return report, ErrSealNotClosed
 				}
-				if err := verifySpentOutpoint(resolver, previous.outpoint, witnessTxID); err != nil {
-					return report, err
-				}
 			}
 			validation, err := schemas.ValidateTransition(schema, typeSystem, transition, context,
 				schemas.InputResolverFunc(func(ref schemas.InputRef) (schemas.ResolvedInput, error) {
@@ -537,20 +534,6 @@ func txSpends(tx *wire.MsgTx, outpoint Outpoint) bool {
 		}
 	}
 	return false
-}
-
-func verifySpentOutpoint(resolver BitcoinResolver, outpoint Outpoint, spendingTxID [32]byte) error {
-	if resolver == nil {
-		return ErrOutpointUnknown
-	}
-	evidence, err := resolver.ResolveRGB11Outpoint(outpoint)
-	if err != nil || !evidence.Known || !evidence.Exists {
-		return ErrOutpointUnknown
-	}
-	if !evidence.Spent || evidence.SpendingTxID == nil || *evidence.SpendingTxID != spendingTxID {
-		return ErrOutpointSpend
-	}
-	return nil
 }
 
 func verifyCurrentOutpoint(resolver BitcoinResolver, outpoint Outpoint) error {

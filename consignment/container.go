@@ -25,6 +25,11 @@ var (
 	ErrFileMagic        = errors.New("invalid RGB11 container file magic")
 )
 
+var (
+	contractFileMagic = []byte{'R', 'G', 'B', 0, 'C', 'O', 'N'}
+	transferFileMagic = []byte{'R', 'G', 'B', 0, 'T', 'F', 'R'}
+)
+
 // Container is a strictly decoded RGB11 contract or transfer. DecodeArmor
 // validates transport integrity, strict confinement, schema commitment and
 // genesis contract commitment. It intentionally does not set ConsensusValid:
@@ -39,6 +44,51 @@ type Container struct {
 	GenesisValid    bool
 	GenesisReport   schemas.GenesisValidation
 	ConsensusValid  bool
+}
+
+// EncodeFile serializes a decoded consignment using the standard RGB contract
+// or transfer file envelope.
+func EncodeFile(container *Container) ([]byte, error) {
+	if container == nil || container.Armor == nil || len(container.Armor.Data) == 0 {
+		return nil, ErrContainerType
+	}
+	var magic []byte
+	switch container.Armor.Type {
+	case "contract":
+		magic = contractFileMagic
+	case "transfer":
+		magic = transferFileMagic
+	default:
+		return nil, ErrContainerType
+	}
+	file := make([]byte, 0, len(magic)+len(container.Armor.Data))
+	file = append(file, magic...)
+	file = append(file, container.Armor.Data...)
+	return file, nil
+}
+
+// DecodeFile accepts only the standard RGB binary file envelope.
+func DecodeFile(raw []byte) (*Container, error) {
+	if len(raw) < len(contractFileMagic) {
+		return nil, ErrFileMagic
+	}
+	var wantType string
+	switch {
+	case bytes.Equal(raw[:len(contractFileMagic)], contractFileMagic):
+		wantType = "contract"
+	case bytes.Equal(raw[:len(transferFileMagic)], transferFileMagic):
+		wantType = "transfer"
+	default:
+		return nil, ErrFileMagic
+	}
+	container, err := Decode(raw)
+	if err != nil {
+		return nil, err
+	}
+	if container.Armor == nil || container.Armor.Type != wantType {
+		return nil, ErrContainerType
+	}
+	return container, nil
 }
 
 // Decode accepts either the official ASCII armor transport or the canonical
