@@ -27,10 +27,14 @@ type ValidatedState struct {
 	Outpoint  Outpoint
 	// SealDisclosure is the strict-encoded disclosed seal that locates this
 	// state. Wallets persist it as proof material; indexers must not derive it.
-	SealDisclosure []byte
-	SealBlinding   uint64
-	WitnessTxPtr   bool
-	CarrierBinding CarrierBinding
+	SealDisclosure  []byte
+	SealBlinding    uint64
+	WitnessTxPtr    bool
+	WitnessTxID     [32]byte
+	WitnessPrepared bool
+	CarrierBinding  CarrierBinding
+	OutputValue     int64
+	OutputScript    []byte
 }
 
 // CarrierBinding is derived from the validated DBC proof for the witness that
@@ -43,13 +47,16 @@ type CarrierBinding struct {
 }
 
 type Validation struct {
-	Bundles          int
-	Transitions      int
-	Anchors          int
-	MinedWitnesses   int
-	PendingWitnesses int
-	CurrentStates    []ValidatedState
-	ConsensusValid   bool
+	Bundles              int
+	Transitions          int
+	Anchors              int
+	MinedWitnesses       int
+	PendingWitnesses     int
+	PreparedWitnesses    int
+	PreparedWitnessTxIDs [][32]byte
+	CurrentStates        []ValidatedState
+	ConsensusValid       bool
+	PreparedValid        bool
 }
 
 type validatedOutput struct {
@@ -58,6 +65,7 @@ type validatedOutput struct {
 	sealDisclosure []byte
 	sealBlinding   uint64
 	witnessTxPtr   bool
+	witnessTxID    [32]byte
 	carrierBinding CarrierBinding
 }
 
@@ -65,6 +73,17 @@ type validatedOutput struct {
 // contract or transfer may affect wallet projection. The resolver supplies
 // only Bitcoin facts; all RGB state is derived and checked locally.
 func (c *Container) Validate(resolver BitcoinResolver) (Validation, error) {
+	return c.validate(resolver, false)
+}
+
+// ValidatePrepared validates a transfer before its embedded Bitcoin witness
+// transaction is broadcast. It never accepts a txid-only witness and still
+// requires all consumed RGB state outpoints to exist and remain unspent.
+func (c *Container) ValidatePrepared(resolver BitcoinResolver) (Validation, error) {
+	return c.validate(resolver, true)
+}
+
+func (c *Container) validate(resolver BitcoinResolver, allowPrepared bool) (Validation, error) {
 	report := Validation{}
 	if c == nil || !c.StructuralValid || !c.GenesisValid {
 		return report, ErrContainerType
@@ -86,6 +105,7 @@ func (c *Container) Validate(resolver BitcoinResolver) (Validation, error) {
 	}
 	context := schemas.TransitionContext{ContractID: genesisCommitment.OperationID, ContractGlobals: globals}
 	consumed := make(map[schemas.InputRef]struct{})
+	preparedWitnesses := make(map[[32]byte]*wire.MsgTx)
 
 	bundlesValue, ok := c.Value.Field("bundles")
 	bundlesValue = bundlesValue.Unwrap()
@@ -112,7 +132,14 @@ func (c *Container) Validate(resolver BitcoinResolver) (Validation, error) {
 		if err != nil {
 			return report, fmt.Errorf("%w: %v", ErrBundleAnchor, err)
 		}
-		witnessTx, witnessTxID, evidence, err := resolveWitness(publicWitness, resolver)
+		var witnessTx *wire.MsgTx
+		var witnessTxID [32]byte
+		var evidence WitnessEvidence
+		if allowPrepared {
+			witnessTx, witnessTxID, evidence, err = resolvePreparedWitness(publicWitness, resolver)
+		} else {
+			witnessTx, witnessTxID, evidence, err = resolveWitness(publicWitness, resolver)
+		}
 		if err != nil {
 			return report, err
 		}
@@ -127,6 +154,10 @@ func (c *Container) Validate(resolver BitcoinResolver) (Validation, error) {
 		report.Anchors++
 		if evidence.State == WitnessMined {
 			report.MinedWitnesses++
+		} else if evidence.State == WitnessPrepared {
+			report.PreparedWitnesses++
+			report.PreparedWitnessTxIDs = append(report.PreparedWitnessTxIDs, witnessTxID)
+			preparedWitnesses[witnessTxID] = witnessTx
 		} else {
 			report.PendingWitnesses++
 		}
@@ -155,6 +186,11 @@ func (c *Container) Validate(resolver BitcoinResolver) (Validation, error) {
 				if !txSpends(witnessTx, previous.outpoint) {
 					return report, ErrSealNotClosed
 				}
+				if evidence.State == WitnessPrepared {
+					if err := verifyPreparedInputOutpoint(resolver, previous.outpoint, witnessTxID); err != nil {
+						return report, err
+					}
+				}
 			}
 			validation, err := schemas.ValidateTransition(schema, typeSystem, transition, context,
 				schemas.InputResolverFunc(func(ref schemas.InputRef) (schemas.ResolvedInput, error) {
@@ -182,17 +218,35 @@ func (c *Container) Validate(resolver BitcoinResolver) (Validation, error) {
 	}
 
 	for reference, output := range states {
-		if err := verifyCurrentOutpoint(resolver, output.outpoint); err != nil {
-			return report, err
+		var outputValue int64
+		var outputScript []byte
+		if witnessTx, prepared := preparedWitnesses[output.outpoint.TxID]; prepared {
+			if uint64(output.outpoint.Vout) >= uint64(len(witnessTx.TxOut)) {
+				return report, ErrOutpointUnknown
+			}
+			txOut := witnessTx.TxOut[output.outpoint.Vout]
+			outputValue = txOut.Value
+			outputScript = append([]byte(nil), txOut.PkScript...)
+		} else {
+			if err := verifyCurrentOutpoint(resolver, output.outpoint); err != nil {
+				return report, err
+			}
 		}
 		report.CurrentStates = append(report.CurrentStates, ValidatedState{
 			Reference: reference, State: output.state, Outpoint: output.outpoint,
 			SealDisclosure: append([]byte(nil), output.sealDisclosure...), SealBlinding: output.sealBlinding,
-			WitnessTxPtr: output.witnessTxPtr, CarrierBinding: cloneCarrierBinding(output.carrierBinding),
+			WitnessTxPtr: output.witnessTxPtr, WitnessTxID: output.witnessTxID,
+			CarrierBinding:  cloneCarrierBinding(output.carrierBinding),
+			WitnessPrepared: preparedWitnesses[output.outpoint.TxID] != nil,
+			OutputValue:     outputValue, OutputScript: outputScript,
 		})
 	}
-	report.ConsensusValid = true
-	c.ConsensusValid = true
+	if report.PreparedWitnesses > 0 {
+		report.PreparedValid = true
+	} else {
+		report.ConsensusValid = true
+		c.ConsensusValid = true
+	}
 	return report, nil
 }
 
@@ -215,7 +269,7 @@ func registerOutputs(states map[schemas.InputRef]validatedOutput, operationID [3
 		states[ref] = validatedOutput{
 			state: output.State, outpoint: outpoint,
 			sealDisclosure: disclosure,
-			sealBlinding:   blinding, witnessTxPtr: witnessTxPtr,
+			sealBlinding:   blinding, witnessTxPtr: witnessTxPtr, witnessTxID: witnessTxID,
 			carrierBinding: cloneCarrierBinding(carrierBinding),
 		}
 	}
@@ -548,4 +602,21 @@ func verifyCurrentOutpoint(resolver BitcoinResolver, outpoint Outpoint) error {
 		return ErrOutpointSpend
 	}
 	return nil
+}
+
+func verifyPreparedInputOutpoint(resolver BitcoinResolver, outpoint Outpoint, witnessTxID [32]byte) error {
+	if resolver == nil {
+		return ErrOutpointUnknown
+	}
+	evidence, err := resolver.ResolveRGB11Outpoint(outpoint)
+	if err != nil || !evidence.Known || !evidence.Exists {
+		return ErrOutpointUnknown
+	}
+	if !evidence.Spent {
+		return nil
+	}
+	if evidence.SpendingTxID != nil && *evidence.SpendingTxID == witnessTxID {
+		return nil
+	}
+	return ErrOutpointSpend
 }

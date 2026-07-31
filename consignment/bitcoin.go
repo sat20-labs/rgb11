@@ -26,6 +26,7 @@ const (
 	WitnessTentative
 	WitnessMined
 	WitnessArchived
+	WitnessPrepared
 )
 
 type Outpoint struct {
@@ -56,6 +57,15 @@ type BitcoinResolver interface {
 }
 
 func resolveWitness(value strict_types.Value, resolver BitcoinResolver) (*wire.MsgTx, [32]byte, WitnessEvidence, error) {
+	return resolveWitnessWithMode(value, resolver, false)
+}
+
+func resolvePreparedWitness(value strict_types.Value, resolver BitcoinResolver) (*wire.MsgTx, [32]byte, WitnessEvidence, error) {
+	return resolveWitnessWithMode(value, resolver, true)
+}
+
+func resolveWitnessWithMode(value strict_types.Value, resolver BitcoinResolver,
+	allowPrepared bool) (*wire.MsgTx, [32]byte, WitnessEvidence, error) {
 	value = value.Unwrap()
 	if value.Kind != strict_types.ValueUnion || value.Inner == nil {
 		return nil, [32]byte{}, WitnessEvidence{}, ErrWitnessUnresolved
@@ -80,27 +90,42 @@ func resolveWitness(value strict_types.Value, resolver BitcoinResolver) (*wire.M
 		return nil, [32]byte{}, WitnessEvidence{}, ErrWitnessUnresolved
 	}
 	if resolver == nil {
+		if allowPrepared && embedded != nil {
+			return embedded, expected, WitnessEvidence{State: WitnessPrepared}, nil
+		}
 		return nil, expected, WitnessEvidence{}, ErrWitnessUnresolved
 	}
 	evidence, err := resolver.ResolveRGB11Witness(expected)
 	if err != nil {
+		if allowPrepared && embedded != nil {
+			return embedded, expected, WitnessEvidence{State: WitnessPrepared}, nil
+		}
 		return nil, expected, evidence, fmt.Errorf("%w: %v", ErrWitnessUnresolved, err)
 	}
 	if evidence.State == WitnessArchived {
 		return nil, expected, evidence, ErrWitnessArchived
 	}
+	var resolved *wire.MsgTx
+	if len(evidence.RawTx) > 0 {
+		resolved = new(wire.MsgTx)
+		if resolved.Deserialize(bytes.NewReader(evidence.RawTx)) != nil {
+			return nil, expected, evidence, ErrWitnessUnresolved
+		}
+		if actual := hashArray(resolved.TxHash()); actual != expected {
+			return nil, expected, evidence, ErrWitnessMismatch
+		}
+	}
+	if embedded != nil && resolved != nil && hashArray(embedded.TxHash()) != hashArray(resolved.TxHash()) {
+		return nil, expected, evidence, ErrWitnessMismatch
+	}
 	if evidence.State != WitnessTentative && evidence.State != WitnessMined {
+		if allowPrepared && embedded != nil {
+			return embedded, expected, WitnessEvidence{State: WitnessPrepared}, nil
+		}
 		return nil, expected, evidence, ErrWitnessUnresolved
 	}
-	resolved := new(wire.MsgTx)
-	if len(evidence.RawTx) == 0 || resolved.Deserialize(bytes.NewReader(evidence.RawTx)) != nil {
+	if resolved == nil {
 		return nil, expected, evidence, ErrWitnessUnresolved
-	}
-	if actual := hashArray(resolved.TxHash()); actual != expected {
-		return nil, expected, evidence, ErrWitnessMismatch
-	}
-	if embedded != nil && hashArray(embedded.TxHash()) != hashArray(resolved.TxHash()) {
-		return nil, expected, evidence, ErrWitnessMismatch
 	}
 	return resolved, expected, evidence, nil
 }

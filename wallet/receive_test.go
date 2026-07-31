@@ -3,6 +3,7 @@ package wallet
 import (
 	"bytes"
 	"encoding/hex"
+	"strings"
 	"testing"
 	"time"
 
@@ -116,6 +117,76 @@ func TestCreateStandardWitnessReceiveOmitsSAT20Extensions(t *testing.T) {
 	}
 	if request.RelayKey == "" || request.AckKey == "" {
 		t.Fatal("local receive state did not retain internal lifecycle keys")
+	}
+}
+
+func TestReceiveAcknowledgedMayAdvanceToAccepted(t *testing.T) {
+	store := storage.NewMemoryStore()
+	engine, err := NewEngine(store)
+	if err != nil {
+		t.Fatal(err)
+	}
+	engine.now = func() time.Time { return time.Unix(1_800_000_000, 0) }
+	request, err := engine.CreateReceive(ReceiveParams{
+		Network: invoicing.BitcoinTestnet4, RecipientID: "recipient-1",
+		WitnessVout: 1, Expiry: 1_800_003_600,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	objectHash := string(bytes.Repeat([]byte{'a'}, 64))
+	witnessTxID := string(bytes.Repeat([]byte{'b'}, 64))
+	if err := engine.MarkRelayAcknowledged(
+		request.RequestID, "transfer-1", objectHash, witnessTxID,
+	); err != nil {
+		t.Fatal(err)
+	}
+	loaded, err := engine.LoadReceive(request.RequestID)
+	if err != nil || loaded.Status != ReceiveAcknowledged || loaded.WitnessTxID != witnessTxID {
+		t.Fatalf("unexpected acknowledged receive: %+v err=%v", loaded, err)
+	}
+	if err := engine.MarkRelayAccepted(request.RequestID, "transfer-1", objectHash); err != nil {
+		t.Fatal(err)
+	}
+	loaded, err = engine.LoadReceive(request.RequestID)
+	if err != nil || loaded.Status != ReceiveAccepted {
+		t.Fatalf("unexpected accepted receive: %+v err=%v", loaded, err)
+	}
+}
+
+func TestReceiveAcknowledgedMayBeRejected(t *testing.T) {
+	store := storage.NewMemoryStore()
+	engine, err := NewEngine(store)
+	if err != nil {
+		t.Fatal(err)
+	}
+	amount := uint64(1)
+	request, err := engine.CreateReceive(ReceiveParams{
+		Mode: ReceiveBlind, Network: invoicing.BitcoinTestnet4,
+		Amount: &amount, RecipientID: "recipient",
+		WitnessVout: 1, Expiry: time.Now().Add(time.Hour).Unix(),
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	objectHash := strings.Repeat("11", 32)
+	witnessTxID := strings.Repeat("22", 32)
+	if err := engine.MarkRelayAcknowledged(
+		request.RequestID, "transfer", objectHash, witnessTxID,
+	); err != nil {
+		t.Fatal(err)
+	}
+	if err := engine.MarkRelayRejected(
+		request.RequestID, "transfer", objectHash, "validation-failed",
+	); err != nil {
+		t.Fatal(err)
+	}
+	loaded, err := engine.LoadReceive(request.RequestID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if loaded.Status != ReceiveFailed || loaded.FailureCode != "validation-failed" {
+		t.Fatalf("unexpected rejected receive: %+v", loaded)
 	}
 }
 

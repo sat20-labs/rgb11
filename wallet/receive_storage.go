@@ -142,7 +142,7 @@ func validReceiveMode(mode ReceiveMode) bool {
 
 func validReceiveStatus(status ReceiveStatus) bool {
 	switch status {
-	case ReceivePrepared, ReceiveRelayed, ReceiveAccepted, ReceiveSettled, ReceiveFailed:
+	case ReceivePrepared, ReceiveRelayed, ReceiveAcknowledged, ReceiveAccepted, ReceiveSettled, ReceiveFailed:
 		return true
 	default:
 		return false

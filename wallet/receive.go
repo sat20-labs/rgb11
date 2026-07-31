@@ -36,9 +36,12 @@ type ReceiveStatus string
 const (
 	ReceivePrepared ReceiveStatus = "PREPARED"
 	ReceiveRelayed  ReceiveStatus = "RELAYED"
-	ReceiveAccepted ReceiveStatus = "ACCEPTED"
-	ReceiveSettled  ReceiveStatus = "SETTLED"
-	ReceiveFailed   ReceiveStatus = "FAILED"
+	// ReceiveAcknowledged means a standard transport consignment passed
+	// embedded-witness validation and was ACKed before Bitcoin broadcast.
+	ReceiveAcknowledged ReceiveStatus = "ACKNOWLEDGED"
+	ReceiveAccepted     ReceiveStatus = "ACCEPTED"
+	ReceiveSettled      ReceiveStatus = "SETTLED"
+	ReceiveFailed       ReceiveStatus = "FAILED"
 )
 
 // ReceiveRequest persists the seal reveal and relay secrets before Invoice is
@@ -65,6 +68,7 @@ type ReceiveRequest struct {
 
 type ReceiveParams struct {
 	Mode           ReceiveMode
+	BlindSeal      *seals.GraphBlindSeal
 	ContractID     string
 	SchemaID       string
 	Network        invoicing.ChainNet
@@ -106,10 +110,14 @@ func (e *Engine) CreateReceive(params ReceiveParams) (*ReceiveRequest, error) {
 	var beneficiary invoicing.Beneficiary
 	switch mode {
 	case ReceiveBlind:
-		var err error
-		seal, err = seals.RandomWitnessBlindSeal(params.WitnessVout)
-		if err != nil {
-			return nil, err
+		if params.BlindSeal != nil {
+			seal = *params.BlindSeal
+		} else {
+			var err error
+			seal, err = seals.RandomWitnessBlindSeal(params.WitnessVout)
+			if err != nil {
+				return nil, err
+			}
 		}
 		secretSeal, err := seal.Conceal()
 		if err != nil {
@@ -205,7 +213,8 @@ func (e *Engine) MarkRelayAccepted(requestID, transferID, objectHash string) err
 	if err != nil {
 		return err
 	}
-	if request.Status != ReceivePrepared && request.Status != ReceiveRelayed {
+	if request.Status != ReceivePrepared && request.Status != ReceiveRelayed &&
+		request.Status != ReceiveAcknowledged {
 		return ErrReceiveState
 	}
 	decoded, err := hex.DecodeString(objectHash)
@@ -218,6 +227,26 @@ func (e *Engine) MarkRelayAccepted(requestID, transferID, objectHash string) err
 	return e.putReceive(request)
 }
 
+func (e *Engine) MarkRelayAcknowledged(requestID, transferID, objectHash, witnessTxID string) error {
+	request, err := e.LoadReceive(requestID)
+	if err != nil {
+		return err
+	}
+	if request.Status != ReceivePrepared && request.Status != ReceiveRelayed {
+		return ErrReceiveState
+	}
+	decoded, err := hex.DecodeString(objectHash)
+	witness, witnessErr := hex.DecodeString(witnessTxID)
+	if err != nil || len(decoded) != 32 || witnessErr != nil || len(witness) != 32 || transferID == "" {
+		return ErrInvalidReceive
+	}
+	request.Status = ReceiveAcknowledged
+	request.TransferID = transferID
+	request.ObjectHash = objectHash
+	request.WitnessTxID = witnessTxID
+	return e.putReceive(request)
+}
+
 // MarkRelayRejected records a terminal receiver decision without importing
 // any allocation into wallet balance. The failure code is suitable for an
 // authenticated NACK but deliberately carries no private consignment data.
@@ -226,7 +255,8 @@ func (e *Engine) MarkRelayRejected(requestID, transferID, objectHash, failureCod
 	if err != nil {
 		return err
 	}
-	if request.Status != ReceivePrepared && request.Status != ReceiveRelayed {
+	if request.Status != ReceivePrepared && request.Status != ReceiveRelayed &&
+		request.Status != ReceiveAcknowledged {
 		return ErrReceiveState
 	}
 	decoded, err := hex.DecodeString(objectHash)

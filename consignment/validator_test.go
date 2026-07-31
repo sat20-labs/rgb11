@@ -18,6 +18,7 @@ type vectorResolver struct {
 	unknownWitness bool
 	unknown        bool
 	currentSpent   bool
+	prevUnspent    bool
 }
 
 func (r vectorResolver) ResolveRGB11Witness(txid [32]byte) (WitnessEvidence, error) {
@@ -38,7 +39,7 @@ func (r vectorResolver) ResolveRGB11Outpoint(outpoint Outpoint) (OutpointEvidenc
 		return OutpointEvidence{}, nil
 	}
 	if outpoint == r.prev {
-		return OutpointEvidence{Known: true, Exists: true, Spent: true}, nil
+		return OutpointEvidence{Known: true, Exists: true, Spent: !r.prevUnspent}, nil
 	}
 	if outpoint.TxID == r.txid {
 		return OutpointEvidence{Known: true, Exists: true, Spent: r.currentSpent}, nil
@@ -73,8 +74,37 @@ func TestValidateRejectsReorgedWitness(t *testing.T) {
 func TestValidateRejectsUnknownWitness(t *testing.T) {
 	container, resolver := loadValidationVector(t)
 	resolver.unknownWitness = true
+	resolver.prevUnspent = true
 	if _, err := container.Validate(resolver); !errors.Is(err, ErrWitnessUnresolved) {
 		t.Fatalf("expected unknown witness rejection, got %v", err)
+	}
+}
+
+func TestValidatePreparedAcceptsEmbeddedUnbroadcastWitness(t *testing.T) {
+	container, resolver := loadValidationVector(t)
+	resolver.unknownWitness = true
+	resolver.prevUnspent = true
+	report, err := container.ValidatePrepared(resolver)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if report.ConsensusValid || !report.PreparedValid || report.PreparedWitnesses != 1 ||
+		len(report.CurrentStates) != 1 {
+		t.Fatalf("unexpected prepared validation report: %+v", report)
+	}
+	state := report.CurrentStates[0]
+	if state.Outpoint.TxID != resolver.txid || state.OutputValue <= 0 {
+		t.Fatalf("prepared state lacks embedded witness output: %+v", state)
+	}
+}
+
+func TestValidatePreparedRejectsUnavailableConsumedOutpoint(t *testing.T) {
+	container, resolver := loadValidationVector(t)
+	resolver.unknownWitness = true
+	resolver.unknown = true
+	resolver.prevUnspent = true
+	if _, err := container.ValidatePrepared(resolver); !errors.Is(err, ErrOutpointUnknown) {
+		t.Fatalf("expected unavailable prepared input rejection, got %v", err)
 	}
 }
 
