@@ -12,7 +12,6 @@ import (
 	"github.com/sat20-labs/rgb11/baid64"
 	"github.com/sat20-labs/rgb11/consensus"
 	"github.com/sat20-labs/rgb11/invoicing"
-	"github.com/sat20-labs/rgb11/relay"
 	"github.com/sat20-labs/rgb11/seals"
 	"github.com/sat20-labs/rgb11/storage"
 )
@@ -138,12 +137,6 @@ func (e *Engine) CreateReceive(params ReceiveParams) (*ReceiveRequest, error) {
 		Beneficiary: beneficiary,
 		Expiry:      &params.Expiry,
 	}
-	if !params.StandardOnly {
-		invoice.UnknownQuery = []invoicing.QueryParam{
-			{Key: "sat20_recipient", Value: params.RecipientID},
-			{Key: "sat20_vout", Value: fmt.Sprintf("%d", params.WitnessVout)},
-		}
-	}
 	if params.ContractID != "" {
 		contract, err := consensus.ParseContractID(params.ContractID)
 		if err != nil {
@@ -165,16 +158,6 @@ func (e *Engine) CreateReceive(params ReceiveParams) (*ReceiveRequest, error) {
 	if params.AssignmentName != "" {
 		invoice.AssignmentName = params.AssignmentName
 	}
-	relayKey, ackKey, err := relay.NewTemporaryKeys()
-	if err != nil {
-		return nil, err
-	}
-	if !params.StandardOnly {
-		invoice.UnknownQuery = append(invoice.UnknownQuery,
-			invoicing.QueryParam{Key: "sat20_relay", Value: relayKey},
-			invoicing.QueryParam{Key: "sat20_ack", Value: ackKey},
-		)
-	}
 	if err := invoice.Validate(e.now().Unix()); err != nil {
 		return nil, err
 	}
@@ -184,7 +167,7 @@ func (e *Engine) CreateReceive(params ReceiveParams) (*ReceiveRequest, error) {
 	}
 	request := &ReceiveRequest{
 		Version: ReceiveVersion, Mode: mode, RequestID: requestID, RecipientID: params.RecipientID,
-		Seal: seal, WitnessScript: append([]byte(nil), params.WitnessScript...), Invoice: invoice.String(), RelayKey: relayKey, AckKey: ackKey,
+		Seal: seal, WitnessScript: append([]byte(nil), params.WitnessScript...), Invoice: invoice.String(),
 		CreatedAt: e.now().Unix(), Expiry: params.Expiry, Status: ReceivePrepared,
 	}
 	if err := e.putReceive(request); err != nil {

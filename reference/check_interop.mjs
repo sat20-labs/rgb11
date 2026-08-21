@@ -35,9 +35,8 @@ try {
     'run', '--manifest-path', 'reference/rust/Cargo.toml', '--locked', '--quiet', '--bin', 'rgb11-reference', '--',
   ]
   const rustTransfer = JSON.parse(run(cargo, [...rustBase, 'inspect-transfer', transferPath]))
-	const rustRegtestContract = JSON.parse(run(cargo, [...rustBase, 'inspect-contract', regtestContractPath]))
+  const rustRegtestContract = JSON.parse(run(cargo, [...rustBase, 'inspect-contract', regtestContractPath]))
   const rustInvoice = JSON.parse(run(cargo, [...rustBase, 'inspect-invoice', goResult.invoice]))
-  const rustSAT20Invoice = JSON.parse(run(cargo, [...rustBase, 'inspect-invoice', goResult.sat20_invoice]))
 	const rustRegtestInvoice = JSON.parse(run(cargo, [...rustBase, 'inspect-invoice', goResult.regtest_invoice]))
 
   for (const field of ['id', 'contract_id', 'schema_id']) {
@@ -46,7 +45,6 @@ try {
     }
   }
   if (!rustTransfer.canonical_roundtrip || rustInvoice.invoice !== goResult.invoice ||
-      rustSAT20Invoice.invoice !== goResult.sat20_invoice ||
 	  !rustRegtestContract.canonical_roundtrip || rustRegtestContract.chain_net !== 'bcrt' ||
 	  rustRegtestContract.contract_id !== goResult.regtest_contract_id ||
 	  rustRegtestContract.schema_id !== goResult.regtest_schema_id ||
@@ -58,7 +56,6 @@ try {
     walletOracle: 'RGB-Tools/rgb-lib 0.3.0-beta.7 dependency set',
     transfer: rustTransfer,
     invoice: rustInvoice.invoice,
-    sat20Invoice: rustSAT20Invoice.invoice,
 	regtestContract: rustRegtestContract,
 	regtestInvoice: rustRegtestInvoice.invoice,
     goPayloadSHA256: goResult.payload_sha256,

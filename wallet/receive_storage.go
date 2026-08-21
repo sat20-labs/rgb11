@@ -21,7 +21,7 @@ const (
 func EncodeReceiveRequest(request *ReceiveRequest) ([]byte, error) {
 	if request == nil || !validReceiveMode(request.Mode) || !validReceiveStatus(request.Status) ||
 		request.Version != ReceiveVersion || request.RequestID == "" || request.RecipientID == "" ||
-		request.Invoice == "" || request.RelayKey == "" || request.AckKey == "" || request.RelayKey == request.AckKey ||
+		request.Invoice == "" || request.RelayKey != "" || request.AckKey != "" ||
 		request.CreatedAt < 0 || request.Expiry < 0 {
 		return nil, ErrInvalidReceive
 	}
@@ -41,8 +41,8 @@ func EncodeReceiveRequest(request *ReceiveRequest) ([]byte, error) {
 		func() error { return e.Bytes(seal, 13, 45) },
 		func() error { return e.Bytes(request.WitnessScript, 0, receiveStoreMaxBlob) },
 		func() error { return e.String(request.Invoice, 1, receiveStoreMaxText) },
-		func() error { return e.String(request.RelayKey, 1, receiveStoreMaxText) },
-		func() error { return e.String(request.AckKey, 1, receiveStoreMaxText) },
+		func() error { return e.String(request.RelayKey, 0, receiveStoreMaxText) },
+		func() error { return e.String(request.AckKey, 0, receiveStoreMaxText) },
 		func() error { return e.U64(uint64(request.CreatedAt)) },
 		func() error { return e.U64(uint64(request.Expiry)) },
 		func() error { return e.String(string(request.Status), 1, receiveStoreMaxText) },
@@ -102,8 +102,11 @@ func DecodeReceiveRequest(data []byte) (*ReceiveRequest, error) {
 	if request.WitnessScript, err = d.Bytes(0, receiveStoreMaxBlob); err != nil {
 		return nil, ErrInvalidReceive
 	}
-	for _, target := range []*string{&request.Invoice, &request.RelayKey, &request.AckKey} {
-		if *target, err = d.String(1, receiveStoreMaxText); err != nil {
+	if request.Invoice, err = d.String(1, receiveStoreMaxText); err != nil {
+		return nil, ErrInvalidReceive
+	}
+	for _, target := range []*string{&request.RelayKey, &request.AckKey} {
+		if *target, err = d.String(0, receiveStoreMaxText); err != nil {
 			return nil, ErrInvalidReceive
 		}
 	}
@@ -130,7 +133,7 @@ func DecodeReceiveRequest(data []byte) (*ReceiveRequest, error) {
 			return nil, ErrInvalidReceive
 		}
 	}
-	if r.Len() != 0 || request.RelayKey == request.AckKey {
+	if r.Len() != 0 || request.RelayKey != "" || request.AckKey != "" {
 		return nil, ErrInvalidReceive
 	}
 	return request, nil

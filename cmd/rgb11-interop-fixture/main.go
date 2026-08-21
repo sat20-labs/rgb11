@@ -23,7 +23,6 @@ type output struct {
 	SchemaID          string `json:"schema_id"`
 	PayloadSHA256     string `json:"payload_sha256"`
 	Invoice           string `json:"invoice"`
-	SAT20Invoice      string `json:"sat20_invoice"`
 	RegtestContractID string `json:"regtest_contract_id"`
 	RegtestSchemaID   string `json:"regtest_schema_id"`
 	RegtestInvoice    string `json:"regtest_invoice"`
@@ -79,13 +78,6 @@ func main() {
 	const invoiceText = "rgb:eIbQx5Am-XRDjj01-RM~5eo7-rv2nluD-OnBJRAy-S9~Yfts/XvmU3d4_nQQ8S7oagbXi07x5vjMm7P~ERukQNX6SC4M/BF/bc:utxob:4vm1CX2Z-K8hMo59-e7dgGBS-Jka7mYn-Xe~yP85-yUiHHxr-aVlYa"
 	invoice, err := invoicing.Parse(invoiceText)
 	fail(err)
-	sat20Invoice := *invoice
-	sat20Invoice.UnknownQuery = []invoicing.QueryParam{
-		{Key: "sat20_recipient", Value: "02d6e24c0bb9db2e5bc6ddf95be427ac363d7364a8b09c67d8540f986a1c9e1350"},
-		{Key: "sat20_vout", Value: "1"},
-		{Key: "sat20_relay", Value: "/tmp/1111111111111111111111111111111111111111111111111111111111111111"},
-		{Key: "sat20_ack", Value: "/tmp/2222222222222222222222222222222222222222222222222222222222222222"},
-	}
 	regtestSeal, err := seals.NewGraphBlindSeal(bytes.Repeat([]byte{0x55}, 32), 0, 0x1122334455667788)
 	fail(err)
 	regtest, err := issuance.Issue(issuance.Spec{
@@ -111,7 +103,7 @@ func main() {
 	}
 	result := output{
 		ID: parsed.Armor.ID, ContractID: parsed.ContractID, SchemaID: parsed.SchemaID,
-		PayloadSHA256: hex.EncodeToString(payloadHash[:]), Invoice: invoice.String(), SAT20Invoice: sat20Invoice.String(),
+		PayloadSHA256: hex.EncodeToString(payloadHash[:]), Invoice: invoice.String(),
 		RegtestContractID: regtest.ContractID, RegtestSchemaID: regtest.SchemaID,
 		RegtestInvoice: regtestInvoice.String(),
 	}

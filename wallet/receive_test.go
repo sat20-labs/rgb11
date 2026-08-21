@@ -40,7 +40,7 @@ func TestCreateReceivePersistsSealBeforeReturningInvoice(t *testing.T) {
 	if err != nil {
 		t.Fatalf("invoice returned without persisted seal: %v", err)
 	}
-	if loaded.Invoice != request.Invoice || loaded.Seal.Blinding == 0 || loaded.RelayKey == loaded.AckKey {
+	if loaded.Invoice != request.Invoice || loaded.Seal.Blinding == 0 || loaded.RelayKey != "" || loaded.AckKey != "" {
 		t.Fatalf("incomplete persisted receive request: %+v", loaded)
 	}
 }
@@ -115,8 +115,8 @@ func TestCreateStandardWitnessReceiveOmitsSAT20Extensions(t *testing.T) {
 	if len(parsed.UnknownQuery) != 0 {
 		t.Fatalf("standard invoice leaked SAT20 query parameters: %+v", parsed.UnknownQuery)
 	}
-	if request.RelayKey == "" || request.AckKey == "" {
-		t.Fatal("local receive state did not retain internal lifecycle keys")
+	if request.RelayKey != "" || request.AckKey != "" {
+		t.Fatal("standard receive state retained legacy SAT20 relay keys")
 	}
 }
 
@@ -193,7 +193,7 @@ func TestReceiveAcknowledgedMayBeRejected(t *testing.T) {
 func TestReceiveRequestStorageUsesStrictEncoding(t *testing.T) {
 	request := &ReceiveRequest{
 		Version: ReceiveVersion, Mode: ReceiveBlind, RequestID: "request-1", RecipientID: "recipient-1",
-		Seal: seals.NewWitnessBlindSeal(2, 42), Invoice: "rgb:invoice", RelayKey: "relay", AckKey: "ack",
+		Seal: seals.NewWitnessBlindSeal(2, 42), Invoice: "rgb:invoice",
 		CreatedAt: 1_800_000_000, Expiry: 1_800_003_600, Status: ReceivePrepared,
 	}
 	encoded, err := EncodeReceiveRequest(request)
