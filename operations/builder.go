@@ -296,10 +296,12 @@ func BuildOpretWitnessBundle(witnessTxID [32]byte, bundle strict_types.Value, pr
 	return registry.Decode("RGBStd", "WitnessBundle", encoded.Bytes())
 }
 
-// BuildOpretWitnessBundleWithTx embeds the complete public witness transaction.
+// BuildOpretWitnessBundleWithTx embeds the public witness transaction.
 // Witness recipients need PubWitness::Tx (not only PubWitness::Txid) so an
 // independent RGB wallet can match the invoice script to the assigned vout
-// before the transaction has been broadcast.
+// before the transaction has been broadcast. Standard acknowledged transfers
+// pass the unsigned PSBT transaction here; only donation flows may embed a
+// signed transaction that the recipient can broadcast.
 func BuildOpretWitnessBundleWithTx(tx *wire.MsgTx, bundle strict_types.Value, proof anchors.MPCProof) (strict_types.Value, error) {
 	if tx == nil || len(proof.Path) > 31 {
 		return strict_types.Value{}, ErrBuildTransition
