@@ -15,10 +15,10 @@ import (
 )
 
 // Upstream-Repository: rgb-protocol/rgb-strict-types
-// Upstream-Version: 1.0.2
-// Upstream-Commit: b441bc508a9fcb556e243c7a9c48f42d4582e32e
+// Upstream-Version: 1.0.4
+// Upstream-Commit: 9eb3b484f23b01c70f2a940bda07a207377b3864
 // Upstream-File: src/value/decode.rs
-// Upstream-File-SHA256: f64e809fe99b766a3489837f0a844ff9c67ae6174cd813084fb1259f6a79d19f
+// Upstream-File-SHA256: f254e3dd82c18ca116d2bbae6f3b55bfbf11130d7820d7584b2730e619046464
 // Translation-Revision: 1
 
 var (

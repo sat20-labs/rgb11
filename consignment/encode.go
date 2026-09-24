@@ -15,7 +15,7 @@ import (
 const armorColumns = 80
 
 // EncodeArmor serializes a canonical RGBStd consignment and wraps it in the
-// ASCII armor format used by the frozen Rust RGB 0.11.1-rc.11 stack.
+// ASCII armor format used by the frozen Rust RGB 0.11.1 stack.
 func EncodeArmor(value strict_types.Value) (string, error) {
 	transferValue, ok := value.Field("transfer")
 	if !ok {

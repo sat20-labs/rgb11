@@ -1,7 +1,26 @@
 # RGB11 目标一开发验收证据
 
-基线：`rgb-lib 0.3.0-beta.7`，RGB `0.11.1-rc.11` release set。目标范围仅为
-PWA / Wallet SDK 原生管理 Bitcoin L1 RGB11；STP 和 SatoshiNet RGB11 入口保持关闭。
+当前协议基线为 RGB `0.11.1` 正式版；`rgb-lib 0.3.0-beta.7` 与 RGB
+`0.11.1-rc.11` 的真实钱包互操作记录保留为历史证据。目标范围仅为 PWA /
+Wallet SDK 原生管理 Bitcoin L1 RGB11；STP 和 SatoshiNet RGB11 入口保持关闭。
+
+## 0.11.1 正式版复核（2026-09-24）
+
+- `UPSTREAM_MANIFEST.json` 与 Rust `Cargo.lock` 锁定正式版 crate 和 SHA256；
+  上游 `rc.11 → 0.11.1` 逐文件差异见 `OFFICIAL_INTEROP.md`。
+- 正式版 Rust oracle 的 75 组输出与 Go 的 45 组直接差分向量通过，canonical
+  SHA256 保持为 `5dbb3cf4bb27a8db4195d047d7c0594b518db18bbf880475f2c21334f8e796bf`。
+- 正式版 Rust parser 接受 Go 生成的 regtest Contract、Transfer、Invoice，
+  canonical round-trip 通过，并对 Contract 执行官方验证。
+- Go 引擎使用正式版 build ID，兼容读取旧 rc.11 恢复包；旧 `rgb-lib` 双向链上
+  交易不被表述为正式版 `rgb-lib` 的新实测。
+- 本地 `go test ./... -count=1`（rgb11）、SDK `go test ./wallet/rgb11`
+  分别通过；SDK `go test ./wallet -count=1` 完整包复跑耗时约 339 秒并通过。
+  `GOOS=js GOARCH=wasm go build` 先输出到临时目录并通过；原有两个 WASM
+  文件备份后由同一产物更新，PWA `npm run verify:rgb11-l1` 通过。
+- 旧测试要求被驱逐的已签名交易立即释放源 proof，与当前保留输入预留的安全策略
+  不符；已把断言改为核对源 proof 仍为 `spending`、输入锁仍为 `pending-rgb`，
+  且临时 change 投影被清除。
 
 ## 已确认的产品约束
 
@@ -29,7 +48,7 @@ PWA / Wallet SDK 原生管理 Bitcoin L1 RGB11；STP 和 SatoshiNet RGB11 入口
 | 两设备恢复 | 首次手动 AUTOPAY；后续自动；加密 immutable snapshot + 钱包签名 latest head；新钱包先查询后恢复 | fee proof 覆盖 manifest/chunks/head；无远端 head 不写；两设备收敛、旧 seq 冲突、恢复 allocation/balance/lock tests |
 | Consignment retention | `/tmp` 仅临时 locator；Transfer 不写 DKVS `/blob` 永久备份；settled 后删除 sender delivery copy | settled batch compaction 保留 local change history、删除 recipient delivery object |
 | IFA Reject List / NACK | 提取官方 global 2012 `RejectListUrl`；逐行 Opout 与后置 `!allow`；沿当前分配祖先 DAG 判断；发送方过滤输入、接收方投影前拒收；钱包签名自动/手动 NACK；批次取消仅释放 `pending-rgb` | 官方五类祖先场景；自动 Reject List NACK 不产生余额；手动 NACK 取消批次、保留 `reason=rgb`、释放手续费锁；服务故障不等同拒收 |
-| 官方互操作 | Go 生成真实 Transfer、regtest Contract 和 `bcrt` Invoice 后由冻结官方 rc.11 Rust parser 读取；官方 `rgb-lib 0.3.0-beta.7` 作为实际 rc.11 钱包端；官方二进制 Consignment 与 ASCII armor 双向无损；支持无 endpoint witness Invoice 和 out-of-band Consignment | parser/CLI 门禁；103 官方 Alice→Bob 基线；官方 Alice→Go 50、Go→官方 Bob 20 双向真实转账；官方 Bob `ReceiveWitness / Settled`；`PubWitness::Tx` 回归；`TestRGB11RegtestOfficialBidirectional` |
+| 官方互操作 | Go 生成真实 Transfer、regtest Contract 和 `bcrt` Invoice 后由正式版 Rust parser 读取并验证 Contract；官方 `rgb-lib 0.3.0-beta.7` 作为历史 rc.11 钱包端；官方二进制 Consignment 与 ASCII armor 双向无损；支持无 endpoint witness Invoice 和 out-of-band Consignment | parser/CLI 门禁；103 官方 Alice→Bob 基线；官方 Alice→Go 50、Go→官方 Bob 20 双向真实转账；官方 Bob `ReceiveWitness / Settled`；`PubWitness::Tx` 回归；`TestRGB11RegtestOfficialBidirectional` |
 | 浏览器二级验证 | manifest allowlist 的 Bitlight regtest Esplora；只作 Bitcoin facts 二级对照 | `browser` adapter tests；`rgb11-browser-check` snapshot |
 | PWA | 统一 L1 列表、NIA/IFA/UDA 发行、导入、Invoice、收发、备份/恢复、proof 详情、transfer monitor | WASM export smoke、CFA 发行入口缺失门禁、`vue-tsc`、production build |
 | STP 隔离 | RGB11 不进入普通 deposit/splicing/聪网操作 | PWA RGB11 分支只暴露 L1 send/receive；SDK STP preservation guard tests |
@@ -40,7 +59,7 @@ PWA / Wallet SDK 原生管理 Bitcoin L1 RGB11；STP 和 SatoshiNet RGB11 入口
 cd /Users/yingfeng/github/rgb11
 go test ./... -count=1
 node reference/check_vectors.mjs
-CARGO=/tmp/rgb11-cargo-home/bin/cargo CARGO_HOME=/tmp/rgb11-cargo-home RUSTUP_HOME=/tmp/rgb11-rustup-home GOCACHE=/tmp/rgb11-go-build node reference/check_interop.mjs
+CARGO_HOME=/private/tmp/rgb11-cargo-0111 node reference/check_interop.mjs
 node reference/check_official_cli.mjs /path/to/RGB-WG/rgb/target/release/rgb
 cargo build --release --manifest-path reference/rgb-lib-wallet/Cargo.toml
 

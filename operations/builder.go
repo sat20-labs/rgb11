@@ -324,7 +324,7 @@ func BuildOpretWitnessBundleWithTx(tx *wire.MsgTx, bundle strict_types.Value, pr
 	return registry.Decode("RGBStd", "WitnessBundle", encoded.Bytes())
 }
 
-// writeStrictBitcoinTx mirrors rgb-strict-encoding 1.0.2's Bitcoin Tx,
+// writeStrictBitcoinTx mirrors rgb-strict-encoding 1.0.4's Bitcoin Tx,
 // TxIn, TxOut, ScriptBuf and Witness encoders. Strict collections use fixed
 // little-endian u32 lengths, unlike Bitcoin consensus CompactSize encoding.
 func writeStrictBitcoinTx(encoded *bytes.Buffer, tx *wire.MsgTx) {

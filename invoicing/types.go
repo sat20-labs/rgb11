@@ -13,8 +13,8 @@ import (
 )
 
 // Upstream-Repository: rgb-protocol/rgb-ops
-// Upstream-Version: 0.11.1-rc.11
-// Upstream-Commit: 5308b9d46c91857513ff5be2459992264687632b
+// Upstream-Version: 0.11.1
+// Upstream-Commit: 8bcdbf2fd706782948a4cbd799639709a4ed10d9
 // Upstream-File: invoice/src/invoice.rs
 // Translation-Revision: 1
 

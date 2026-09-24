@@ -11,8 +11,8 @@ import (
 )
 
 // Upstream-Repository: rgb-protocol/rgb-strict-types
-// Upstream-Version: 1.0.2
-// Upstream-Commit: b441bc508a9fcb556e243c7a9c48f42d4582e32e
+// Upstream-Version: 1.0.4
+// Upstream-Commit: 9eb3b484f23b01c70f2a940bda07a207377b3864
 // Upstream-File: src/typesys/system.rs
 // Translation-Revision: 1
 

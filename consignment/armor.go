@@ -17,10 +17,10 @@ import (
 )
 
 // Upstream-Repository: rgb-protocol/rgb-ops
-// Upstream-Version: 0.11.1-rc.11
-// Upstream-Commit: 5308b9d46c91857513ff5be2459992264687632b
+// Upstream-Version: 0.11.1
+// Upstream-Commit: 8bcdbf2fd706782948a4cbd799639709a4ed10d9
 // Upstream-File: src/containers/consignment.rs
-// Upstream-File-SHA256: 553db5473f1e4b87d2a72da130c8ad5f37f72ea1229f2524f9fd0ef98594be3b
+// Upstream-File-SHA256: 27043a55133493c7d3f5e16f488fcd4d46308625e9acd11393f42bc41f3d4740
 // Translation-Revision: 1
 
 const (

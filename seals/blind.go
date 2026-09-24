@@ -13,8 +13,8 @@ import (
 )
 
 // Upstream-Repository: rgb-protocol/rgb-consensus
-// Upstream-Version: 0.11.1-rc.11
-// Upstream-Commit: 44e79963aa4603270eee9aa112ef07a512345e98
+// Upstream-Version: 0.11.1
+// Upstream-Commit: 32a67862aef0f4c7a1fdc7834a3555d702f1bdf0
 // Upstream-File: src/seals/txout/blind.rs
 // Upstream-File-SHA256: 82eb02354b6e4ee841667401b74e564d417214f63aaac58d33ecebe59d79b899
 // Translation-Revision: 1

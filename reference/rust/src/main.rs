@@ -50,12 +50,28 @@ fn run_inspector() -> bool {
 			let armored = fs::read_to_string(&args[2]).expect("read contract consignment");
 			let contract = Contract::from_ascii_armored_str(&armored)
 				.expect("official Rust parser rejected contract consignment");
+			struct NoWitness;
+			impl ResolveWitness for NoWitness {
+				fn resolve_witness(&self, _: rgbstd::Txid) -> Result<WitnessStatus, WitnessResolverError> {
+					Ok(WitnessStatus::Unresolved)
+				}
+				fn check_chain_net(&self, _: ChainNet) -> Result<(), WitnessResolverError> {
+					Ok(())
+				}
+			}
+			let validation_config = ValidationConfig {
+				chain_net: contract.genesis().chain_net,
+				trusted_typesystem: contract.types.clone(),
+				..Default::default()
+			};
+			let consensus_valid = contract.clone().validate(&NoWitness, &validation_config).is_ok();
 			println!("{}", serde_json::json!({
 				"id": contract.consignment_id().to_string(),
 				"contract_id": contract.contract_id().to_string(),
 				"schema_id": contract.schema_id().to_string(),
 				"chain_net": contract.genesis().chain_net.prefix(),
 				"canonical_roundtrip": Contract::from_ascii_armored_str(&contract.to_string()).is_ok(),
+				"consensus_valid": consensus_valid,
 			}));
 			true
 		}

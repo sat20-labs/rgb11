@@ -1,5 +1,5 @@
 // Package schemas identifies every standard schema shipped by the frozen
-// rgb-schemas 0.11.1-rc.11 release. Consensus validation code must still
+// rgb-schemas 0.11.1 release. Consensus validation code must still
 // validate the actual schema and operation data; this catalog is the stable
 // capability/metadata layer.
 package schemas

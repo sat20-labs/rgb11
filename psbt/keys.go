@@ -14,8 +14,8 @@ import (
 )
 
 // Upstream-Repository: rgb-protocol/rgb-api
-// Upstream-Version: 0.11.1-rc.11
-// Upstream-Commit: 8d448f46c866d44ca0495ad0e924e57d9fd294dd
+// Upstream-Version: 0.11.1
+// Upstream-Commit: 102f4b09efa8f0e5987e60714364ba693c89def7
 // Upstream-File: psbt/src/lib.rs
 // Translation-Revision: 1
 

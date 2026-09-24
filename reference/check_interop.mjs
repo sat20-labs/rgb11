@@ -45,7 +45,8 @@ try {
     }
   }
   if (!rustTransfer.canonical_roundtrip || rustInvoice.invoice !== goResult.invoice ||
-	  !rustRegtestContract.canonical_roundtrip || rustRegtestContract.chain_net !== 'bcrt' ||
+	  !rustRegtestContract.canonical_roundtrip || !rustRegtestContract.consensus_valid ||
+	  rustRegtestContract.chain_net !== 'bcrt' ||
 	  rustRegtestContract.contract_id !== goResult.regtest_contract_id ||
 	  rustRegtestContract.schema_id !== goResult.regtest_schema_id ||
 	  rustRegtestInvoice.invoice !== goResult.regtest_invoice) {
@@ -53,7 +54,7 @@ try {
   }
   console.log(JSON.stringify({
     status: 'ok',
-    walletOracle: 'RGB-Tools/rgb-lib 0.3.0-beta.7 dependency set',
+    protocolOracle: 'rgb-protocol 0.11.1 stable release set',
     transfer: rustTransfer,
     invoice: rustInvoice.invoice,
 	regtestContract: rustRegtestContract,

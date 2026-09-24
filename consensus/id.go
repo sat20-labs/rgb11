@@ -9,10 +9,10 @@ import (
 )
 
 // Upstream-Repository: rgb-protocol/rgb-consensus
-// Upstream-Version: 0.11.1-rc.11
-// Upstream-Commit: 44e79963aa4603270eee9aa112ef07a512345e98
+// Upstream-Version: 0.11.1
+// Upstream-Commit: 32a67862aef0f4c7a1fdc7834a3555d702f1bdf0
 // Upstream-File: src/operation/commit.rs
-// Upstream-File-SHA256: 54f78964b48a910216c5552cee446d296b7499327acdd45cfa6f5046c0f6cad4
+// Upstream-File-SHA256: 0c2bf4e01c94bf52e22a40b013874b6706ea2e1b998f373cda2e10ea66be7ee9
 // Translation-Revision: 1
 
 const (

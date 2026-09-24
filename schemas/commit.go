@@ -10,10 +10,10 @@ import (
 )
 
 // Upstream-Repository: rgb-protocol/rgb-consensus
-// Upstream-Version: 0.11.1-rc.11
-// Upstream-Commit: 44e79963aa4603270eee9aa112ef07a512345e98
+// Upstream-Version: 0.11.1
+// Upstream-Commit: 32a67862aef0f4c7a1fdc7834a3555d702f1bdf0
 // Upstream-File: src/schema/schema.rs
-// Upstream-File-SHA256: f91e2b45fdd9afc8081f1e5ef72cebe05d472493562fd270f591c75c3242e92f
+// Upstream-File-SHA256: 74013842290fedbc72ba051fe71877a03e24d41b16a8b0175c59bbad2e7f13e0
 // Translation-Revision: 1
 
 const SchemaCommitmentTag = "urn:lnp-bp:rgb:schema#2024-02-03"

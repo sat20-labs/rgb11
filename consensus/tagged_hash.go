@@ -3,8 +3,8 @@ package consensus
 import "crypto/sha256"
 
 // Upstream-Repository: rgb-protocol/rgb-consensus
-// Upstream-Version: 0.11.1-rc.11
-// Upstream-Commit: 44e79963aa4603270eee9aa112ef07a512345e98
+// Upstream-Version: 0.11.1
+// Upstream-Commit: 32a67862aef0f4c7a1fdc7834a3555d702f1bdf0
 // Upstream-File: src/commit_verify/digest.rs
 // Upstream-File-SHA256: 56e4911a170271c7c1cb6305637e3e7391621b9542d1a0fb80e7e3265a5139c9
 // Translation-Revision: 1

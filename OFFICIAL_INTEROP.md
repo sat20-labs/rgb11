@@ -2,6 +2,26 @@
 
 目标一使用三层门禁，避免把“本项目内部互通”误认为 RGB 官方互操作。
 
+## 0.11.1 正式版升级（2026-09-24）
+
+当前协议基线已固定为 `rgb-consensus`、`rgb-ops`、`rgb-invoicing`、`rgb-psbt-utils`、
+`rgb-schemas` 的 `0.11.1` 正式版，以及 Strict Encoding / Strict Types `1.0.4`。
+精确 commit 和 crate SHA256 见 `UPSTREAM_MANIFEST.json`。下面 2026-07-19 的
+`rgb-lib 0.3.0-beta.7` 双向钱包转账记录仍是 rc.11 历史互操作证据，
+不代表已经用正式版 `rgb-lib` 钱包重新广播交易。
+
+逐文件对照 rc.11 和正式版 crate：共识、ID、Strict Encoding 与 consignment 的
+Rust 改动为 `serde` 序列化适配；Esplora witness resolver 改为通过一次
+`get_tx_info` 获取交易和确认状态；Go 的 Indexer adapter 仍分两次查询，
+短暂链状态变化时可能看到不同时间点的证据，钱包刷新流程会重新核对。
+正式版 Rust oracle 重新运行 75 组向量与 45 组 Go 差分向量，
+canonical SHA256 仍为
+`5dbb3cf4bb27a8db4195d047d7c0594b518db18bbf880475f2c21334f8e796bf`。
+Go 生成的 regtest Contract、Transfer 与 Invoice 由正式版 Rust parser
+解析、重编码并对 Contract 执行官方验证。Go 引擎的新 build ID 为
+`rgb11-go-0.11.1+sat20.1`；恢复旧 `rgb11-go-0.11.1-rc.11+sat20.1` 快照后，
+新写入统一使用正式版 build ID。
+
 ## 推荐的外部钱包与工具
 
 1. **官方 `RGB-Tools/rgb-lib`**：实际 RGB 钱包互操作端固定为 commit `538f2abaa67d7ce96be32d94092e8f1b9e3ea38e`（`0.3.0-beta.7`，RGB `0.11.1-rc.11`）。`reference/rgb-lib-wallet` 只提供薄 CLI，钱包状态、签名、Esplora 同步、Consignment 验证和余额均由上游库完成。
@@ -25,8 +45,8 @@ node reference/check_interop.mjs
 ```
 
 第二条命令由 Go 构造真实 Transfer Consignment，再交给冻结的官方 Rust
-`0.11.1-rc.11` parser，比较 consignment、contract、schema ID 和 Invoice canonical
-round-trip。它不是对 Go 结果的自解析。
+`0.11.1` 正式版 parser，比较 consignment、contract、schema ID 和 Invoice canonical
+round-trip，并执行官方 Contract 验证。它不是对 Go 结果的自解析。
 
 冻结的官方 CLI 也必须从 manifest 指定的 commit 构建并核对命令面：
 
@@ -42,10 +62,10 @@ node reference/check_official_cli.mjs \
 ```
 
 `v0.11.1-alpha.3` 的实际二进制没有在线教程示例中的旧 `rgb check` 子命令。其
-`validate / accept` 只用于 alpha.3 同版本线工作流，不能作为 rc.11 文件发布门禁：
+`validate / accept` 只用于 alpha.3 同版本线工作流，不能作为正式版文件发布门禁：
 该 tag 的 `rgb-core / rgb-std / rgb-psbt` 均为 `0.11.1-alpha.3`，对未经修改的 rc.11
-官方 fixture 和 Go 构造的 rc.11 fixture 都返回 `invalid file data`。rc.11 发布门禁必须
-由上一节的 `0.11.1-rc.11` 官方 Rust parser 完成。
+官方 fixture 和 Go 构造的 rc.11 fixture 都返回 `invalid file data`。正式版发布门禁
+由上一节的 `0.11.1` 官方 Rust parser 完成。
 
 ### 103 实测记录（2026-07-19）
 

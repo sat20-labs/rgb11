@@ -1,4 +1,4 @@
-// Package issuance constructs standard RGB 0.11.1-rc.11 contracts without a
+// Package issuance constructs standard RGB 0.11.1 contracts without a
 // Rust runtime. It starts from the exact official rgb-schemas templates and
 // changes only issuer-controlled genesis state and seals.
 package issuance

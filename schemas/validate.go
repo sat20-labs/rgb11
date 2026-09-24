@@ -11,8 +11,8 @@ import (
 )
 
 // Upstream-Repository: rgb-protocol/rgb-schemas
-// Upstream-Version: 0.11.1-rc.11
-// Upstream-Commit: c5e43e987d18a2398d5f5f6c78629480fd792abd
+// Upstream-Version: 0.11.1
+// Upstream-Commit: 906817a0c24a6bb7d2e53ceac9e2c185ec70a5ff
 // Upstream-File: src/nia.rs
 // Upstream-File: src/cfa.rs
 // Upstream-File: src/ifa.rs

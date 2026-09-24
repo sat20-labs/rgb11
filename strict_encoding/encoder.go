@@ -1,5 +1,5 @@
 // Package strict_encoding implements the deterministic binary primitives used
-// by RGB strict-encoding 1.0.2. Composite RGB types explicitly call these
+// by RGB strict-encoding 1.0.4. Composite RGB types explicitly call these
 // primitives in the same field order as the frozen Rust source.
 package strict_encoding
 
@@ -10,8 +10,8 @@ import (
 )
 
 // Upstream-Repository: rgb-protocol/rgb-strict-encoding
-// Upstream-Version: 1.0.2
-// Upstream-Commit: 7698a5e96a2a27d5bfa4cd3560da0e8af8e4a18a
+// Upstream-Version: 1.0.4
+// Upstream-Commit: aa90bf353f53e8220aaacec4a671545808da05ae
 // Upstream-File: rust/src/traits.rs
 // Upstream-File-SHA256: ddec82128f25d29db095ed325eb4f4906cb3e6c25894efca016c125a5f8a4235
 // Translation-Revision: 1

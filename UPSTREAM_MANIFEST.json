@@ -1,8 +1,9 @@
 {
   "format_version": 1,
-  "generated_at": "2026-07-19T00:00:00+08:00",
+  "generated_at": "2026-09-24T23:20:53+08:00",
   "target_protocol": "RGB 0.11.1",
-  "engine_build_id": "rgb11-go/0.1.0-dev+rc11",
+  "engine_build_id": "rgb11-go-0.11.1+sat20.1",
+  "legacy_compatible_engine_build_ids": ["rgb11-go-0.11.1-rc.11+sat20.1"],
   "wallet_import_validation_scope": ["NIA", "IFA", "CFA", "UDA"],
   "wallet_issuance_scope": ["NIA", "IFA", "UDA"],
   "wallet_batch_scope": "single-contract-multi-witness-recipient",
@@ -11,6 +12,13 @@
     "rust_oracle_vectors": 75,
     "go_direct_vectors": 45,
     "canonical_sha256": "5dbb3cf4bb27a8db4195d047d7c0594b518db18bbf880475f2c21334f8e796bf"
+  },
+  "rc11_to_stable_review": {
+    "strict_encoding_wire_delta": "none-in-compared-rust-sources-and-differential-vectors",
+    "consensus_and_consignment_wire_delta": "none-in-compared-source-and-stable-rust-oracle",
+    "other_rust_source_delta": "serde-adapters-esplora-client-api-stock-error-conversion-and-aluvm-unimplemented-curve-removal",
+    "esplora_resolver_delta": "upstream-combines-tx-and-status-in-get_tx_info; go-indexer-adapter-queries-them-separately",
+    "historical_wallet_oracle": "rgb-lib-0.3.0-beta.7-remains-on-rc11"
   },
   "secondary_oracles": [
     {
@@ -26,7 +34,8 @@
     "wallet_oracle": {
       "repository": "https://github.com/RGB-Tools/rgb-lib",
       "tag": "0.3.0-beta.7",
-      "commit": "538f2abaa67d7ce96be32d94092e8f1b9e3ea38e"
+      "commit": "538f2abaa67d7ce96be32d94092e8f1b9e3ea38e",
+      "role": "historical-rc11-wallet-interoperability"
     },
     "manual_cli_oracle": {
       "repository": "https://github.com/RGB-WG/rgb",
@@ -45,52 +54,66 @@
     "crates": [
       {
         "name": "rgb-consensus",
-        "version": "0.11.1-rc.11",
+        "version": "0.11.1",
         "repository": "https://github.com/rgb-protocol/rgb-consensus",
-        "commit": "44e79963aa4603270eee9aa112ef07a512345e98",
-        "crate_sha256": "cee44070883ac31a112814ee635623b0bde44a2afab71ff3c591700a878a76d9"
+        "commit": "32a67862aef0f4c7a1fdc7834a3555d702f1bdf0",
+        "crate_sha256": "cecb9e63175ae5f75b53724c8fbdea261d5903086a121fe722fbd8af3b3b1af3"
       },
       {
         "name": "rgb-invoicing",
-        "version": "0.11.1-rc.11",
+        "version": "0.11.1",
         "repository": "https://github.com/rgb-protocol/rgb-ops",
-        "commit": "5308b9d46c91857513ff5be2459992264687632b",
-        "crate_sha256": "b44153a2411b2d1ddc859a011061f95ec07acf32e70c414193838244207e232e"
+        "commit": "8bcdbf2fd706782948a4cbd799639709a4ed10d9",
+        "crate_sha256": "07ddb1c50519395edca755cb957685c739d89f86f5a218904ab918054e68518c"
       },
       {
         "name": "rgb-ops",
-        "version": "0.11.1-rc.11",
+        "version": "0.11.1",
         "repository": "https://github.com/rgb-protocol/rgb-ops",
-        "commit": "5308b9d46c91857513ff5be2459992264687632b",
-        "crate_sha256": "e454f98d8ab2ef78a2e0ba924e2a5c67b5ed55ba1664f4a6ee269d2f271353bc"
+        "commit": "8bcdbf2fd706782948a4cbd799639709a4ed10d9",
+        "crate_sha256": "60f23b8116d672ea7e455de1cb340cea243ff40b319c4b3c3622efe88f46ecff"
       },
       {
         "name": "rgb-psbt-utils",
-        "version": "0.11.1-rc.11",
+        "version": "0.11.1",
         "repository": "https://github.com/rgb-protocol/rgb-api",
-        "commit": "8d448f46c866d44ca0495ad0e924e57d9fd294dd",
-        "crate_sha256": "9df8f48e7c851814306af91411d7d6f7e8571939d509d4a786597a5eba0efbbf"
+        "commit": "102f4b09efa8f0e5987e60714364ba693c89def7",
+        "crate_sha256": "b1c22ce8b1f6e125c5125a16f136c93450ceb0830e9048a43dad336c1b588120"
       },
       {
         "name": "rgb-schemas",
-        "version": "0.11.1-rc.11",
+        "version": "0.11.1",
         "repository": "https://github.com/rgb-protocol/rgb-schemas",
-        "commit": "c5e43e987d18a2398d5f5f6c78629480fd792abd",
-        "crate_sha256": "4fa6cd396adb8e48b558c12750d8c8837aefe230ad905f1be5424b1d57b4f55b"
+        "commit": "906817a0c24a6bb7d2e53ceac9e2c185ec70a5ff",
+        "crate_sha256": "3d46b2d581f785bb8f69760df64d2d0bbdcc78839817560ff4e73aed5f9e1cb6"
       },
       {
         "name": "rgb-strict-encoding",
-        "version": "1.0.2",
+        "version": "1.0.4",
         "repository": "https://github.com/rgb-protocol/rgb-strict-encoding",
-        "commit": "7698a5e96a2a27d5bfa4cd3560da0e8af8e4a18a",
-        "crate_sha256": "0f68326e14d4b627f86634ea324510135cb551e27c5583a74811fa230b0cf34d"
+        "commit": "aa90bf353f53e8220aaacec4a671545808da05ae",
+        "crate_sha256": "784229a9cf3ed198e59cbd44bc5a3c772619e5f2a864eea3ec13524ec4eb1616"
       },
       {
         "name": "rgb-strict-types",
-        "version": "1.0.2",
+        "version": "1.0.4",
         "repository": "https://github.com/rgb-protocol/rgb-strict-types",
-        "commit": "09b58e6c2db25cef8bdb15e33b8654530607b972",
-        "crate_sha256": "e920bdf61b662a3743572a03696b0d88992eeb7d4f7afa0902915968327b3ce6"
+        "commit": "9eb3b484f23b01c70f2a940bda07a207377b3864",
+        "crate_sha256": "7cb1f717f2235eedfb147cfd5a47ccdb6660168e38f1acf2afcb199d19104e2f"
+      },
+      {
+        "name": "rgb-aluvm",
+        "version": "0.11.1",
+        "repository": "https://github.com/rgb-protocol/rgb-aluvm",
+        "commit": "b07d03f15dc6078affef117bc3ad9d4db9e53231",
+        "crate_sha256": "4b371aad57bb172879ef661d1cc102dadca47ff703def8d916b31ca772180960"
+      },
+      {
+        "name": "rgb-ascii-armor",
+        "version": "1.0.4",
+        "repository": "https://github.com/rgb-protocol/rgb-ascii-armor",
+        "commit": "ce782d0294960ddf83912a117eea6e6a2de49a6b",
+        "crate_sha256": "559bf258d790594c2e6e6c31ec40d0f70e0511cd05ab1dca99d40207f2bbf1f7"
       }
     ]
   },

@@ -6,8 +6,8 @@ import (
 )
 
 // Upstream-Repository: rgb-protocol/rgb-consensus
-// Upstream-Version: 0.11.1-rc.11
-// Upstream-Commit: 44e79963aa4603270eee9aa112ef07a512345e98
+// Upstream-Version: 0.11.1
+// Upstream-Commit: 32a67862aef0f4c7a1fdc7834a3555d702f1bdf0
 // Upstream-File: src/dbc/proof.rs
 // Upstream-File-SHA256: 52d66b04e55c1928acc1d37a9a6b7a561d933283b99b0a9fcff9c616bec99bf1
 // Translation-Revision: 1
