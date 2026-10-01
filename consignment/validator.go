@@ -59,6 +59,11 @@ type Validation struct {
 	PreparedValid        bool
 }
 
+type validatedOp struct {
+	bundle  [32]byte
+	parents [][32]byte
+}
+
 type validatedOutput struct {
 	state          schemas.ResolvedInput
 	outpoint       Outpoint
@@ -73,17 +78,26 @@ type validatedOutput struct {
 // contract or transfer may affect wallet projection. The resolver supplies
 // only Bitcoin facts; all RGB state is derived and checked locally.
 func (c *Container) Validate(resolver BitcoinResolver) (Validation, error) {
-	return c.validate(resolver, false)
+	return c.validate(resolver, false, false)
+}
+
+// ValidateHistory checks operations, their ancestor graph, seal closures and
+// freshly resolved Bitcoin witnesses, as in official RGB 0.11.1. A historical
+// terminal need not remain unspent. This method produces no spendable projection
+// and does not mark the container ConsensusValid for wallet import.
+func (c *Container) ValidateHistory(resolver BitcoinResolver) error {
+	_, err := c.validate(resolver, false, true)
+	return err
 }
 
 // ValidatePrepared validates a transfer before its embedded Bitcoin witness
 // transaction is broadcast. It never accepts a txid-only witness and still
 // requires all consumed RGB state outpoints to exist and remain unspent.
 func (c *Container) ValidatePrepared(resolver BitcoinResolver) (Validation, error) {
-	return c.validate(resolver, true)
+	return c.validate(resolver, true, false)
 }
 
-func (c *Container) validate(resolver BitcoinResolver, allowPrepared bool) (Validation, error) {
+func (c *Container) validate(resolver BitcoinResolver, allowPrepared, historyOnly bool) (Validation, error) {
 	report := Validation{}
 	if c == nil || !c.StructuralValid || !c.GenesisValid {
 		return report, ErrContainerType
@@ -106,6 +120,9 @@ func (c *Container) validate(resolver BitcoinResolver, allowPrepared bool) (Vali
 	context := schemas.TransitionContext{ContractID: genesisCommitment.OperationID, ContractGlobals: globals}
 	consumed := make(map[schemas.InputRef]struct{})
 	preparedWitnesses := make(map[[32]byte]*wire.MsgTx)
+	graph := map[[32]byte]validatedOp{genesisCommitment.OperationID: {}}
+	bundleOps := make(map[[32]byte][][32]byte)
+	completeGraph := true
 
 	bundlesValue, ok := c.Value.Field("bundles")
 	bundlesValue = bundlesValue.Unwrap()
@@ -163,6 +180,7 @@ func (c *Container) validate(resolver BitcoinResolver, allowPrepared bool) (Vali
 		}
 
 		inputMap, _ := bundleValue.Field("inputMap")
+		verifiedOps := make(map[[32]byte]struct{})
 		for _, transition := range bundle.Transitions {
 			commitment, err := operations.CommitTransition(transition)
 			if err != nil {
@@ -213,10 +231,36 @@ func (c *Container) validate(resolver BitcoinResolver, allowPrepared bool) (Vali
 			if err := appendOperationGlobals(context.ContractGlobals, transition); err != nil {
 				return report, err
 			}
+			parents := make([][32]byte, 0, len(inputs))
+			for _, input := range inputs {
+				parents = append(parents, input.OperationID)
+			}
+			graph[validation.OperationID] = validatedOp{bundle: bundle.BundleID, parents: parents}
+			bundleOps[bundle.BundleID] = append(bundleOps[bundle.BundleID], validation.OperationID)
+			verifiedOps[validation.OperationID] = struct{}{}
 			report.Transitions++
+		}
+		// inputMap may commit additional, undisclosed operations. Such a
+		// partial graph cannot establish a unique receiving tip.
+		if len(verifiedOps) != len(bundle.InputOperations) {
+			completeGraph = false
 		}
 	}
 
+	historical, err := historicalSideOps(c.Value, graph, bundleOps, completeGraph)
+	if err != nil {
+		return report, err
+	}
+	if historyOnly {
+		return report, nil
+	}
+	transfer, _ := c.Value.Field("transfer")
+	terminals, hasTerminals := c.Value.Field("terminals")
+	terminals = terminals.Unwrap()
+	// A static contract preserves its genesis after issuance outputs are spent.
+	// Import its validated metadata without reviving those spent allocations.
+	genesisOnly := transfer.Unwrap().Name == "false" && len(bundlesValue.Items) == 0 &&
+		hasTerminals && terminals.Kind == strict_types.ValueMap && len(terminals.Entries) == 0
 	for reference, output := range states {
 		var outputValue int64
 		var outputScript []byte
@@ -228,8 +272,14 @@ func (c *Container) validate(resolver BitcoinResolver, allowPrepared bool) (Vali
 			outputValue = txOut.Value
 			outputScript = append([]byte(nil), txOut.PkScript...)
 		} else {
-			if err := verifyCurrentOutpoint(resolver, output.outpoint); err != nil {
+			omitSpent := historical[reference.OperationID] ||
+				(genesisOnly && reference.OperationID == genesisCommitment.OperationID)
+			keep, err := verifyProjectedOutpoint(resolver, output.outpoint, omitSpent)
+			if err != nil {
 				return report, err
+			}
+			if !keep {
+				continue
 			}
 		}
 		report.CurrentStates = append(report.CurrentStates, ValidatedState{
@@ -248,6 +298,84 @@ func (c *Container) validate(resolver BitcoinResolver, allowPrepared bool) (Vali
 		c.ConsensusValid = true
 	}
 	return report, nil
+}
+
+// historicalSideOps runs only after all disclosed operations and anchors have
+// validated. It never changes input validation: only residual state projection
+// may omit a known-spent output from a strict ancestor of the receiving bundle.
+func historicalSideOps(value strict_types.Value, graph map[[32]byte]validatedOp,
+	bundleOps map[[32]byte][][32]byte, complete bool) (map[[32]byte]bool, error) {
+	transfer, _ := value.Field("transfer")
+	if transfer.Unwrap().Name != "true" {
+		return nil, nil
+	}
+	terminals, ok := value.Field("terminals")
+	terminals = terminals.Unwrap()
+	if !ok || terminals.Kind != strict_types.ValueMap {
+		return nil, ErrContainerType
+	}
+	protected := make(map[[32]byte]bool)
+	for _, terminal := range terminals.Entries {
+		raw, ok := terminal.Key.Bytes()
+		if !ok || len(raw) != 32 {
+			return nil, operations.ErrInvalidBundle
+		}
+		var id [32]byte
+		copy(id[:], raw)
+		if len(bundleOps[id]) == 0 {
+			return nil, operations.ErrInvalidBundle
+		}
+		protected[id] = true
+	}
+	if len(protected) == 0 {
+		if !complete {
+			return nil, nil
+		}
+		parents := make(map[[32]byte]bool)
+		for _, node := range graph {
+			for _, parent := range node.parents {
+				parents[parent] = true
+			}
+		}
+		var tip [32]byte
+		count := 0
+		for id, node := range graph {
+			if !parents[id] {
+				tip = node.bundle
+				count++
+			}
+		}
+		if count != 1 || len(bundleOps[tip]) == 0 {
+			return nil, nil
+		}
+		protected[tip] = true
+	}
+	var pending [][32]byte
+	for bundle := range protected {
+		for _, id := range bundleOps[bundle] {
+			pending = append(pending, graph[id].parents...)
+		}
+	}
+	historical := make(map[[32]byte]bool)
+	seen := make(map[[32]byte]bool)
+	for len(pending) > 0 {
+		id := pending[len(pending)-1]
+		pending = pending[:len(pending)-1]
+		if seen[id] {
+			continue
+		}
+		seen[id] = true
+		node, ok := graph[id]
+		if !ok {
+			// Validated input refs must have a disclosed source operation.
+			return nil, schemas.ErrInputUnresolved
+		}
+		if !protected[node.bundle] {
+			historical[id] = true
+		}
+		pending = append(pending, node.parents...)
+	}
+	return historical, nil
 }
 
 func registerOutputs(states map[schemas.InputRef]validatedOutput, operationID [32]byte, operation strict_types.Value,
@@ -590,18 +718,24 @@ func txSpends(tx *wire.MsgTx, outpoint Outpoint) bool {
 	return false
 }
 
-func verifyCurrentOutpoint(resolver BitcoinResolver, outpoint Outpoint) error {
+// Historical allocations (strict ancestors or static contract genesis) remain
+// valid RGB history after their carrier is spent. Require chain evidence to omit
+// it; unknown evidence, current inputs and receiving outputs stay fail-closed.
+func verifyProjectedOutpoint(resolver BitcoinResolver, outpoint Outpoint, historical bool) (bool, error) {
 	if resolver == nil {
-		return ErrOutpointUnknown
+		return false, ErrOutpointUnknown
 	}
 	evidence, err := resolver.ResolveRGB11Outpoint(outpoint)
 	if err != nil || !evidence.Known || !evidence.Exists {
-		return ErrOutpointUnknown
+		return false, ErrOutpointUnknown
 	}
 	if evidence.Spent {
-		return ErrOutpointSpend
+		if historical {
+			return false, nil
+		}
+		return false, ErrOutpointSpend
 	}
-	return nil
+	return true, nil
 }
 
 func verifyPreparedInputOutpoint(resolver BitcoinResolver, outpoint Outpoint, witnessTxID [32]byte) error {
