@@ -8,6 +8,7 @@ import (
 	"io/fs"
 	"path/filepath"
 	"strings"
+	"sync"
 )
 
 // Upstream-Repository: rgb-protocol/rgb-strict-types
@@ -25,8 +26,8 @@ var (
 type typeLibrary struct {
 	ID          string
 	Name        string
-	bySemID     map[string]json.RawMessage
-	byName      map[string]json.RawMessage
+	bySemID     map[string]*parsedType
+	byName      map[string]*parsedType
 	semIDByName map[string]string
 }
 
@@ -61,11 +62,18 @@ func (r *Registry) AddLibrary(data []byte) error {
 	}
 	lib := &typeLibrary{
 		ID: envelope.ID, Name: envelope.Library.Name,
-		bySemID: make(map[string]json.RawMessage), byName: envelope.Library.Types,
+		bySemID: make(map[string]*parsedType), byName: make(map[string]*parsedType, len(envelope.Library.Types)),
 		semIDByName: envelope.NamedSemIDs,
 	}
+	for name, raw := range envelope.Library.Types {
+		parsed, err := parseType(raw)
+		if err != nil {
+			return fmt.Errorf("%s.%s: %w", lib.Name, name, err)
+		}
+		lib.byName[name] = parsed
+	}
 	for name, semID := range envelope.NamedSemIDs {
-		typeDef, ok := envelope.Library.Types[name]
+		typeDef, ok := lib.byName[name]
 		if !ok || len(semID) != 64 {
 			return fmt.Errorf("invalid named strict type %s.%s", envelope.Library.Name, name)
 		}
@@ -106,7 +114,28 @@ func LoadRegistry(source fs.FS) (*Registry, error) {
 //go:embed schema/rc11/*.json
 var rc11Libraries embed.FS
 
+var rc11Once sync.Once
+var rc11Registry *Registry
+var rc11RegistryError error
+
 func RC11Registry() (*Registry, error) {
+	rc11Once.Do(func() { rc11Registry, rc11RegistryError = loadRC11Registry() })
+	if rc11RegistryError != nil {
+		return nil, rc11RegistryError
+	}
+	// Fixed parsed definitions are immutable; registration maps belong to each
+	// caller so AddLibrary/AddTypeSystem cannot affect a different contract.
+	registry := NewRegistry()
+	for id, lib := range rc11Registry.byID {
+		registry.byID[id] = lib
+	}
+	for name, lib := range rc11Registry.byName {
+		registry.byName[name] = lib
+	}
+	return registry, nil
+}
+
+func loadRC11Registry() (*Registry, error) {
 	root, err := fs.Sub(rc11Libraries, "schema/rc11")
 	if err != nil {
 		return nil, err
@@ -124,7 +153,11 @@ func RC11Registry() (*Registry, error) {
 	if err != nil {
 		return nil, err
 	}
-	bpCore.bySemID[anchorDbcProof] = json.RawMessage(`{"Struct":[{"name":"mpcProof","ty":{"extern":{"libId":"b1c6aeb1c15b1eb68477ab69abfaa807098164db6303ee0aaad3459e2431af96","semId":"36a4b4db8009d8790433ae3d1aed61719206e799fdd1abd504867b9d374c076f"}}},{"name":"dbcProof","ty":{"extern":{"libId":"742e975a8ab1582191efc07f3920b778f531ed9e1c6577b845ee7acc9af0683b","semId":"5d81fb469b06c44019333ff09f29b9a3530f8d9aada7ce5265d192193da5c26f"}}}]}`)
+	anchor, err := parseType(json.RawMessage(`{"Struct":[{"name":"mpcProof","ty":{"extern":{"libId":"b1c6aeb1c15b1eb68477ab69abfaa807098164db6303ee0aaad3459e2431af96","semId":"36a4b4db8009d8790433ae3d1aed61719206e799fdd1abd504867b9d374c076f"}}},{"name":"dbcProof","ty":{"extern":{"libId":"742e975a8ab1582191efc07f3920b778f531ed9e1c6577b845ee7acc9af0683b","semId":"5d81fb469b06c44019333ff09f29b9a3530f8d9aada7ce5265d192193da5c26f"}}}]}`))
+	if err != nil {
+		return nil, err
+	}
+	bpCore.bySemID[anchorDbcProof] = anchor
 	return registry, nil
 }
 
@@ -138,14 +171,14 @@ func (r *Registry) library(nameOrID string) (*typeLibrary, error) {
 	return nil, fmt.Errorf("%w: %s", ErrLibraryAbsent, nameOrID)
 }
 
-func (lib *typeLibrary) named(name string) (json.RawMessage, error) {
+func (lib *typeLibrary) named(name string) (*parsedType, error) {
 	if typeDef, ok := lib.byName[name]; ok {
 		return typeDef, nil
 	}
 	return nil, fmt.Errorf("%w: %s.%s", ErrTypeAbsent, lib.Name, name)
 }
 
-func (lib *typeLibrary) semantic(semID string) (json.RawMessage, error) {
+func (lib *typeLibrary) semantic(semID string) (*parsedType, error) {
 	if typeDef, ok := lib.bySemID[strings.ToLower(semID)]; ok {
 		return typeDef, nil
 	}

@@ -3,7 +3,6 @@ package strict_types
 import (
 	"bytes"
 	"encoding/binary"
-	"encoding/json"
 	"fmt"
 	"unicode/utf8"
 
@@ -36,47 +35,35 @@ func (r *Registry) Encode(libraryName, typeName string, value Value) ([]byte, er
 	return e.buffer.Bytes(), nil
 }
 
-func (e *encoder) encodeType(lib *typeLibrary, raw json.RawMessage, value Value, path string) error {
-	var variants map[string]json.RawMessage
-	if err := json.Unmarshal(raw, &variants); err != nil || len(variants) != 1 {
+func (e *encoder) encodeType(lib *typeLibrary, typeDef *parsedType, value Value, path string) error {
+	if typeDef == nil {
 		return fmt.Errorf("%s: %w", path, ErrMalformedType)
 	}
-	for kind, body := range variants {
-		switch kind {
-		case "Primitive":
-			var primitive uint8
-			if json.Unmarshal(body, &primitive) != nil {
-				return fmt.Errorf("%s: %w", path, ErrMalformedType)
-			}
-			return e.encodePrimitive(primitive, value, path)
-		case "UnicodeChar", "Unicode":
-			return e.encodeUnicode(value, path)
-		case "Enum":
-			return e.encodeEnum(body, value, path)
-		case "Union":
-			return e.encodeUnion(lib, body, value, path)
-		case "Tuple":
-			return e.encodeTuple(lib, body, value, path)
-		case "Struct":
-			return e.encodeStruct(lib, body, value, path)
-		case "Array":
-			return e.encodeArray(lib, body, value, path)
-		case "List", "Set":
-			return e.encodeList(lib, kind, body, value, path)
-		case "Map":
-			return e.encodeMap(lib, body, value, path)
-		default:
-			return fmt.Errorf("%s: %w %q", path, ErrMalformedType, kind)
-		}
+	switch typeDef.kind {
+	case "Primitive":
+		return e.encodePrimitive(typeDef.primitive, value, path)
+	case "UnicodeChar", "Unicode":
+		return e.encodeUnicode(value, path)
+	case "Enum":
+		return e.encodeEnum(typeDef.variants, value, path)
+	case "Union":
+		return e.encodeUnion(lib, typeDef.variants, value, path)
+	case "Tuple":
+		return e.encodeTuple(lib, typeDef.refs, value, path)
+	case "Struct":
+		return e.encodeStruct(lib, typeDef.fields, value, path)
+	case "Array":
+		return e.encodeArray(lib, typeDef.refs[0], typeDef.length, value, path)
+	case "List", "Set":
+		return e.encodeList(lib, typeDef.kind, typeDef.refs[0], typeDef.limits, value, path)
+	case "Map":
+		return e.encodeMap(lib, typeDef.refs, typeDef.limits, value, path)
+	default:
+		return fmt.Errorf("%s: %w %q", path, ErrMalformedType, typeDef.kind)
 	}
-	panic("unreachable")
 }
 
-func (e *encoder) encodeRef(lib *typeLibrary, raw json.RawMessage, value Value, path string) error {
-	ref, err := parseRef(raw)
-	if err != nil {
-		return fmt.Errorf("%s: %w", path, err)
-	}
+func (e *encoder) encodeRef(lib *typeLibrary, ref typeRef, value Value, path string) error {
 	switch {
 	case ref.Named != nil:
 		typeDef, err := lib.semantic(*ref.Named)
@@ -144,50 +131,36 @@ func (e *encoder) encodeUnicode(value Value, path string) error {
 	return e.strict.Raw(raw)
 }
 
-func (e *encoder) encodeEnum(body json.RawMessage, value Value, path string) error {
+func (e *encoder) encodeEnum(variants []parsedVariant, value Value, path string) error {
 	value = value.Unwrap()
 	if value.Kind != ValueEnum {
 		return fmt.Errorf("%s: %w enum", path, ErrMalformedType)
 	}
-	var variants []string
-	if json.Unmarshal(body, &variants) != nil {
-		return fmt.Errorf("%s: %w", path, ErrMalformedType)
-	}
 	for _, variant := range variants {
-		name, tag, err := parseVariant(variant)
-		if err == nil && tag == value.Tag && (value.Name == "" || value.Name == name) {
-			return e.strict.U8(tag)
+		if variant.tag == value.Tag && (value.Name == "" || value.Name == variant.name) {
+			return e.strict.U8(variant.tag)
 		}
 	}
 	return fmt.Errorf("%s: %w: %d", path, ErrUnknownVariant, value.Tag)
 }
 
-func (e *encoder) encodeUnion(lib *typeLibrary, body json.RawMessage, value Value, path string) error {
+func (e *encoder) encodeUnion(lib *typeLibrary, variants []parsedVariant, value Value, path string) error {
 	value = value.Unwrap()
 	if value.Kind != ValueUnion || value.Inner == nil {
 		return fmt.Errorf("%s: %w union", path, ErrMalformedType)
 	}
-	var variants map[string]json.RawMessage
-	if json.Unmarshal(body, &variants) != nil {
-		return fmt.Errorf("%s: %w", path, ErrMalformedType)
-	}
-	for variant, ref := range variants {
-		name, tag, err := parseVariant(variant)
-		if err == nil && tag == value.Tag && name == value.Name {
-			if err := e.strict.U8(tag); err != nil {
+	for _, variant := range variants {
+		if variant.tag == value.Tag && variant.name == value.Name {
+			if err := e.strict.U8(variant.tag); err != nil {
 				return err
 			}
-			return e.encodeRef(lib, ref, *value.Inner, path+"."+name)
+			return e.encodeRef(lib, variant.ref, *value.Inner, path+"."+variant.name)
 		}
 	}
 	return fmt.Errorf("%s: %w: %d", path, ErrUnknownVariant, value.Tag)
 }
 
-func (e *encoder) encodeTuple(lib *typeLibrary, body json.RawMessage, value Value, path string) error {
-	var refs []json.RawMessage
-	if json.Unmarshal(body, &refs) != nil {
-		return fmt.Errorf("%s: %w", path, ErrMalformedType)
-	}
+func (e *encoder) encodeTuple(lib *typeLibrary, refs []typeRef, value Value, path string) error {
 	decoderView := &decoder{registry: e.registry}
 	if len(refs) == 2 {
 		if _, _, limits, ok := decoderView.restrictedString(lib, refs); ok {
@@ -224,14 +197,7 @@ func (e *encoder) encodeTuple(lib *typeLibrary, body json.RawMessage, value Valu
 	return fmt.Errorf("%s: %w tuple", path, ErrMalformedType)
 }
 
-func (e *encoder) encodeStruct(lib *typeLibrary, body json.RawMessage, value Value, path string) error {
-	var fields []struct {
-		Name string          `json:"name"`
-		Type json.RawMessage `json:"ty"`
-	}
-	if json.Unmarshal(body, &fields) != nil {
-		return fmt.Errorf("%s: %w", path, ErrMalformedType)
-	}
+func (e *encoder) encodeStruct(lib *typeLibrary, fields []parsedField, value Value, path string) error {
 	value = value.Unwrap()
 	if value.Kind != ValueStruct || len(value.Fields) != len(fields) {
 		return fmt.Errorf("%s: %w struct", path, ErrMalformedType)
@@ -247,17 +213,9 @@ func (e *encoder) encodeStruct(lib *typeLibrary, body json.RawMessage, value Val
 	return nil
 }
 
-func (e *encoder) encodeArray(lib *typeLibrary, body json.RawMessage, value Value, path string) error {
-	var parts []json.RawMessage
-	if json.Unmarshal(body, &parts) != nil || len(parts) != 2 {
-		return fmt.Errorf("%s: %w", path, ErrMalformedType)
-	}
-	var length uint16
-	if json.Unmarshal(parts[1], &length) != nil {
-		return fmt.Errorf("%s: %w", path, ErrMalformedType)
-	}
+func (e *encoder) encodeArray(lib *typeLibrary, ref typeRef, length uint16, value Value, path string) error {
 	decoderView := &decoder{registry: e.registry}
-	if decoderView.refIsPrimitive(lib, parts[0], 0x40) {
+	if decoderView.refIsPrimitive(lib, ref, 0x40) {
 		if value.Kind != ValueBytes || len(value.Raw) != int(length) {
 			return fmt.Errorf("%s: %w byte array", path, ErrMalformedType)
 		}
@@ -268,24 +226,16 @@ func (e *encoder) encodeArray(lib *typeLibrary, body json.RawMessage, value Valu
 		return fmt.Errorf("%s: %w array", path, ErrMalformedType)
 	}
 	for index, item := range value.Items {
-		if err := e.encodeRef(lib, parts[0], item, fmt.Sprintf("%s[%d]", path, index)); err != nil {
+		if err := e.encodeRef(lib, ref, item, fmt.Sprintf("%s[%d]", path, index)); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func (e *encoder) encodeList(lib *typeLibrary, kind string, body json.RawMessage, value Value, path string) error {
-	var parts []json.RawMessage
-	if json.Unmarshal(body, &parts) != nil || len(parts) != 2 {
-		return fmt.Errorf("%s: %w", path, ErrMalformedType)
-	}
-	var limits sizing
-	if json.Unmarshal(parts[1], &limits) != nil || limits.Min > limits.Max {
-		return fmt.Errorf("%s: %w", path, ErrMalformedType)
-	}
+func (e *encoder) encodeList(lib *typeLibrary, kind string, ref typeRef, limits sizing, value Value, path string) error {
 	decoderView := &decoder{registry: e.registry}
-	if kind == "List" && (decoderView.refIsPrimitive(lib, parts[0], 0x40) || decoderView.refIsUnicode(lib, parts[0]) || decoderView.refIsCharEnum(lib, parts[0])) {
+	if kind == "List" && (decoderView.refIsPrimitive(lib, ref, 0x40) || decoderView.refIsUnicode(lib, ref) || decoderView.refIsCharEnum(lib, ref)) {
 		raw := value.Raw
 		if len(raw) == 0 && value.Kind == ValueString {
 			raw = []byte(value.Text)
@@ -318,22 +268,14 @@ func (e *encoder) encodeList(lib *typeLibrary, kind string, body json.RawMessage
 		return err
 	}
 	for index, item := range value.Items {
-		if err := e.encodeRef(lib, parts[0], item, fmt.Sprintf("%s[%d]", path, index)); err != nil {
+		if err := e.encodeRef(lib, ref, item, fmt.Sprintf("%s[%d]", path, index)); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func (e *encoder) encodeMap(lib *typeLibrary, body json.RawMessage, value Value, path string) error {
-	var parts []json.RawMessage
-	if json.Unmarshal(body, &parts) != nil || len(parts) != 3 {
-		return fmt.Errorf("%s: %w", path, ErrMalformedType)
-	}
-	var limits sizing
-	if json.Unmarshal(parts[2], &limits) != nil || limits.Min > limits.Max {
-		return fmt.Errorf("%s: %w", path, ErrMalformedType)
-	}
+func (e *encoder) encodeMap(lib *typeLibrary, refs []typeRef, limits sizing, value Value, path string) error {
 	value = value.Unwrap()
 	if value.Kind != ValueMap || uint64(len(value.Entries)) < limits.Min || uint64(len(value.Entries)) > limits.Max {
 		return fmt.Errorf("%s: %w map", path, strict.ErrOutOfBounds)
@@ -348,10 +290,10 @@ func (e *encoder) encodeMap(lib *typeLibrary, body json.RawMessage, value Value,
 		return err
 	}
 	for index, entry := range value.Entries {
-		if err := e.encodeRef(lib, parts[0], entry.Key, fmt.Sprintf("%s[%d].key", path, index)); err != nil {
+		if err := e.encodeRef(lib, refs[0], entry.Key, fmt.Sprintf("%s[%d].key", path, index)); err != nil {
 			return err
 		}
-		if err := e.encodeRef(lib, parts[1], entry.Value, fmt.Sprintf("%s[%d].value", path, index)); err != nil {
+		if err := e.encodeRef(lib, refs[1], entry.Value, fmt.Sprintf("%s[%d].value", path, index)); err != nil {
 			return err
 		}
 	}

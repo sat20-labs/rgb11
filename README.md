@@ -57,4 +57,6 @@
 
 ```bash
 go test ./...
+node reference/check_vectors.mjs
+node reference/check_interop.mjs
 ```

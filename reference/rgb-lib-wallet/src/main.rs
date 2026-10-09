@@ -91,6 +91,28 @@ fn amount_arg(args: &[String], index: usize) -> Result<u64, DynError> {
     Ok(arg(args, index, "amount")?.parse()?)
 }
 
+fn assignment_arg(
+    args: &[String],
+    amount_index: usize,
+    kind_index: usize,
+) -> Result<Assignment, DynError> {
+    match args
+        .get(kind_index)
+        .map(String::as_str)
+        .unwrap_or("fungible")
+    {
+        "fungible" => Ok(Assignment::Fungible(amount_arg(args, amount_index)?)),
+        "uda" => {
+            if amount_arg(args, amount_index)? != 1 {
+                return Err("UDA amount must be one".into());
+            }
+            Ok(Assignment::NonFungible)
+        }
+        "any" => Ok(Assignment::Any),
+        value => Err(format!("unsupported assignment: {value}").into()),
+    }
+}
+
 fn bitcoin_network(value: &str) -> Result<BitcoinNetwork, DynError> {
     match value {
         "regtest" => Ok(BitcoinNetwork::Regtest),
@@ -252,13 +274,37 @@ fn main() -> Result<(), DynError> {
             let asset = wallet.issue_asset_nia(ticker, name, 0, vec![amount])?;
             println!("{}", serde_json::to_string(&asset)?);
         }
+        "issue-ifa" => {
+            let (wallet, _) = load_wallet(&data_dir)?;
+            let asset = wallet.issue_asset_ifa(
+                arg(&args, 3, "ticker")?,
+                arg(&args, 4, "name")?,
+                0,
+                vec![amount_arg(&args, 5)?],
+                vec![amount_arg(&args, 6)?],
+                None,
+            )?;
+            println!("{}", serde_json::to_string(&asset)?);
+        }
+        "issue-uda" => {
+            let (wallet, _) = load_wallet(&data_dir)?;
+            let asset = wallet.issue_asset_uda(
+                arg(&args, 3, "ticker")?,
+                arg(&args, 4, "name")?,
+                None,
+                0,
+                None,
+                vec![],
+            )?;
+            println!("{}", serde_json::to_string(&asset)?);
+        }
         "receive-witness" => {
             let asset_id = arg(&args, 3, "asset-id or -")?;
-            let amount = amount_arg(&args, 4)?;
+            let assignment = assignment_arg(&args, 4, 5)?;
             let (mut wallet, _) = load_wallet(&data_dir)?;
             let receive = wallet.witness_receive(
                 (asset_id != "-").then_some(asset_id),
-                Assignment::Fungible(amount),
+                assignment,
                 expiry(),
                 vec![],
                 1,
@@ -269,7 +315,7 @@ fn main() -> Result<(), DynError> {
             let esplora = arg(&args, 3, "esplora-url")?;
             let asset_id = arg(&args, 4, "asset-id")?;
             let recipient_id = arg(&args, 5, "recipient-id")?;
-            let amount = amount_arg(&args, 6)?;
+            let assignment = assignment_arg(&args, 6, 8)?;
             let donation: bool = arg(&args, 7, "donation")?.parse()?;
             let recipient_info = RecipientInfo::new(recipient_id.clone())?;
             let witness_data =
@@ -282,7 +328,7 @@ fn main() -> Result<(), DynError> {
                 vec![Recipient {
                     recipient_id,
                     witness_data,
-                    assignment: Assignment::Fungible(amount),
+                    assignment,
                     transport_endpoints: vec![],
                 }],
             )]);

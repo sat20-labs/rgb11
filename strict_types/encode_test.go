@@ -38,3 +38,34 @@ func TestOfficialConsignmentsStrictEncodeRoundTrip(t *testing.T) {
 		}
 	}
 }
+
+func BenchmarkRC11RegistryDecodeOfficialNIA(b *testing.B) {
+	raw, err := os.ReadFile("../testvectors/rc11/nia-example.rgba")
+	if err != nil {
+		b.Fatal(err)
+	}
+	armor, err := consignment.ParseArmor(string(raw))
+	if err != nil {
+		b.Fatal(err)
+	}
+	registry, err := strict_types.RC11Registry()
+	if err != nil {
+		b.Fatal(err)
+	}
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		if _, err := registry.Decode("RGBStd", "Consignmentfalse", armor.Data); err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
+func BenchmarkRC11RegistryLoad(b *testing.B) {
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		if _, err := strict_types.RC11Registry(); err != nil {
+			b.Fatal(err)
+		}
+	}
+}

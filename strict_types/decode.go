@@ -3,7 +3,6 @@ package strict_types
 import (
 	"bytes"
 	"encoding/binary"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"math"
@@ -39,7 +38,7 @@ type typeRef struct {
 		LibID string `json:"libId"`
 		SemID string `json:"semId"`
 	}
-	Inline json.RawMessage
+	Inline *parsedType
 }
 
 type sizing struct {
@@ -68,9 +67,9 @@ func (r *Registry) Decode(libraryName, typeName string, data []byte) (Value, err
 	return value, nil
 }
 
-func (d *decoder) decodeType(lib *typeLibrary, raw json.RawMessage, path string) (Value, error) {
+func (d *decoder) decodeType(lib *typeLibrary, typeDef *parsedType, path string) (Value, error) {
 	start := d.reader.Len()
-	value, err := d.decodeTypeBody(lib, raw, path)
+	value, err := d.decodeTypeBody(lib, typeDef, path)
 	if err != nil {
 		return Value{}, err
 	}
@@ -85,47 +84,35 @@ func (d *decoder) decodeType(lib *typeLibrary, raw json.RawMessage, path string)
 	return value, nil
 }
 
-func (d *decoder) decodeTypeBody(lib *typeLibrary, raw json.RawMessage, path string) (Value, error) {
-	var variants map[string]json.RawMessage
-	if err := json.Unmarshal(raw, &variants); err != nil || len(variants) != 1 {
+func (d *decoder) decodeTypeBody(lib *typeLibrary, typeDef *parsedType, path string) (Value, error) {
+	if typeDef == nil {
 		return Value{}, fmt.Errorf("%s: %w", path, ErrMalformedType)
 	}
-	for kind, body := range variants {
-		switch kind {
-		case "Primitive":
-			var primitive uint8
-			if err := json.Unmarshal(body, &primitive); err != nil {
-				return Value{}, fmt.Errorf("%s: %w", path, ErrMalformedType)
-			}
-			return d.decodePrimitive(primitive, path)
-		case "UnicodeChar", "Unicode":
-			return d.decodeUnicode(path)
-		case "Enum":
-			return d.decodeEnum(body, path)
-		case "Union":
-			return d.decodeUnion(lib, body, path)
-		case "Tuple":
-			return d.decodeTuple(lib, body, path)
-		case "Struct":
-			return d.decodeStruct(lib, body, path)
-		case "Array":
-			return d.decodeArray(lib, body, path)
-		case "List", "Set":
-			return d.decodeList(lib, kind, body, path)
-		case "Map":
-			return d.decodeMap(lib, body, path)
-		default:
-			return Value{}, fmt.Errorf("%s: %w %q", path, ErrMalformedType, kind)
-		}
+	switch typeDef.kind {
+	case "Primitive":
+		return d.decodePrimitive(typeDef.primitive, path)
+	case "UnicodeChar", "Unicode":
+		return d.decodeUnicode(path)
+	case "Enum":
+		return d.decodeEnum(typeDef.variants, path)
+	case "Union":
+		return d.decodeUnion(lib, typeDef.variants, path)
+	case "Tuple":
+		return d.decodeTuple(lib, typeDef.refs, path)
+	case "Struct":
+		return d.decodeStruct(lib, typeDef.fields, path)
+	case "Array":
+		return d.decodeArray(lib, typeDef.refs[0], typeDef.length, path)
+	case "List", "Set":
+		return d.decodeList(lib, typeDef.kind, typeDef.refs[0], typeDef.limits, path)
+	case "Map":
+		return d.decodeMap(lib, typeDef.refs, typeDef.limits, path)
+	default:
+		return Value{}, fmt.Errorf("%s: %w %q", path, ErrMalformedType, typeDef.kind)
 	}
-	panic("unreachable")
 }
 
-func (d *decoder) decodeRef(lib *typeLibrary, raw json.RawMessage, path string) (Value, error) {
-	ref, err := parseRef(raw)
-	if err != nil {
-		return Value{}, fmt.Errorf("%s: %w", path, err)
-	}
+func (d *decoder) decodeRef(lib *typeLibrary, ref typeRef, path string) (Value, error) {
 	switch {
 	case ref.Named != nil:
 		typeDef, err := lib.semantic(*ref.Named)
@@ -150,43 +137,7 @@ func (d *decoder) decodeRef(lib *typeLibrary, raw json.RawMessage, path string) 
 	}
 }
 
-func parseRef(raw json.RawMessage) (typeRef, error) {
-	var object map[string]json.RawMessage
-	if err := json.Unmarshal(raw, &object); err != nil || len(object) != 1 {
-		return typeRef{}, ErrMalformedType
-	}
-	var result typeRef
-	if value, ok := object["named"]; ok {
-		var semID string
-		if err := json.Unmarshal(value, &semID); err != nil || len(semID) != 64 {
-			return typeRef{}, ErrMalformedType
-		}
-		result.Named = &semID
-		return result, nil
-	}
-	if value, ok := object["extern"]; ok {
-		var external struct {
-			LibID string `json:"libId"`
-			SemID string `json:"semId"`
-		}
-		if err := json.Unmarshal(value, &external); err != nil || len(external.LibID) != 64 || len(external.SemID) != 64 {
-			return typeRef{}, ErrMalformedType
-		}
-		result.Extern = &external
-		return result, nil
-	}
-	if value, ok := object["inline"]; ok {
-		result.Inline = value
-		return result, nil
-	}
-	return typeRef{}, ErrMalformedType
-}
-
-func (d *decoder) resolveRef(lib *typeLibrary, raw json.RawMessage) (*typeLibrary, json.RawMessage, error) {
-	ref, err := parseRef(raw)
-	if err != nil {
-		return nil, nil, err
-	}
+func (d *decoder) resolveRef(lib *typeLibrary, ref typeRef) (*typeLibrary, *parsedType, error) {
 	switch {
 	case ref.Named != nil:
 		typeDef, err := lib.semantic(*ref.Named)
@@ -308,57 +259,37 @@ func parseVariant(value string) (string, uint8, error) {
 	return name, uint8(tag), nil
 }
 
-func (d *decoder) decodeEnum(body json.RawMessage, path string) (Value, error) {
-	var variants []string
-	if err := json.Unmarshal(body, &variants); err != nil {
-		return Value{}, fmt.Errorf("%s: %w", path, ErrMalformedType)
-	}
+func (d *decoder) decodeEnum(variants []parsedVariant, path string) (Value, error) {
 	tag, err := d.strict.U8()
 	if err != nil {
 		return Value{}, fmt.Errorf("%s: %w", path, err)
 	}
 	for _, variant := range variants {
-		name, candidate, err := parseVariant(variant)
-		if err != nil {
-			return Value{}, fmt.Errorf("%s: %w", path, err)
-		}
-		if candidate == tag {
-			return Value{Kind: ValueEnum, Name: name, Text: name, Tag: tag}, nil
+		if variant.tag == tag {
+			return Value{Kind: ValueEnum, Name: variant.name, Text: variant.name, Tag: tag}, nil
 		}
 	}
 	return Value{}, fmt.Errorf("%s: %w: %d", path, ErrUnknownVariant, tag)
 }
 
-func (d *decoder) decodeUnion(lib *typeLibrary, body json.RawMessage, path string) (Value, error) {
-	var variants map[string]json.RawMessage
-	if err := json.Unmarshal(body, &variants); err != nil {
-		return Value{}, fmt.Errorf("%s: %w", path, ErrMalformedType)
-	}
+func (d *decoder) decodeUnion(lib *typeLibrary, variants []parsedVariant, path string) (Value, error) {
 	tag, err := d.strict.U8()
 	if err != nil {
 		return Value{}, fmt.Errorf("%s: %w", path, err)
 	}
-	for variant, ref := range variants {
-		name, candidate, err := parseVariant(variant)
-		if err != nil {
-			return Value{}, fmt.Errorf("%s: %w", path, err)
-		}
-		if candidate == tag {
-			inner, err := d.decodeRef(lib, ref, path+"."+name)
+	for _, variant := range variants {
+		if variant.tag == tag {
+			inner, err := d.decodeRef(lib, variant.ref, path+"."+variant.name)
 			if err != nil {
 				return Value{}, err
 			}
-			return Value{Kind: ValueUnion, Name: name, Tag: tag, Inner: &inner}, nil
+			return Value{Kind: ValueUnion, Name: variant.name, Tag: tag, Inner: &inner}, nil
 		}
 	}
 	return Value{}, fmt.Errorf("%s: %w: %d", path, ErrUnknownVariant, tag)
 }
 
-func (d *decoder) decodeTuple(lib *typeLibrary, body json.RawMessage, path string) (Value, error) {
-	var refs []json.RawMessage
-	if err := json.Unmarshal(body, &refs); err != nil {
-		return Value{}, fmt.Errorf("%s: %w", path, ErrMalformedType)
-	}
+func (d *decoder) decodeTuple(lib *typeLibrary, refs []typeRef, path string) (Value, error) {
 	if len(refs) == 2 {
 		if restLib, restRef, limits, ok := d.restrictedString(lib, refs); ok {
 			length, err := d.strict.Length(limits.Max)
@@ -394,39 +325,21 @@ func (d *decoder) decodeTuple(lib *typeLibrary, body json.RawMessage, path strin
 	return Value{Kind: ValueTuple, Items: items}, nil
 }
 
-func (d *decoder) restrictedString(lib *typeLibrary, refs []json.RawMessage) (*typeLibrary, json.RawMessage, sizing, bool) {
+func (d *decoder) restrictedString(lib *typeLibrary, refs []typeRef) (*typeLibrary, typeRef, sizing, bool) {
 	if len(refs) != 2 || !d.refIsCharEnum(lib, refs[0]) {
-		return nil, nil, sizing{}, false
+		return nil, typeRef{}, sizing{}, false
 	}
 	restLib, restType, err := d.resolveRef(lib, refs[1])
-	if err != nil {
-		return nil, nil, sizing{}, false
+	if err != nil || restType == nil || restType.kind != "List" || !d.refIsCharEnum(restLib, restType.refs[0]) || restType.limits.Max == math.MaxUint64 {
+		return nil, typeRef{}, sizing{}, false
 	}
-	var object map[string]json.RawMessage
-	if json.Unmarshal(restType, &object) != nil {
-		return nil, nil, sizing{}, false
-	}
-	var parts []json.RawMessage
-	if json.Unmarshal(object["List"], &parts) != nil || len(parts) != 2 || !d.refIsCharEnum(restLib, parts[0]) {
-		return nil, nil, sizing{}, false
-	}
-	var limits sizing
-	if json.Unmarshal(parts[1], &limits) != nil || limits.Max == math.MaxUint64 {
-		return nil, nil, sizing{}, false
-	}
+	limits := restType.limits
 	limits.Min++
 	limits.Max++
-	return restLib, parts[0], limits, true
+	return restLib, restType.refs[0], limits, true
 }
 
-func (d *decoder) decodeStruct(lib *typeLibrary, body json.RawMessage, path string) (Value, error) {
-	var fields []struct {
-		Name string          `json:"name"`
-		Type json.RawMessage `json:"ty"`
-	}
-	if err := json.Unmarshal(body, &fields); err != nil {
-		return Value{}, fmt.Errorf("%s: %w", path, ErrMalformedType)
-	}
+func (d *decoder) decodeStruct(lib *typeLibrary, fields []parsedField, path string) (Value, error) {
 	result := make([]Field, 0, len(fields))
 	for _, field := range fields {
 		value, err := d.decodeRef(lib, field.Type, path+"."+field.Name)
@@ -438,16 +351,8 @@ func (d *decoder) decodeStruct(lib *typeLibrary, body json.RawMessage, path stri
 	return Value{Kind: ValueStruct, Fields: result}, nil
 }
 
-func (d *decoder) decodeArray(lib *typeLibrary, body json.RawMessage, path string) (Value, error) {
-	var parts []json.RawMessage
-	if err := json.Unmarshal(body, &parts); err != nil || len(parts) != 2 {
-		return Value{}, fmt.Errorf("%s: %w", path, ErrMalformedType)
-	}
-	var length uint16
-	if err := json.Unmarshal(parts[1], &length); err != nil {
-		return Value{}, fmt.Errorf("%s: %w", path, ErrMalformedType)
-	}
-	if d.refIsPrimitive(lib, parts[0], 0x40) {
+func (d *decoder) decodeArray(lib *typeLibrary, ref typeRef, length uint16, path string) (Value, error) {
+	if d.refIsPrimitive(lib, ref, 0x40) {
 		raw, err := d.strict.Raw(uint64(length))
 		if err != nil {
 			return Value{}, fmt.Errorf("%s: %w", path, err)
@@ -456,7 +361,7 @@ func (d *decoder) decodeArray(lib *typeLibrary, body json.RawMessage, path strin
 	}
 	items := make([]Value, 0, length)
 	for index := uint16(0); index < length; index++ {
-		value, err := d.decodeRef(lib, parts[0], fmt.Sprintf("%s[%d]", path, index))
+		value, err := d.decodeRef(lib, ref, fmt.Sprintf("%s[%d]", path, index))
 		if err != nil {
 			return Value{}, err
 		}
@@ -465,15 +370,7 @@ func (d *decoder) decodeArray(lib *typeLibrary, body json.RawMessage, path strin
 	return Value{Kind: ValueList, Items: items}, nil
 }
 
-func (d *decoder) decodeList(lib *typeLibrary, kind string, body json.RawMessage, path string) (Value, error) {
-	var parts []json.RawMessage
-	if err := json.Unmarshal(body, &parts); err != nil || len(parts) != 2 {
-		return Value{}, fmt.Errorf("%s: %w", path, ErrMalformedType)
-	}
-	var limits sizing
-	if err := json.Unmarshal(parts[1], &limits); err != nil || limits.Min > limits.Max {
-		return Value{}, fmt.Errorf("%s: %w", path, ErrMalformedType)
-	}
+func (d *decoder) decodeList(lib *typeLibrary, kind string, ref typeRef, limits sizing, path string) (Value, error) {
 	length, err := d.strict.Length(limits.Max)
 	if err != nil || length < limits.Min {
 		if err == nil {
@@ -485,14 +382,14 @@ func (d *decoder) decodeList(lib *typeLibrary, kind string, body json.RawMessage
 	if kind == "Set" {
 		valueKind = ValueSet
 	}
-	if kind == "List" && d.refIsPrimitive(lib, parts[0], 0x40) {
+	if kind == "List" && d.refIsPrimitive(lib, ref, 0x40) {
 		raw, err := d.strict.Raw(length)
 		if err != nil {
 			return Value{}, fmt.Errorf("%s: %w", path, err)
 		}
 		return Value{Kind: ValueBytes, Raw: raw}, nil
 	}
-	if kind == "List" && d.refIsUnicode(lib, parts[0]) {
+	if kind == "List" && d.refIsUnicode(lib, ref) {
 		raw, err := d.strict.Raw(length)
 		if err != nil {
 			return Value{}, fmt.Errorf("%s: %w", path, err)
@@ -502,13 +399,13 @@ func (d *decoder) decodeList(lib *typeLibrary, kind string, body json.RawMessage
 		}
 		return Value{Kind: ValueString, Text: string(raw), Raw: raw}, nil
 	}
-	if kind == "List" && d.refIsCharEnum(lib, parts[0]) {
+	if kind == "List" && d.refIsCharEnum(lib, ref) {
 		raw, err := d.strict.Raw(length)
 		if err != nil {
 			return Value{}, fmt.Errorf("%s: %w", path, err)
 		}
 		for _, char := range raw {
-			if !d.refEnumHasTag(lib, parts[0], char) {
+			if !d.refEnumHasTag(lib, ref, char) {
 				return Value{}, fmt.Errorf("%s: %w: %d", path, ErrUnknownVariant, char)
 			}
 		}
@@ -519,7 +416,7 @@ func (d *decoder) decodeList(lib *typeLibrary, kind string, body json.RawMessage
 	var previous *Value
 	for index := uint64(0); index < length; index++ {
 		start := d.reader.Len()
-		value, err := d.decodeRef(lib, parts[0], fmt.Sprintf("%s[%d]", path, index))
+		value, err := d.decodeRef(lib, ref, fmt.Sprintf("%s[%d]", path, index))
 		if err != nil {
 			return Value{}, err
 		}
@@ -549,15 +446,7 @@ func (d *decoder) decodeList(lib *typeLibrary, kind string, body json.RawMessage
 	return Value{Kind: valueKind, Items: items}, nil
 }
 
-func (d *decoder) decodeMap(lib *typeLibrary, body json.RawMessage, path string) (Value, error) {
-	var parts []json.RawMessage
-	if err := json.Unmarshal(body, &parts); err != nil || len(parts) != 3 {
-		return Value{}, fmt.Errorf("%s: %w", path, ErrMalformedType)
-	}
-	var limits sizing
-	if err := json.Unmarshal(parts[2], &limits); err != nil || limits.Min > limits.Max {
-		return Value{}, fmt.Errorf("%s: %w", path, ErrMalformedType)
-	}
+func (d *decoder) decodeMap(lib *typeLibrary, refs []typeRef, limits sizing, path string) (Value, error) {
 	length, err := d.strict.Length(limits.Max)
 	if err != nil || length < limits.Min {
 		if err == nil {
@@ -570,7 +459,7 @@ func (d *decoder) decodeMap(lib *typeLibrary, body json.RawMessage, path string)
 	var previous *Value
 	for index := uint64(0); index < length; index++ {
 		start := d.reader.Len()
-		key, err := d.decodeRef(lib, parts[0], fmt.Sprintf("%s[%d].key", path, index))
+		key, err := d.decodeRef(lib, refs[0], fmt.Sprintf("%s[%d].key", path, index))
 		if err != nil {
 			return Value{}, err
 		}
@@ -593,7 +482,7 @@ func (d *decoder) decodeMap(lib *typeLibrary, body json.RawMessage, path string)
 		seen[encodedKey] = struct{}{}
 		copy := key
 		previous = &copy
-		value, err := d.decodeRef(lib, parts[1], fmt.Sprintf("%s[%d].value", path, index))
+		value, err := d.decodeRef(lib, refs[1], fmt.Sprintf("%s[%d].value", path, index))
 		if err != nil {
 			return Value{}, err
 		}
@@ -602,87 +491,47 @@ func (d *decoder) decodeMap(lib *typeLibrary, body json.RawMessage, path string)
 	return Value{Kind: ValueMap, Entries: entries}, nil
 }
 
-func (d *decoder) refIsPrimitive(lib *typeLibrary, raw json.RawMessage, primitive uint8) bool {
-	resolvedLib, typeDef, err := d.resolveRef(lib, raw)
-	if err != nil || resolvedLib == nil {
-		return false
-	}
-	var object map[string]json.RawMessage
-	if json.Unmarshal(typeDef, &object) != nil {
-		return false
-	}
-	var code uint8
-	return json.Unmarshal(object["Primitive"], &code) == nil && code == primitive
+func (d *decoder) refIsPrimitive(lib *typeLibrary, ref typeRef, primitive uint8) bool {
+	_, typeDef, err := d.resolveRef(lib, ref)
+	return err == nil && typeDef != nil && typeDef.kind == "Primitive" && typeDef.primitive == primitive
 }
 
-func (d *decoder) refIsUnicode(lib *typeLibrary, raw json.RawMessage) bool {
-	_, typeDef, err := d.resolveRef(lib, raw)
-	if err != nil {
-		return false
-	}
-	var object map[string]json.RawMessage
-	if json.Unmarshal(typeDef, &object) != nil {
-		return false
-	}
-	_, unicodeChar := object["UnicodeChar"]
-	_, unicode := object["Unicode"]
-	return unicodeChar || unicode
+func (d *decoder) refIsUnicode(lib *typeLibrary, ref typeRef) bool {
+	_, typeDef, err := d.resolveRef(lib, ref)
+	return err == nil && typeDef != nil && (typeDef.kind == "UnicodeChar" || typeDef.kind == "Unicode")
 }
 
-func (d *decoder) refIsCharEnum(lib *typeLibrary, raw json.RawMessage) bool {
-	resolvedLib, typeDef, err := d.resolveRef(lib, raw)
-	if err != nil {
+func (d *decoder) refIsCharEnum(lib *typeLibrary, ref typeRef) bool {
+	resolvedLib, typeDef, err := d.resolveRef(lib, ref)
+	if err != nil || typeDef == nil {
 		return false
 	}
-	var object map[string]json.RawMessage
-	if json.Unmarshal(typeDef, &object) != nil {
-		return false
-	}
-	if enumBody, ok := object["Enum"]; ok {
-		var variants []string
-		if json.Unmarshal(enumBody, &variants) != nil || len(variants) == 0 {
+	if typeDef.kind == "Enum" {
+		if len(typeDef.variants) == 0 {
 			return false
 		}
-		for _, variant := range variants {
-			_, tag, err := parseVariant(variant)
-			if err != nil || tag < 32 || tag > 127 {
+		for _, variant := range typeDef.variants {
+			if variant.tag < 32 || variant.tag > 127 {
 				return false
 			}
 		}
 		return true
 	}
-	if tupleBody, ok := object["Tuple"]; ok {
-		var refs []json.RawMessage
-		return json.Unmarshal(tupleBody, &refs) == nil && len(refs) > 0 && d.refIsCharEnum(resolvedLib, refs[0])
-	}
-	return false
+	return typeDef.kind == "Tuple" && len(typeDef.refs) > 0 && d.refIsCharEnum(resolvedLib, typeDef.refs[0])
 }
 
-func (d *decoder) refEnumHasTag(lib *typeLibrary, raw json.RawMessage, wanted uint8) bool {
-	resolvedLib, typeDef, err := d.resolveRef(lib, raw)
-	if err != nil {
+func (d *decoder) refEnumHasTag(lib *typeLibrary, ref typeRef, wanted uint8) bool {
+	resolvedLib, typeDef, err := d.resolveRef(lib, ref)
+	if err != nil || typeDef == nil {
 		return false
 	}
-	var object map[string]json.RawMessage
-	if json.Unmarshal(typeDef, &object) != nil {
-		return false
-	}
-	if enumBody, ok := object["Enum"]; ok {
-		var variants []string
-		if json.Unmarshal(enumBody, &variants) != nil {
-			return false
-		}
-		for _, variant := range variants {
-			_, tag, err := parseVariant(variant)
-			if err == nil && tag == wanted {
+	if typeDef.kind == "Enum" {
+		for _, variant := range typeDef.variants {
+			if variant.tag == wanted {
 				return true
 			}
 		}
 		return false
 	}
-	if tupleBody, ok := object["Tuple"]; ok {
-		var refs []json.RawMessage
-		return json.Unmarshal(tupleBody, &refs) == nil && len(refs) > 0 && d.refEnumHasTag(resolvedLib, refs[0], wanted)
-	}
-	return false
+	return typeDef.kind == "Tuple" && len(typeDef.refs) > 0 && d.refEnumHasTag(resolvedLib, typeDef.refs[0], wanted)
 }

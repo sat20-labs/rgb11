@@ -46,7 +46,32 @@ node reference/check_interop.mjs
 
 第二条命令由 Go 构造真实 Transfer Consignment，再交给冻结的官方 Rust
 `0.11.1` 正式版 parser，比较 consignment、contract、schema ID 和 Invoice canonical
-round-trip，并执行官方 Contract 验证。它不是对 Go 结果的自解析。
+round-trip，并执行官方 Contract 和完整 Transfer 验证。Transfer 的 Strict
+payload 必须逐字节一致；只重新解析成功不能算 canonical round-trip。
+
+新增的 44 项冻结用例复用 `cmd/rgb11-interop-fixture`、官方 Rust inspector
+与现有 `testvectors/rc11`。其中 10 项有效、26 项无效、8 项 Bitcoin 证据错误，
+覆盖 NIA / IFA / CFA / UDA 的 tentative、mined、archived witness，金额守恒、
+UDA token assignment、IFA 增发授权、缺失历史、seal / Anchor / witness 错配，
+以及截断、尾随字节、非法 enum、非 canonical map 顺序。用例名称、结果和
+payload SHA256 冻结在 `testvectors/rc11/validation-cases.json`。
+
+语义反例重新计算 transition、bundle、consignment ID 及 Bitcoin commitment，
+避免旧 ID 错配掩盖真正的脚本规则。金额与 token 反例还要求官方结果明确到达
+`ScriptFailure`。两个实现使用同一份原始 Bitcoin transaction、network、
+confirmation height 与 timestamp；官方 trusted type system 来自对应 schema 的
+固定官方 fixture，不信任待测 consignment 自带的类型定义。Go 的对照入口是
+`ValidateHistory`，和官方 client-side validation 对齐；钱包投影仍额外检查当前
+UTXO 的可花费状态。证据不足单独记为 `evidence_error`，不得计为有效。
+
+```bash
+RGB11_INTEROP_EVIDENCE_DIR=/path/to/evidence node reference/check_interop.mjs
+go test ./...
+```
+
+设置证据目录后，保留输入用例和逐项结果，失败也保留输入。普通 `go test`
+检查冻结 corpus 与 Go 回归；Rust 差分仍须独立执行。RGB 代码变更需要两者
+都通过；发布或更换上游版本还须执行下述三种资产的真实钱包双向门禁。
 
 冻结的官方 CLI 也必须从 manifest 指定的 commit 构建并核对命令面：
 
@@ -66,6 +91,37 @@ node reference/check_official_cli.mjs \
 该 tag 的 `rgb-core / rgb-std / rgb-psbt` 均为 `0.11.1-alpha.3`，对未经修改的 rc.11
 官方 fixture 和 Go 构造的 rc.11 fixture 都返回 `invalid file data`。正式版发布门禁
 由上一节的 `0.11.1` 官方 Rust parser 完成。
+
+### 本地一次性 regtest 实测（2026-10-09）
+
+本次使用本地 Bitcoin Core `28.1` 和原生 Blockstream/electrs
+`dd09701e84dc88a2c58a1365f798222b66e13772`，服务仅绑定 loopback；
+未使用远程节点。官方 `rgb-lib` CLI 从上述冻结 commit 重新构建，
+由上游实际发行、验证、签名及接收。SDK 使用现有
+`TestRGB11RegtestOfficialBidirectional` 入口，NIA / IFA / UDA 三项全部通过。
+
+| Schema | 官方 Alice → SDK txid | SDK → 官方 Bob txid | 重启后 Alice / SDK / Bob 余额 |
+| --- | --- | --- | --- |
+| NIA | `b4a93f4b8876dfb785fe417c424ffa3d2eb8a687b9c335b2fbce72b26d67033c` | `aa0da4f6f28787ba2ed7114b6ab4202a63c001dbb10f1971dbedbb6753008070` | 950 / 30 / 20 |
+| IFA | `456840617360f40b44735145ff408fe938ead2507b937037008ef65fd40f84ca` | `056d7e6012b5ec26211ab10c59e863b5766b415523c486b7fd7bebf2b449e620` | 950 / 30 / 20 |
+| UDA | `5b6cfc9ecf0d1fc241103dd76973540c778f2d41c1991e217ac0676b56a373c0` | `8cb1beb743fb916b04889962dc0b880eec1c14a241e2e4ad0c6d4e2e8830bb29` | 0 / 0 / 1 |
+
+两笔 Bitcoin 交易均实际广播并确认，官方 Bob 的接收状态均为 `Settled`；
+UDA assignment 明确为 `NonFungible`。关闭并重开 SDK 数据库、重新创建同一
+助记词的钱包后，余额、proof identity、原始 state data、seal 和 consignment hash
+一致；每次官方 CLI 调用也都从磁盘重新加载钱包。
+
+测试适配器同时修正了实际确认后未刷新状态、独立 witness 地址未装载，以及
+IFA receipt 首项可能为控制权限的错误假设。Esplora 对未知 txid 的 `/status`
+也会返回 `confirmed=false`，不能据此宣称交易已在 mempool；适配器改用实际
+transaction info，并增加已复现问题的失败/通过回归。所有 Bitcoin 与资产数据
+来自真实本地服务和上游钱包，未修改生产协议或放宽结算断言。
+
+完整成功与失败证据位于
+`/private/tmp/sat20-rgb-conformance-20261009/`，三项成功摘要在
+`live-final-gate/<schema>/evidence/bidirectional-summary.json`。
+临时链服务已停止，链数据、钱包与日志保留。此处钱包证据仍是冻结的
+`rgb-lib 0.3.0-beta.7 / rc.11`，正式版 `0.11.1` 的协议验证由前述 Rust 门禁承担。
 
 ### 103 实测记录（2026-07-19）
 

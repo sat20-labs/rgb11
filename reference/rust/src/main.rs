@@ -20,9 +20,9 @@ use rgbstd::invoice::RgbInvoice;
 use rgbstd::persistence::Stock;
 use rgbstd::txout::{CloseMethod, ExplicitSeal};
 use rgbstd::validation::{ResolveWitness, ValidationConfig, WitnessOrdProvider, WitnessResolverError, WitnessStatus};
-use rgbstd::vm::WitnessOrd;
+use rgbstd::vm::{WitnessOrd, WitnessPos};
 use rgbstd::{Amount, AssignmentType, ChainNet, GraphSeal, Opout};
-use strict_encoding::{StrictEncode, StrictSerialize, StrictWriter};
+use strict_encoding::{StrictDeserialize, StrictEncode, StrictSerialize, StrictWriter};
 
 fn hex(data: &[u8]) -> String {
     const CHARS: &[u8; 16] = b"0123456789abcdef";
@@ -41,60 +41,181 @@ fn strict_hex<T: StrictEncode>(value: &T) -> String {
 }
 
 fn run_inspector() -> bool {
-	let args = env::args().collect::<Vec<_>>();
-	if args.len() != 3 {
-		return false;
-	}
-	match args[1].as_str() {
-		"inspect-contract" => {
-			let armored = fs::read_to_string(&args[2]).expect("read contract consignment");
-			let contract = Contract::from_ascii_armored_str(&armored)
-				.expect("official Rust parser rejected contract consignment");
-			struct NoWitness;
-			impl ResolveWitness for NoWitness {
-				fn resolve_witness(&self, _: rgbstd::Txid) -> Result<WitnessStatus, WitnessResolverError> {
-					Ok(WitnessStatus::Unresolved)
-				}
-				fn check_chain_net(&self, _: ChainNet) -> Result<(), WitnessResolverError> {
-					Ok(())
-				}
-			}
-			let validation_config = ValidationConfig {
-				chain_net: contract.genesis().chain_net,
-				trusted_typesystem: contract.types.clone(),
-				..Default::default()
-			};
-			let consensus_valid = contract.clone().validate(&NoWitness, &validation_config).is_ok();
-			println!("{}", serde_json::json!({
-				"id": contract.consignment_id().to_string(),
-				"contract_id": contract.contract_id().to_string(),
-				"schema_id": contract.schema_id().to_string(),
-				"chain_net": contract.genesis().chain_net.prefix(),
-				"canonical_roundtrip": Contract::from_ascii_armored_str(&contract.to_string()).is_ok(),
-				"consensus_valid": consensus_valid,
-			}));
-			true
-		}
-		"inspect-transfer" => {
-			let armored = fs::read_to_string(&args[2]).expect("read transfer consignment");
-			let transfer = Transfer::from_ascii_armored_str(&armored)
-				.expect("official Rust parser rejected transfer consignment");
-			println!("{}", serde_json::json!({
-				"id": transfer.consignment_id().to_string(),
-				"contract_id": transfer.contract_id().to_string(),
-				"schema_id": transfer.schema_id().to_string(),
-				"canonical_roundtrip": Transfer::from_ascii_armored_str(&transfer.to_string()).is_ok(),
-			}));
-			true
-		}
-		"inspect-invoice" => {
-			let invoice = RgbInvoice::from_str(&args[2])
-				.expect("official Rust parser rejected invoice");
-			println!("{}", serde_json::json!({"invoice": invoice.to_string()}));
-			true
-		}
-		_ => false,
-	}
+    let args = env::args().collect::<Vec<_>>();
+    if args.len() != 3 && args.len() != 4 {
+        return false;
+    }
+    match args[1].as_str() {
+        "inspect-contract" => {
+            let armored = fs::read_to_string(&args[2]).expect("read contract consignment");
+            let contract = Contract::from_ascii_armored_str(&armored)
+                .expect("official Rust parser rejected contract consignment");
+            struct NoWitness;
+            impl ResolveWitness for NoWitness {
+                fn resolve_witness(
+                    &self,
+                    _: rgbstd::Txid,
+                ) -> Result<WitnessStatus, WitnessResolverError> {
+                    Ok(WitnessStatus::Unresolved)
+                }
+                fn check_chain_net(&self, _: ChainNet) -> Result<(), WitnessResolverError> {
+                    Ok(())
+                }
+            }
+            let validation_config = ValidationConfig {
+                chain_net: contract.genesis().chain_net,
+                trusted_typesystem: trusted_contract(contract.schema_id()).types,
+                ..Default::default()
+            };
+            let consensus_valid = contract
+                .clone()
+                .validate(&NoWitness, &validation_config)
+                .is_ok();
+            println!(
+                "{}",
+                serde_json::json!({
+                    "id": contract.consignment_id().to_string(),
+                    "contract_id": contract.contract_id().to_string(),
+                    "schema_id": contract.schema_id().to_string(),
+                    "chain_net": contract.genesis().chain_net.prefix(),
+                    "canonical_roundtrip": Contract::from_ascii_armored_str(&contract.to_string()).is_ok(),
+                    "consensus_valid": consensus_valid,
+                })
+            );
+            true
+        }
+        "inspect-transfer" | "inspect-transfer-payload" => {
+            let parsed = if args[1] == "inspect-transfer-payload" {
+                Transfer::strict_deserialize_from_file::<{ usize::MAX }>(&args[2])
+                    .map_err(|e| e.to_string())
+            } else {
+                Transfer::from_ascii_armored_str(&fs::read_to_string(&args[2]).unwrap())
+                    .map_err(|e| e.to_string())
+            };
+            let transfer = match parsed {
+                Ok(value) => value,
+                Err(error) => {
+                    println!(
+                        "{}",
+                        serde_json::json!({"outcome": "invalid", "stage": "decode", "error": error.to_string()})
+                    );
+                    return true;
+                }
+            };
+            let payload = strict_hex(&transfer);
+            let roundtrip = Transfer::from_ascii_armored_str(&transfer.to_ascii_armored_string())
+                .map(|value| strict_hex(&value) == payload)
+                .unwrap_or(false);
+            let mut result = serde_json::json!({
+                "id": transfer.consignment_id().to_string(),
+                "contract_id": transfer.contract_id().to_string(),
+                "schema_id": transfer.schema_id().to_string(),
+                "canonical_roundtrip": roundtrip,
+                "payload_hex": payload,
+            });
+            if let Some(path) = args.get(3) {
+                let evidence: serde_json::Value =
+                    serde_json::from_slice(&fs::read(path).expect("read Bitcoin evidence"))
+                        .expect("Bitcoin evidence JSON");
+                let resolver = EvidenceResolver(evidence);
+                // The trust root is the frozen official fixture, never the candidate's types.
+                let trusted = trusted_contract(transfer.schema_id());
+                let config = ValidationConfig {
+                    chain_net: transfer.genesis().chain_net,
+                    trusted_typesystem: trusted.types,
+                    ..Default::default()
+                };
+                match transfer.validate(&resolver, &config) {
+                    Ok(valid) => {
+                        result["outcome"] = "valid".into();
+                        result["validation_status"] =
+                            format!("{:?}", valid.validation_status()).into();
+                    }
+                    Err(error) => {
+                        result["outcome"] = match &error {
+                            rgbstd::validation::ValidationError::ResolverError(_) => {
+                                "evidence_error"
+                            }
+                            _ => "invalid",
+                        }
+                        .into();
+                        result["stage"] = "validate".into();
+                        result["error"] = format!("{error:?}").into();
+                    }
+                }
+            }
+            println!("{result}");
+            true
+        }
+        "inspect-invoice" => {
+            let invoice =
+                RgbInvoice::from_str(&args[2]).expect("official Rust parser rejected invoice");
+            println!("{}", serde_json::json!({"invoice": invoice.to_string()}));
+            true
+        }
+        _ => false,
+    }
+}
+
+struct EvidenceResolver(serde_json::Value);
+
+fn trusted_contract(schema_id: rgbstd::SchemaId) -> Contract {
+    for fixture in [
+        include_str!("../../../testvectors/rc11/nia-example.rgba"),
+        include_str!("../../../testvectors/rc11/ifa-example.rgba"),
+        include_str!("../../../testvectors/rc11/cfa-example.rgba"),
+        include_str!("../../../testvectors/rc11/uda-example.rgba"),
+    ] {
+        let contract = Contract::from_ascii_armored_str(fixture).unwrap();
+        if contract.schema_id() == schema_id {
+            return contract;
+        }
+    }
+    panic!("schema outside frozen oracle catalog");
+}
+
+impl ResolveWitness for EvidenceResolver {
+    fn resolve_witness(&self, id: rgbstd::Txid) -> Result<WitnessStatus, WitnessResolverError> {
+        let item = self.0["witnesses"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|item| item["txid"].as_str() == Some(&id.to_string()))
+            .ok_or_else(|| {
+                WitnessResolverError::ResolverIssue(Some(id), "missing witness evidence".into())
+            })?;
+        let state = item["state"].as_str().unwrap();
+        if state == "unknown" {
+            return Err(WitnessResolverError::ResolverIssue(
+                Some(id),
+                "witness unresolved".into(),
+            ));
+        }
+        let raw: Vec<u8> = bitcoin::hex::FromHex::from_hex(item["raw_tx"].as_str().unwrap())
+            .map_err(|_| WitnessResolverError::InvalidResolverData)?;
+        let tx = bitcoin::consensus::deserialize::<bitcoin::Transaction>(&raw)
+            .map_err(|_| WitnessResolverError::InvalidResolverData)?;
+        let ord = match state {
+            "mined" => WitnessOrd::Mined(
+                WitnessPos::bitcoin(
+                    std::num::NonZeroU32::new(item["height"].as_u64().unwrap() as u32).unwrap(),
+                    item["timestamp"].as_i64().unwrap(),
+                )
+                .unwrap(),
+            ),
+            "tentative" => WitnessOrd::Tentative,
+            "archived" => WitnessOrd::Archived,
+            _ => return Err(WitnessResolverError::InvalidResolverData),
+        };
+        Ok(WitnessStatus::Resolved(tx, ord))
+    }
+    fn check_chain_net(&self, chain: ChainNet) -> Result<(), WitnessResolverError> {
+        if self.0["chain_net"].as_str() == Some(chain.prefix()) {
+            Ok(())
+        } else {
+            Err(WitnessResolverError::WrongChainNet)
+        }
+    }
 }
 
 fn main() {

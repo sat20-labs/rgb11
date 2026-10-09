@@ -32,8 +32,8 @@ func (r *Registry) AddTypeSystem(name string, value Value) error {
 	lib := &typeLibrary{
 		ID:          "typesystem:" + name,
 		Name:        name,
-		bySemID:     make(map[string]json.RawMessage, len(entries)),
-		byName:      make(map[string]json.RawMessage),
+		bySemID:     make(map[string]*parsedType, len(entries)),
+		byName:      make(map[string]*parsedType),
 		semIDByName: make(map[string]string),
 	}
 	for _, entry := range entries {
@@ -50,7 +50,11 @@ func (r *Registry) AddTypeSystem(name string, value Value) error {
 		if err != nil {
 			return err
 		}
-		lib.bySemID[semID] = encoded
+		parsed, err := parseType(encoded)
+		if err != nil {
+			return fmt.Errorf("%w: %s: %v", ErrInvalidTypeSystem, semID, err)
+		}
+		lib.bySemID[semID] = parsed
 	}
 	if _, exists := r.byName[name]; exists {
 		return fmt.Errorf("duplicate strict type system %s", name)
@@ -114,7 +118,7 @@ func (r *Registry) SemanticTypeDefinition(typeSystem, semID string) ([]byte, err
 	if err != nil {
 		return nil, err
 	}
-	return append([]byte(nil), typeDef...), nil
+	return append([]byte(nil), typeDef.raw...), nil
 }
 
 func typeDefinition(value Value) (map[string]any, error) {

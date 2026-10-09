@@ -33,6 +33,7 @@ func main() {
 	transferPath := flag.String("transfer", "testvectors/rc11/nia-transfer.rgba", "official transfer fixture providing the witness bundle")
 	outputPath := flag.String("output", "", "Go-built transfer output path")
 	regtestOutputPath := flag.String("regtest-output", "", "Go-built regtest contract output path")
+	validationDir := flag.String("validation-dir", "", "full-validation differential artifacts directory")
 	flag.Parse()
 	if *outputPath == "" {
 		fail(fmt.Errorf("output path is required"))
@@ -71,6 +72,9 @@ func main() {
 	armored, err := consignment.EncodeArmor(built.Value)
 	fail(err)
 	fail(os.WriteFile(*outputPath, []byte(armored), 0o600))
+	if *validationDir != "" {
+		fail(writeValidationCases(*validationDir))
+	}
 	parsed, err := consignment.DecodeArmor(armored)
 	fail(err)
 	payloadHash := sha256.Sum256(parsed.Armor.Data)

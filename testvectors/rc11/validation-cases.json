@@ -1,0 +1,222 @@
+[
+  {
+    "name": "nia-valid",
+    "outcome": "valid",
+    "payload_sha256": "ee2e0a70ce8d5e5a90fc6d5465b2b3e980d335c00be11b99117faa349eea5e65"
+  },
+  {
+    "name": "nia-mined",
+    "outcome": "valid",
+    "payload_sha256": "ee2e0a70ce8d5e5a90fc6d5465b2b3e980d335c00be11b99117faa349eea5e65"
+  },
+  {
+    "name": "nia-archived",
+    "outcome": "invalid",
+    "payload_sha256": "ee2e0a70ce8d5e5a90fc6d5465b2b3e980d335c00be11b99117faa349eea5e65"
+  },
+  {
+    "name": "nia-unresolved",
+    "outcome": "evidence_error",
+    "payload_sha256": "ee2e0a70ce8d5e5a90fc6d5465b2b3e980d335c00be11b99117faa349eea5e65"
+  },
+  {
+    "name": "nia-witness-mismatch",
+    "outcome": "evidence_error",
+    "payload_sha256": "ee2e0a70ce8d5e5a90fc6d5465b2b3e980d335c00be11b99117faa349eea5e65"
+  },
+  {
+    "name": "nia-invalid-state",
+    "outcome": "invalid",
+    "payload_sha256": "45acb6e141553ba88629db4daf7326e91ce69d8608140a155246d9d41e77dc28"
+  },
+  {
+    "name": "nia-missing-history",
+    "outcome": "invalid",
+    "payload_sha256": "83fba3c68032a1e48123a037fb0914544936ea62fb4c38f08d00502382ebc5ec"
+  },
+  {
+    "name": "nia-seal-mismatch",
+    "outcome": "invalid",
+    "payload_sha256": "2696373fb5902ae83a3d59639358a470952de5304369b928b0ad63f21d338199"
+  },
+  {
+    "name": "nia-anchor-mismatch",
+    "outcome": "invalid",
+    "payload_sha256": "db03820aa186d15c96f7a10da39dd5384ce6f80576190317eeb17f3b532effff"
+  },
+  {
+    "name": "ifa-valid",
+    "outcome": "valid",
+    "payload_sha256": "554853aa52f0ec206e03d65ced5a1076d4c9fb8cab27c8c369951ec700a29a2b"
+  },
+  {
+    "name": "ifa-mined",
+    "outcome": "valid",
+    "payload_sha256": "554853aa52f0ec206e03d65ced5a1076d4c9fb8cab27c8c369951ec700a29a2b"
+  },
+  {
+    "name": "ifa-archived",
+    "outcome": "invalid",
+    "payload_sha256": "554853aa52f0ec206e03d65ced5a1076d4c9fb8cab27c8c369951ec700a29a2b"
+  },
+  {
+    "name": "ifa-unresolved",
+    "outcome": "evidence_error",
+    "payload_sha256": "554853aa52f0ec206e03d65ced5a1076d4c9fb8cab27c8c369951ec700a29a2b"
+  },
+  {
+    "name": "ifa-witness-mismatch",
+    "outcome": "evidence_error",
+    "payload_sha256": "554853aa52f0ec206e03d65ced5a1076d4c9fb8cab27c8c369951ec700a29a2b"
+  },
+  {
+    "name": "ifa-invalid-state",
+    "outcome": "invalid",
+    "payload_sha256": "ed5dd36aeee59e9dd507411845d9f134b22eafb4668940e6a187e36f8c6ff8c5"
+  },
+  {
+    "name": "ifa-missing-history",
+    "outcome": "invalid",
+    "payload_sha256": "091e70b0de9f54abd479ce9d7290122a63f09d4e987efe0b508111320f2386bf"
+  },
+  {
+    "name": "ifa-seal-mismatch",
+    "outcome": "invalid",
+    "payload_sha256": "2659c156d91ce430a7251a26ecbe14b61c08ea88a35d03a8e7610e240a6980cd"
+  },
+  {
+    "name": "ifa-anchor-mismatch",
+    "outcome": "invalid",
+    "payload_sha256": "403ad3b4a3939478b0669c182a1b19ee821f45a472b90fdc85c5fc5a76b4dfd9"
+  },
+  {
+    "name": "cfa-valid",
+    "outcome": "valid",
+    "payload_sha256": "741dc6ea69452ab7ea217f01eb6cd0438d9399d88c912bc1c88b58f49a6ce3b5"
+  },
+  {
+    "name": "cfa-mined",
+    "outcome": "valid",
+    "payload_sha256": "741dc6ea69452ab7ea217f01eb6cd0438d9399d88c912bc1c88b58f49a6ce3b5"
+  },
+  {
+    "name": "cfa-archived",
+    "outcome": "invalid",
+    "payload_sha256": "741dc6ea69452ab7ea217f01eb6cd0438d9399d88c912bc1c88b58f49a6ce3b5"
+  },
+  {
+    "name": "cfa-unresolved",
+    "outcome": "evidence_error",
+    "payload_sha256": "741dc6ea69452ab7ea217f01eb6cd0438d9399d88c912bc1c88b58f49a6ce3b5"
+  },
+  {
+    "name": "cfa-witness-mismatch",
+    "outcome": "evidence_error",
+    "payload_sha256": "741dc6ea69452ab7ea217f01eb6cd0438d9399d88c912bc1c88b58f49a6ce3b5"
+  },
+  {
+    "name": "cfa-invalid-state",
+    "outcome": "invalid",
+    "payload_sha256": "6102b10a087a2557c3864053d96c8435ea52919f1c133c2c5c4a15a06ec07e93"
+  },
+  {
+    "name": "cfa-missing-history",
+    "outcome": "invalid",
+    "payload_sha256": "0523f6b76706b5cb1628b82b20b23cefb322627b1e631091ab7a271faca5c09c"
+  },
+  {
+    "name": "cfa-seal-mismatch",
+    "outcome": "invalid",
+    "payload_sha256": "565932d1afebfa632127c0677b2fd026d3f5750817d396eae80c2b65f962bf65"
+  },
+  {
+    "name": "cfa-anchor-mismatch",
+    "outcome": "invalid",
+    "payload_sha256": "c5aed2ec81263a7027482096e3decef085a807594689721954d1d306558c8177"
+  },
+  {
+    "name": "uda-valid",
+    "outcome": "valid",
+    "payload_sha256": "8afc49afc6b01e74f988c5019118e577bf7467e50a39aee1db7029ec8aa1f896"
+  },
+  {
+    "name": "uda-mined",
+    "outcome": "valid",
+    "payload_sha256": "8afc49afc6b01e74f988c5019118e577bf7467e50a39aee1db7029ec8aa1f896"
+  },
+  {
+    "name": "uda-archived",
+    "outcome": "invalid",
+    "payload_sha256": "8afc49afc6b01e74f988c5019118e577bf7467e50a39aee1db7029ec8aa1f896"
+  },
+  {
+    "name": "uda-unresolved",
+    "outcome": "evidence_error",
+    "payload_sha256": "8afc49afc6b01e74f988c5019118e577bf7467e50a39aee1db7029ec8aa1f896"
+  },
+  {
+    "name": "uda-witness-mismatch",
+    "outcome": "evidence_error",
+    "payload_sha256": "8afc49afc6b01e74f988c5019118e577bf7467e50a39aee1db7029ec8aa1f896"
+  },
+  {
+    "name": "uda-invalid-state",
+    "outcome": "invalid",
+    "payload_sha256": "c5bb267072aa8d17106ee0631e279f02b44f42f4e731cc2ebd5e6cc49a284c06"
+  },
+  {
+    "name": "uda-missing-history",
+    "outcome": "invalid",
+    "payload_sha256": "be8a04203595aeecc17a6ef0f97da3641022e43a93d0daa06f48d2de2458ae00"
+  },
+  {
+    "name": "uda-seal-mismatch",
+    "outcome": "invalid",
+    "payload_sha256": "7a0666ba5018d894a3fe76f4a7095956273efdaff96b564cf04c4c015d8566a8"
+  },
+  {
+    "name": "uda-anchor-mismatch",
+    "outcome": "invalid",
+    "payload_sha256": "4f9c509a0ddcd39aff2991dd5c1052f366d65e49591ef4a0b57e01ce81d8707b"
+  },
+  {
+    "name": "ifa-inflate-valid",
+    "outcome": "valid",
+    "payload_sha256": "2eaa39c53c188e87793a5843bc73288cfaa7d5e1cf61c35038e4f2b5a064f959"
+  },
+  {
+    "name": "ifa-inflate-excess",
+    "outcome": "invalid",
+    "payload_sha256": "c661b1dc0f8908b40c05103a4ad44b140aa233d610e4173942686ed2e8601e17"
+  },
+  {
+    "name": "ifa-inflate-no-right",
+    "outcome": "invalid",
+    "payload_sha256": "ccdb6b9f9e641db6da001cd11c402c319ee56c3276933cc9aa5d09c89944e9ba"
+  },
+  {
+    "name": "truncated",
+    "outcome": "invalid",
+    "payload_sha256": "0dc8f95589a8eb79cc4587cacc21a0d1d353501190711573c194c280d0cc971a"
+  },
+  {
+    "name": "trailing-byte",
+    "outcome": "invalid",
+    "payload_sha256": "aa6ca3506bae8f606846e3f5336555d0cfca09e51e3a4c55b93ab96c4db7dd70"
+  },
+  {
+    "name": "invalid-enum",
+    "outcome": "invalid",
+    "payload_sha256": "dcf063f45533d096b29c38bc2126d43584b7bc4a7cc5cd5324237a3428c60263"
+  },
+  {
+    "name": "noncanonical-map",
+    "outcome": "invalid",
+    "payload_sha256": "23d3ceb6b7f3c258518fbb3dca87919c9689df85a9220053f4087c15e24544aa"
+  },
+  {
+    "name": "nia-official-transfer",
+    "outcome": "valid",
+    "payload_sha256": "228b1bed7e57f9996dffd67370855c1b631f6a475a8841b79139adf69f96e6a7"
+  }
+]
