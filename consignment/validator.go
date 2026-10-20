@@ -98,6 +98,11 @@ func (c *Container) ValidatePrepared(resolver BitcoinResolver) (Validation, erro
 }
 
 func (c *Container) validate(resolver BitcoinResolver, allowPrepared, historyOnly bool) (Validation, error) {
+	return c.validateWithHistoryReport(resolver, allowPrepared, historyOnly, nil)
+}
+
+func (c *Container) validateWithHistoryReport(resolver BitcoinResolver, allowPrepared, historyOnly bool,
+	collector *historyReportCollector) (Validation, error) {
 	report := Validation{}
 	if c == nil || !c.StructuralValid || !c.GenesisValid {
 		return report, ErrContainerType
@@ -204,7 +209,7 @@ func (c *Container) validate(resolver BitcoinResolver, allowPrepared, historyOnl
 				if !txSpends(witnessTx, previous.outpoint) {
 					return report, ErrSealNotClosed
 				}
-				if evidence.State == WitnessPrepared {
+				if evidence.State == WitnessPrepared && !(historyOnly && collector != nil) {
 					if err := verifyPreparedInputOutpoint(resolver, previous.outpoint, witnessTxID); err != nil {
 						return report, err
 					}
@@ -220,6 +225,10 @@ func (c *Container) validate(resolver BitcoinResolver, allowPrepared, historyOnl
 				}))
 			if err != nil {
 				return report, err
+			}
+			if collector != nil {
+				collector.recordConsumption(c.ContractID, inputs, states, validation.OperationID,
+					bundle.BundleID, witnessTxID, evidence.State)
 			}
 			for _, input := range inputs {
 				consumed[input] = struct{}{}
@@ -247,11 +256,16 @@ func (c *Container) validate(resolver BitcoinResolver, allowPrepared, historyOnl
 		}
 	}
 
-	historical, err := historicalSideOps(c.Value, graph, bundleOps, completeGraph)
+	historical, err := historicalSideOpsWithReport(c.Value, graph, bundleOps, completeGraph, collector)
 	if err != nil {
 		return report, err
 	}
 	if historyOnly {
+		if collector != nil {
+			if err := collector.finish(states, preparedWitnesses, completeGraph); err != nil {
+				return report, err
+			}
+		}
 		return report, nil
 	}
 	transfer, _ := c.Value.Field("transfer")
@@ -305,8 +319,18 @@ func (c *Container) validate(resolver BitcoinResolver, allowPrepared, historyOnl
 // may omit a known-spent output from a strict ancestor of the receiving bundle.
 func historicalSideOps(value strict_types.Value, graph map[[32]byte]validatedOp,
 	bundleOps map[[32]byte][][32]byte, complete bool) (map[[32]byte]bool, error) {
+	return historicalSideOpsWithReport(value, graph, bundleOps, complete, nil)
+}
+
+func historicalSideOpsWithReport(value strict_types.Value, graph map[[32]byte]validatedOp,
+	bundleOps map[[32]byte][][32]byte, complete bool, collector *historyReportCollector) (map[[32]byte]bool, error) {
 	transfer, _ := value.Field("transfer")
 	if transfer.Unwrap().Name != "true" {
+		if collector != nil {
+			for id := range graph {
+				collector.selected[id] = true
+			}
+		}
 		return nil, nil
 	}
 	terminals, ok := value.Field("terminals")
@@ -353,6 +377,9 @@ func historicalSideOps(value strict_types.Value, graph map[[32]byte]validatedOp,
 	var pending [][32]byte
 	for bundle := range protected {
 		for _, id := range bundleOps[bundle] {
+			if collector != nil {
+				collector.selected[id] = true
+			}
 			pending = append(pending, graph[id].parents...)
 		}
 	}
@@ -369,6 +396,9 @@ func historicalSideOps(value strict_types.Value, graph map[[32]byte]validatedOp,
 		if !ok {
 			// Validated input refs must have a disclosed source operation.
 			return nil, schemas.ErrInputUnresolved
+		}
+		if collector != nil {
+			collector.selected[id] = true
 		}
 		if !protected[node.bundle] {
 			historical[id] = true
